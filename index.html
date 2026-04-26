@@ -1,0 +1,66 @@
+<p> </p>
+<p>Climate Monitoring Dashboard - Storage Retschwil</p>
+<section class="topbar">
+<div>
+<div class="eyebrow">Climate Monitoring</div>
+<h1>J&amp;P Storage Retschwil</h1>
+</div>
+<div class="controls"><select id="hoursSelect">
+<option value="6">Last 6h</option>
+<option selected="selected" value="24">Last 24h</option>
+<option value="72">Last 3 days</option>
+<option value="168">Last 7 days</option>
+</select><button id="refreshButton">Refresh</button></div>
+</section>
+<div id="errorBox" class="error"> </div>
+<div class="status-row"><span id="statusDot" class="dot"></span> <span id="statusText">Loading data…</span> · <span id="lastUpdated">Last updated: —</span></div>
+<section class="grid">
+<article class="card metric">
+<div class="label">Current Temperature</div>
+<div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+<div id="tempTrend" class="trend">Trend: —</div>
+</article>
+<article class="card metric">
+<div class="label">Current Humidity</div>
+<div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+<div id="humidityTrend" class="trend">Trend: —</div>
+</article>
+<article class="card metric">
+<div class="label">Measurements</div>
+<div class="value"><span id="measurementCount">—</span></div>
+<div class="trend">Selected time range</div>
+</article>
+<article class="card metric">
+<div class="label">Last Reading</div>
+<div class="value" style="font-size: 24px;"><span id="lastReading">—</span></div>
+<div class="trend">Device timestamp</div>
+</article>
+<article class="card chart-card">
+<div class="chart-title">
+<h2>Temperature</h2>
+<span class="pill">°C over time</span></div>
+<canvas id="tempChart"></canvas></article>
+<article class="card chart-card">
+<div class="chart-title">
+<h2>Humidity</h2>
+<span class="pill">Relative humidity</span></div>
+<canvas id="humidityChart"></canvas></article>
+<article class="card wide">
+<div class="chart-title">
+<h2>Latest readings</h2>
+<span class="pill">Last 10 samples</span></div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Temperature</th>
+<th>Humidity</th>
+<th>Device</th>
+</tr>
+</thead>
+<tbody id="readingsTable"></tbody>
+</table>
+</div>
+</article>
+</section>
