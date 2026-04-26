@@ -1,66 +1,530 @@
-<p> </p>
-<p>Climate Monitoring Dashboard - Storage Retschwil</p>
-<section class="topbar">
-<div>
-<div class="eyebrow">Climate Monitoring</div>
-<h1>J&amp;P Storage Retschwil</h1>
-</div>
-<div class="controls"><select id="hoursSelect">
-<option value="6">Last 6h</option>
-<option selected="selected" value="24">Last 24h</option>
-<option value="72">Last 3 days</option>
-<option value="168">Last 7 days</option>
-</select><button id="refreshButton">Refresh</button></div>
-</section>
-<div id="errorBox" class="error"> </div>
-<div class="status-row"><span id="statusDot" class="dot"></span> <span id="statusText">Loading data…</span> · <span id="lastUpdated">Last updated: —</span></div>
-<section class="grid">
-<article class="card metric">
-<div class="label">Current Temperature</div>
-<div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
-<div id="tempTrend" class="trend">Trend: —</div>
-</article>
-<article class="card metric">
-<div class="label">Current Humidity</div>
-<div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
-<div id="humidityTrend" class="trend">Trend: —</div>
-</article>
-<article class="card metric">
-<div class="label">Measurements</div>
-<div class="value"><span id="measurementCount">—</span></div>
-<div class="trend">Selected time range</div>
-</article>
-<article class="card metric">
-<div class="label">Last Reading</div>
-<div class="value" style="font-size: 24px;"><span id="lastReading">—</span></div>
-<div class="trend">Device timestamp</div>
-</article>
-<article class="card chart-card">
-<div class="chart-title">
-<h2>Temperature</h2>
-<span class="pill">°C over time</span></div>
-<canvas id="tempChart"></canvas></article>
-<article class="card chart-card">
-<div class="chart-title">
-<h2>Humidity</h2>
-<span class="pill">Relative humidity</span></div>
-<canvas id="humidityChart"></canvas></article>
-<article class="card wide">
-<div class="chart-title">
-<h2>Latest readings</h2>
-<span class="pill">Last 10 samples</span></div>
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Time</th>
-<th>Temperature</th>
-<th>Humidity</th>
-<th>Device</th>
-</tr>
-</thead>
-<tbody id="readingsTable"></tbody>
-</table>
-</div>
-</article>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shelly H&T Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --panel: rgba(255, 255, 255, 0.075);
+      --panel-strong: rgba(255, 255, 255, 0.11);
+      --text: #eef2ff;
+      --muted: #98a2b3;
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #38bdf8;
+      --accent-2: #a78bfa;
+      --good: #34d399;
+      --warning: #fbbf24;
+      --danger: #fb7185;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 34%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.18), transparent 32%),
+        linear-gradient(135deg, #080b13 0%, #0b0f19 48%, #101827 100%);
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1;
+      margin: 0 0 12px;
+      letter-spacing: -0.05em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 720px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    select, button {
+      border: 1px solid var(--border);
+      background: rgba(20, 24, 38, 0.95);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    select option {
+      background: #0b0f19;
+      color: #ffffff;
+    }
+
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(167, 139, 250, 0.18));
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .status-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warning);
+      box-shadow: 0 0 24px var(--warning);
+    }
+
+    .dot.online {
+      background: var(--good);
+      box-shadow: 0 0 24px var(--good);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.09), transparent 32%);
+      pointer-events: none;
+    }
+
+    .metric {
+      grid-column: span 3;
+      min-height: 148px;
+    }
+
+    .chart-card {
+      grid-column: span 6;
+      min-height: 420px;
+    }
+
+    .wide {
+      grid-column: span 12;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .value {
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-size: 18px;
+      margin-left: 4px;
+      font-weight: 600;
+    }
+
+    .trend {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chart-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chart-title h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .pill {
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    canvas {
+      position: relative;
+      z-index: 1;
+      max-height: 320px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .error {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(251, 113, 133, 0.38);
+      background: rgba(251, 113, 133, 0.12);
+      color: #fecdd3;
+    }
+
+    @media (max-width: 980px) {
+      body { padding: 20px; }
+      .topbar { flex-direction: column; }
+      .metric, .chart-card { grid-column: span 12; }
+      .controls { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="topbar">
+      <div>
+        <div class="eyebrow">Storage Climate Monitoring</div>
+        <h1>Shelly H&T Dashboard</h1>
+        <p class="subtitle">Live temperature and humidity insights from your Shelly H&T Gen3 sensor, stored in DynamoDB and served through AWS Lambda.</p>
+      </div>
+
+      <div class="controls">
+        <select id="hoursSelect" aria-label="Time range">
+          <option value="6">Last 6h</option>
+          <option value="24" selected>Last 24h</option>
+          <option value="72">Last 3 days</option>
+          <option value="168">Last 7 days</option>
+        </select>
+        <button id="refreshButton">Refresh</button>
+      </div>
+    </section>
+
+    <div id="errorBox" class="error"></div>
+
+    <div class="status-row">
+      <span id="statusDot" class="dot"></span>
+      <span id="statusText">Loading data…</span>
+      <span>·</span>
+      <span id="lastUpdated">Last updated: —</span>
+    </div>
+
+    <section class="grid">
+      <article class="card metric">
+        <div class="label">Current Temperature</div>
+        <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+        <div id="tempTrend" class="trend">Trend: —</div>
+      </article>
+
+      <article class="card metric">
+        <div class="label">Current Humidity</div>
+        <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+        <div id="humidityTrend" class="trend">Trend: —</div>
+      </article>
+
+      <article class="card metric">
+        <div class="label">Measurements</div>
+        <div class="value"><span id="measurementCount">—</span></div>
+        <div class="trend">Selected time range</div>
+      </article>
+
+      <article class="card metric">
+        <div class="label">Last Reading</div>
+        <div class="value" style="font-size: 24px;"><span id="lastReading">—</span></div>
+        <div class="trend">Device timestamp</div>
+      </article>
+
+      <article class="card chart-card">
+        <div class="chart-title">
+          <h2>Temperature</h2>
+          <span class="pill">°C over time</span>
+        </div>
+        <canvas id="tempChart"></canvas>
+      </article>
+
+      <article class="card chart-card">
+        <div class="chart-title">
+          <h2>Humidity</h2>
+          <span class="pill">Relative humidity</span>
+        </div>
+        <canvas id="humidityChart"></canvas>
+      </article>
+
+      <article class="card wide">
+        <div class="chart-title">
+          <h2>Latest readings</h2>
+          <span class="pill">Last 10 samples</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Temperature</th>
+                <th>Humidity</th>
+                <th>Device</th>
+              </tr>
+            </thead>
+            <tbody id="readingsTable"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com";
+    const DEVICE_ID = "shellyhtg3-e4b3232fa628";
+
+    let tempChart;
+    let humidityChart;
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { labels: { color: "#cbd5e1" } },
+        tooltip: {
+          backgroundColor: "rgba(15, 23, 42, 0.95)",
+          borderColor: "rgba(255,255,255,0.14)",
+          borderWidth: 1,
+          titleColor: "#f8fafc",
+          bodyColor: "#cbd5e1"
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "#94a3b8", maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { color: "rgba(148, 163, 184, 0.10)" }
+        },
+        y: {
+          ticks: { color: "#94a3b8" },
+          grid: { color: "rgba(148, 163, 184, 0.10)" }
+        }
+      }
+    };
+
+    function formatTime(seconds) {
+      return new Date(seconds * 1000).toLocaleString(undefined, {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function calculateTrend(items, field) {
+      if (items.length < 2) return "—";
+      const first = Number(items[0][field]);
+      const last = Number(items[items.length - 1][field]);
+      const diff = last - first;
+      const sign = diff > 0 ? "+" : "";
+      return `${sign}${diff.toFixed(1)} in range`;
+    }
+
+    function setError(message) {
+      const box = document.getElementById("errorBox");
+      box.textContent = message;
+      box.style.display = message ? "block" : "none";
+    }
+
+    function renderCharts(labels, temperatures, humidities) {
+      if (tempChart) tempChart.destroy();
+      if (humidityChart) humidityChart.destroy();
+
+      tempChart = new Chart(document.getElementById("tempChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Temperature °C",
+            data: temperatures,
+            borderColor: "#38bdf8",
+            backgroundColor: "rgba(56, 189, 248, 0.12)",
+            tension: 0.38,
+            fill: true,
+            pointRadius: 2,
+            pointHoverRadius: 5
+          }]
+        },
+        options: chartOptions
+      });
+
+      humidityChart = new Chart(document.getElementById("humidityChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Humidity %",
+            data: humidities,
+            borderColor: "#a78bfa",
+            backgroundColor: "rgba(167, 139, 250, 0.12)",
+            tension: 0.38,
+            fill: true,
+            pointRadius: 2,
+            pointHoverRadius: 5
+          }]
+        },
+        options: chartOptions
+      });
+    }
+
+    function renderTable(items) {
+      const tbody = document.getElementById("readingsTable");
+      tbody.innerHTML = items.slice(-10).reverse().map(item => `
+        <tr>
+          <td>${formatTime(item.eventtime)}</td>
+          <td>${Number(item.temperature).toFixed(1)} °C</td>
+          <td>${Number(item.humidity).toFixed(1)} %</td>
+          <td>${item.deviceId}</td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadData() {
+      const hours = document.getElementById("hoursSelect").value;
+      const url = `${API_BASE_URL}/measurements?deviceId=${encodeURIComponent(DEVICE_ID)}&hours=${hours}`;
+
+      document.getElementById("statusText").textContent = "Loading data…";
+      document.getElementById("statusDot").classList.remove("online");
+      setError("");
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`API returned HTTP ${response.status}`);
+
+        const data = await response.json();
+        const items = (data.items || []).sort((a, b) => a.eventtime - b.eventtime);
+
+        if (!items.length) {
+          throw new Error("No measurements found for the selected time range.");
+        }
+
+        const latest = items[items.length - 1];
+        const labels = items.map(x => formatTime(x.eventtime));
+        const temperatures = items.map(x => Number(x.temperature));
+        const humidities = items.map(x => Number(x.humidity));
+
+        document.getElementById("currentTemp").textContent = Number(latest.temperature).toFixed(1);
+        document.getElementById("currentHumidity").textContent = Number(latest.humidity).toFixed(1);
+        document.getElementById("measurementCount").textContent = items.length;
+        document.getElementById("lastReading").textContent = formatTime(latest.eventtime);
+        document.getElementById("tempTrend").textContent = `Trend: ${calculateTrend(items, "temperature")} °C`;
+        document.getElementById("humidityTrend").textContent = `Trend: ${calculateTrend(items, "humidity")} %`;
+        document.getElementById("statusText").textContent = "Online · API reachable";
+        document.getElementById("statusDot").classList.add("online");
+        document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+
+        renderCharts(labels, temperatures, humidities);
+        renderTable(items);
+      } catch (error) {
+        console.error(error);
+        document.getElementById("statusText").textContent = "Offline or API error";
+        setError(error.message);
+      }
+    }
+
+    document.getElementById("refreshButton").addEventListener("click", loadData);
+    document.getElementById("hoursSelect").addEventListener("change", loadData);
+
+    loadData();
+    setInterval(loadData, 60_000);
+  </script>
+</body>
+</html>
