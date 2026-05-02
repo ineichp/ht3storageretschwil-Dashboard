@@ -109,6 +109,12 @@
       border-color: rgba(255, 255, 255, 0.28);
     }
 
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .status-row {
       display: flex;
       gap: 12px;
@@ -116,6 +122,7 @@
       margin-bottom: 22px;
       color: var(--muted);
       font-size: 14px;
+      flex-wrap: wrap;
     }
 
     .dot {
@@ -209,6 +216,7 @@
       margin-bottom: 16px;
       position: relative;
       z-index: 1;
+      gap: 12px;
     }
 
     .chart-title h2 {
@@ -224,6 +232,7 @@
       padding: 6px 10px;
       font-size: 12px;
       background: rgba(255, 255, 255, 0.06);
+      white-space: nowrap;
     }
 
     canvas {
@@ -267,11 +276,93 @@
       color: #fecdd3;
     }
 
+    .video-player-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    #videoPlayer {
+      width: 100%;
+      max-height: 560px;
+      border-radius: 22px;
+      background: #000;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    .video-controls {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .video-info {
+      text-align: center;
+      min-width: 0;
+    }
+
+    .video-title {
+      font-weight: 700;
+      word-break: break-all;
+      color: var(--text);
+    }
+
+    .video-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .video-list {
+      margin-top: 16px;
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    .video-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .video-item:last-child {
+      border-bottom: none;
+    }
+
+    .video-item.active {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--text);
+    }
+
+    .video-item-name {
+      word-break: break-all;
+    }
+
     @media (max-width: 980px) {
       body { padding: 20px; }
       .topbar { flex-direction: column; }
       .metric, .chart-card { grid-column: span 12; }
       .controls { width: 100%; justify-content: space-between; }
+    }
+
+    @media (max-width: 720px) {
+      .video-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .video-info {
+        text-align: left;
+      }
     }
   </style>
 </head>
@@ -281,7 +372,7 @@
       <div>
         <div class="eyebrow">Storage Climate Monitoring</div>
         <h1>Storage Retschwil</h1>
-        <p class="subtitle">Live temperature and humidity insights from the Storage in Retschwil - Deployed on AWS</p>
+        <p class="subtitle">Live temperature, humidity and camera insights from the Storage in Retschwil - Deployed on AWS</p>
       </div>
 
       <div class="controls">
@@ -302,6 +393,8 @@
       <span id="statusText">Loading data…</span>
       <span>·</span>
       <span id="lastUpdated">Last updated: —</span>
+      <span>·</span>
+      <span id="videoStatus">Videos: loading…</span>
     </div>
 
     <section class="grid">
@@ -347,6 +440,30 @@
 
       <article class="card wide">
         <div class="chart-title">
+          <h2>Camera Videos</h2>
+          <span id="videoCounter" class="pill">Loading videos…</span>
+        </div>
+
+        <div class="video-player-wrap">
+          <video id="videoPlayer" controls playsinline preload="metadata"></video>
+
+          <div class="video-controls">
+            <button id="prevVideo">← Previous</button>
+
+            <div class="video-info">
+              <div id="videoTitle" class="video-title">—</div>
+              <div id="videoMeta" class="video-meta">—</div>
+            </div>
+
+            <button id="nextVideo">Next →</button>
+          </div>
+
+          <div id="videoList" class="video-list"></div>
+        </div>
+      </article>
+
+      <article class="card wide">
+        <div class="chart-title">
           <h2>Latest readings</h2>
           <span class="pill">Last 10 samples</span>
         </div>
@@ -373,6 +490,8 @@
 
     let tempChart;
     let humidityChart;
+    let videos = [];
+    let currentVideoIndex = 0;
 
     const chartOptions = {
       responsive: true,
@@ -407,6 +526,30 @@
         hour: "2-digit",
         minute: "2-digit"
       });
+    }
+
+    function formatDateTime(value) {
+      return new Date(value).toLocaleString(undefined, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 B";
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      let value = Number(bytes);
+      let index = 0;
+
+      while (value >= 1024 && index < units.length - 1) {
+        value /= 1024;
+        index++;
+      }
+
+      return `${value.toFixed(1)} ${units[index]}`;
     }
 
     function calculateTrend(items, field) {
@@ -520,11 +663,109 @@
       }
     }
 
-    document.getElementById("refreshButton").addEventListener("click", loadData);
+    async function loadVideos() {
+      const url = `${API_BASE_URL}/videos`;
+
+      document.getElementById("videoStatus").textContent = "Videos: loading…";
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Video API returned HTTP ${response.status}`);
+
+        const data = await response.json();
+        videos = data.items || [];
+
+        document.getElementById("videoCounter").textContent = `${videos.length} videos`;
+        document.getElementById("videoStatus").textContent = `Videos: ${videos.length} available`;
+
+        if (videos.length) {
+          currentVideoIndex = 0;
+          renderCurrentVideo();
+          renderVideoList();
+        } else {
+          document.getElementById("videoTitle").textContent = "No videos found";
+          document.getElementById("videoMeta").textContent = "—";
+          document.getElementById("videoPlayer").removeAttribute("src");
+          document.getElementById("videoPlayer").load();
+          document.getElementById("videoList").innerHTML = "";
+          setVideoButtons(false);
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById("videoCounter").textContent = "Video API error";
+        document.getElementById("videoStatus").textContent = "Videos: API error";
+      }
+    }
+
+    function renderCurrentVideo() {
+      if (!videos.length) return;
+
+      const video = videos[currentVideoIndex];
+      const player = document.getElementById("videoPlayer");
+
+      player.src = video.url;
+      player.load();
+
+      document.getElementById("videoTitle").textContent = video.key;
+      document.getElementById("videoMeta").textContent =
+        `${currentVideoIndex + 1} / ${videos.length} · ${formatBytes(video.size)} · ${formatDateTime(video.lastModified)}`;
+
+      setVideoButtons(videos.length > 1);
+      renderVideoList();
+    }
+
+    function renderVideoList() {
+      const list = document.getElementById("videoList");
+
+      if (!videos.length) {
+        list.innerHTML = "";
+        return;
+      }
+
+      list.innerHTML = videos.map((video, index) => `
+        <div class="video-item ${index === currentVideoIndex ? "active" : ""}" data-index="${index}">
+          <span class="video-item-name">${video.key}</span>
+          <span>${formatBytes(video.size)}</span>
+        </div>
+      `).join("");
+
+      list.querySelectorAll(".video-item").forEach(item => {
+        item.addEventListener("click", () => {
+          currentVideoIndex = Number(item.dataset.index);
+          renderCurrentVideo();
+        });
+      });
+    }
+
+    function setVideoButtons(enabled) {
+      document.getElementById("prevVideo").disabled = !enabled;
+      document.getElementById("nextVideo").disabled = !enabled;
+    }
+
+    document.getElementById("prevVideo").addEventListener("click", () => {
+      if (!videos.length) return;
+      currentVideoIndex = (currentVideoIndex - 1 + videos.length) % videos.length;
+      renderCurrentVideo();
+    });
+
+    document.getElementById("nextVideo").addEventListener("click", () => {
+      if (!videos.length) return;
+      currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+      renderCurrentVideo();
+    });
+
+    document.getElementById("refreshButton").addEventListener("click", () => {
+      loadData();
+      loadVideos();
+    });
+
     document.getElementById("hoursSelect").addEventListener("change", loadData);
 
     loadData();
+    loadVideos();
+
     setInterval(loadData, 60_000);
+    setInterval(loadVideos, 300_000);
   </script>
 </body>
 </html>
