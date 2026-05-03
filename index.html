@@ -35,10 +35,7 @@
       padding: 32px;
     }
 
-    .shell {
-      max-width: 1280px;
-      margin: 0 auto;
-    }
+    .shell { max-width: 1280px; margin: 0 auto; }
 
     .topbar {
       display: flex;
@@ -81,9 +78,37 @@
       padding: 10px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(16px);
+      flex-wrap: wrap;
     }
 
-    select, button {
+    .threshold-controls {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .threshold-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .threshold-field span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    select, button, input {
       border: 1px solid var(--border);
       background: rgba(20, 24, 38, 0.95);
       color: #ffffff;
@@ -91,6 +116,14 @@
       padding: 10px 12px;
       font-size: 14px;
       outline: none;
+    }
+
+    input::placeholder { color: var(--muted); }
+
+    .threshold-field input {
+      width: 54px;
+      text-align: center;
+      padding: 8px 6px;
     }
 
     select option {
@@ -138,6 +171,11 @@
       box-shadow: 0 0 24px var(--good);
     }
 
+    .dot.alert {
+      background: var(--danger);
+      box-shadow: 0 0 24px var(--danger);
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
@@ -163,9 +201,46 @@
       pointer-events: none;
     }
 
+    .section-card {
+      grid-column: span 12;
+      padding: 24px;
+    }
+
+    .section-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
     .metric {
       grid-column: span 3;
       min-height: 148px;
+      display: flex;
+      flex-direction: column;
     }
 
     .chart-card {
@@ -173,9 +248,7 @@
       min-height: 420px;
     }
 
-    .wide {
-      grid-column: span 12;
-    }
+    .wide { grid-column: span 12; }
 
     .label {
       color: var(--muted);
@@ -192,6 +265,9 @@
       letter-spacing: -0.04em;
       position: relative;
       z-index: 1;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
     }
 
     .unit {
@@ -202,11 +278,61 @@
     }
 
     .trend {
-      margin-top: 16px;
+      margin-top: auto;
+      padding-top: 16px;
       color: var(--muted);
       font-size: 13px;
       position: relative;
       z-index: 1;
+    }
+
+    .last-reading-value {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 42px;
+      line-height: 1.05;
+    }
+
+    .last-reading-date {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .last-reading-time {
+      font-size: 20px;
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .threshold-ok { color: var(--text); }
+
+    .threshold-alert {
+      color: var(--danger) !important;
+      text-shadow: 0 0 18px rgba(251, 113, 133, 0.45);
+    }
+
+    .threshold-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(251, 113, 133, 0.35);
+      background: rgba(251, 113, 133, 0.12);
+      color: #fecdd3;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .threshold-row-alert td {
+      background: rgba(251, 113, 133, 0.075);
     }
 
     .chart-title {
@@ -335,42 +461,47 @@
       font-size: 13px;
     }
 
-    .video-item:last-child {
-      border-bottom: none;
-    }
+    .video-item:last-child { border-bottom: none; }
 
     .video-item.active {
       background: rgba(56, 189, 248, 0.12);
       color: var(--text);
     }
 
-    .video-item-name {
-      word-break: break-all;
+    .video-item-name { word-break: break-all; }
+
+    .event-label {
+      font-weight: 700;
+      color: var(--accent);
     }
+    .section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
     @media (max-width: 980px) {
       body { padding: 20px; }
       .topbar { flex-direction: column; }
       .metric, .chart-card { grid-column: span 12; }
       .controls { width: 100%; justify-content: space-between; }
+      .section-header { align-items: flex-start; flex-direction: column; }
+      .threshold-controls { width: 100%; justify-content: flex-start; }
     }
 
     @media (max-width: 720px) {
-      .video-controls {
-        grid-template-columns: 1fr;
-      }
-
-      .video-info {
-        text-align: left;
-      }
+      .video-controls { grid-template-columns: 1fr; }
+      .video-info { text-align: left; }
     }
   </style>
 </head>
+
 <body>
   <main class="shell">
     <section class="topbar">
       <div>
-        <div class="eyebrow">Storage Climate Monitoring</div>
+        <div class="eyebrow">Storage Monitoring</div>
         <h1>Storage Retschwil</h1>
         <p class="subtitle">Live temperature, humidity and camera insights from the Storage in Retschwil - Deployed on AWS</p>
       </div>
@@ -381,6 +512,7 @@
           <option value="24" selected>Last 24h</option>
           <option value="72">Last 3 days</option>
           <option value="168">Last 7 days</option>
+          <option value="720">Last 30 days</option>
         </select>
         <button id="refreshButton">Refresh</button>
       </div>
@@ -395,90 +527,170 @@
       <span id="lastUpdated">Last updated: —</span>
       <span>·</span>
       <span id="videoStatus">Videos: loading…</span>
+      <span>·</span>
+      <span id="eventStatus">Events: loading…</span>
     </div>
 
     <section class="grid">
-      <article class="card metric">
-        <div class="label">Current Temperature</div>
-        <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
-        <div id="tempTrend" class="trend">Trend: —</div>
-      </article>
+      <article class="card section-card">
+        <div class="section-header">
+          <div>
+  <div class="section-title-row">
+    <h2>Measurements</h2>
+    <span id="measurementHealth" class="pill">Climate data</span>
+  </div>
+  <div class="section-subtitle">Temperature and humidity readings from the HT sensor.</div>
+</div>
 
-      <article class="card metric">
-        <div class="label">Current Humidity</div>
-        <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
-        <div id="humidityTrend" class="trend">Trend: —</div>
-      </article>
+          <div class="threshold-controls">
+            <label class="threshold-field">
+              <span>Min Temp</span>
+              <input id="minTempInput" type="number" min="0" max="99" step="1">
+            </label>
 
-      <article class="card metric">
-        <div class="label">Measurements</div>
-        <div class="value"><span id="measurementCount">—</span></div>
-        <div class="trend">Selected time range</div>
-      </article>
+            <label class="threshold-field">
+              <span>Max Temp</span>
+              <input id="maxTempInput" type="number" min="0" max="99" step="1">
+            </label>
 
-      <article class="card metric">
-        <div class="label">Last Reading</div>
-        <div class="value" style="font-size: 24px;"><span id="lastReading">—</span></div>
-        <div class="trend">Device timestamp</div>
-      </article>
+            <label class="threshold-field">
+              <span>Min Hum</span>
+              <input id="minHumidityInput" type="number" min="0" max="99" step="1">
+            </label>
 
-      <article class="card chart-card">
-        <div class="chart-title">
-          <h2>Temperature</h2>
-          <span class="pill">°C over time</span>
-        </div>
-        <canvas id="tempChart"></canvas>
-      </article>
+            <label class="threshold-field">
+              <span>Max Hum</span>
+              <input id="maxHumidityInput" type="number" min="0" max="99" step="1">
+            </label>
 
-      <article class="card chart-card">
-        <div class="chart-title">
-          <h2>Humidity</h2>
-          <span class="pill">Relative humidity</span>
-        </div>
-        <canvas id="humidityChart"></canvas>
-      </article>
-
-      <article class="card wide">
-        <div class="chart-title">
-          <h2>Camera Videos</h2>
-          <span id="videoCounter" class="pill">Loading videos…</span>
+            <button id="saveThresholdsButton">Save</button>
+          </div>
         </div>
 
-        <div class="video-player-wrap">
-          <video id="videoPlayer" controls playsinline preload="metadata"></video>
+        <div class="section-grid">
+          <article class="card metric">
+            <div class="label">Current Temperature</div>
+            <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+            <div id="tempTrend" class="trend">Trend: —</div>
+          </article>
 
-          <div class="video-controls">
-            <button id="prevVideo">← Previous</button>
+          <article class="card metric">
+            <div class="label">Current Humidity</div>
+            <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+            <div id="humidityTrend" class="trend">Trend: —</div>
+          </article>
 
-            <div class="video-info">
-              <div id="videoTitle" class="video-title">—</div>
-              <div id="videoMeta" class="video-meta">—</div>
+          <article class="card metric">
+            <div class="label">Measurements</div>
+            <div class="value"><span id="measurementCount">—</span></div>
+            <div class="trend">in selected time range</div>
+          </article>
+
+          <article class="card metric">
+            <div class="label">Last Reading</div>
+            <div class="value last-reading-value">
+              <span id="lastReadingDate" class="last-reading-date">—</span>
+              <span id="lastReadingTime" class="last-reading-time">—</span>
+            </div>
+            <div class="trend">Device timestamp</div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="chart-title">
+              <h2>Temperature</h2>
+              <span id="tempThresholdInfo" class="pill">°C over time</span>
+            </div>
+            <canvas id="tempChart"></canvas>
+          </article>
+
+          <article class="card chart-card">
+            <div class="chart-title">
+              <h2>Humidity</h2>
+              <span id="humidityThresholdInfo" class="pill">Relative humidity</span>
+            </div>
+            <canvas id="humidityChart"></canvas>
+          </article>
+
+          <article class="card wide">
+            <div class="chart-title" style="cursor:pointer;" onclick="toggleReadings()">
+              <h2>Latest readings</h2>
+              <span id="readingsToggle" class="pill">Show</span>
             </div>
 
-            <button id="nextVideo">Next →</button>
-          </div>
-
-          <div id="videoList" class="video-list"></div>
+            <div id="readingsContent" style="display:none;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Temperature</th>
+                      <th>Humidity</th>
+                      <th>Device</th>
+                    </tr>
+                  </thead>
+                  <tbody id="readingsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </article>
         </div>
       </article>
 
-      <article class="card wide">
-        <div class="chart-title">
-          <h2>Latest readings</h2>
-          <span class="pill">Last 10 samples</span>
+      <article class="card section-card">
+        <div class="section-header">
+          <div>
+            <h2>Surveillance</h2>
+            <div class="section-subtitle">Recorded camera clips and AI-detected events from Amazon Rekognition.</div>
+          </div>
+          <span class="pill">Camera & AI</span>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Temperature</th>
-                <th>Humidity</th>
-                <th>Device</th>
-              </tr>
-            </thead>
-            <tbody id="readingsTable"></tbody>
-          </table>
+
+        <div class="section-grid">
+          <article class="card wide">
+            <div class="chart-title">
+              <h2>Camera Videos</h2>
+              <span id="videoCounter" class="pill">Loading videos…</span>
+            </div>
+
+            <div class="video-player-wrap">
+              <video id="videoPlayer" controls playsinline preload="metadata"></video>
+
+              <div class="video-controls">
+                <button id="prevVideo">← Previous</button>
+
+                <div class="video-info">
+                  <div id="videoTitle" class="video-title">—</div>
+                  <div id="videoMeta" class="video-meta">—</div>
+                </div>
+
+                <button id="nextVideo">Next →</button>
+              </div>
+
+              <div id="videoList" class="video-list"></div>
+            </div>
+          </article>
+
+          <article class="card wide">
+            <div class="chart-title">
+              <h2>Detected Events</h2>
+              <span id="eventCounter" class="pill">Loading events…</span>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time in Video</th>
+                    <th>Label</th>
+                    <th>Confidence</th>
+                    <th>Video</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="eventsTable"></tbody>
+              </table>
+            </div>
+          </article>
         </div>
       </article>
     </section>
@@ -488,10 +700,130 @@
     const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com";
     const DEVICE_ID = "shellyhtg3-e4b3232fa628";
 
+    let LIMITS = {
+      maxTemperature: 20,
+      minTemperature: 5,
+      maxHumidity: 50,
+      minHumidity: 0
+    };
+
     let tempChart;
     let humidityChart;
     let videos = [];
+    let events = [];
     let currentVideoIndex = 0;
+
+    function isTemperatureAlert(value) {
+      const n = Number(value);
+      return Number.isFinite(n) && (n > LIMITS.maxTemperature || n < LIMITS.minTemperature);
+    }
+
+    function isHumidityAlert(value) {
+      const n = Number(value);
+      return Number.isFinite(n) && (n > LIMITS.maxHumidity || n < LIMITS.minHumidity);
+    }
+
+    function thresholdClass(isAlert) {
+      return isAlert ? "threshold-alert" : "threshold-ok";
+    }
+
+    function chartPointColor(values, checkFn, normalColor) {
+      return values.map(value => checkFn(value) ? "#fb7185" : normalColor);
+    }
+
+    function chartPointRadius(values, checkFn) {
+      return values.map(value => checkFn(value) ? 5 : 2);
+    }
+
+    async function loadThresholds() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/thresholds`);
+        if (!response.ok) throw new Error(`Threshold API returned HTTP ${response.status}`);
+
+        const data = await response.json();
+
+        LIMITS = {
+          minTemperature: Number(data.minTemperature),
+          maxTemperature: Number(data.maxTemperature),
+          minHumidity: Number(data.minHumidity),
+          maxHumidity: Number(data.maxHumidity)
+        };
+
+        renderThresholdInputs();
+      } catch (error) {
+        console.error(error);
+        setError(`Threshold API error: ${error.message}`);
+        renderThresholdInputs();
+      }
+    }
+
+    function renderThresholdInputs() {
+      document.getElementById("minTempInput").value = LIMITS.minTemperature;
+      document.getElementById("maxTempInput").value = LIMITS.maxTemperature;
+      document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
+      document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
+    }
+
+    async function saveThresholds() {
+      const newLimits = {
+        minTemperature: Number(document.getElementById("minTempInput").value),
+        maxTemperature: Number(document.getElementById("maxTempInput").value),
+        minHumidity: Number(document.getElementById("minHumidityInput").value),
+        maxHumidity: Number(document.getElementById("maxHumidityInput").value)
+      };
+
+      if (
+        !Number.isFinite(newLimits.minTemperature) ||
+        !Number.isFinite(newLimits.maxTemperature) ||
+        !Number.isFinite(newLimits.minHumidity) ||
+        !Number.isFinite(newLimits.maxHumidity)
+      ) {
+        setError("Please enter valid threshold numbers.");
+        return;
+      }
+
+      if (newLimits.minTemperature > newLimits.maxTemperature) {
+        setError("Temperature min cannot be greater than temperature max.");
+        return;
+      }
+
+      if (newLimits.minHumidity > newLimits.maxHumidity) {
+        setError("Humidity min cannot be greater than humidity max.");
+        return;
+      }
+
+      try {
+        document.getElementById("saveThresholdsButton").disabled = true;
+        document.getElementById("saveThresholdsButton").textContent = "Saving…";
+
+        const response = await fetch(`${API_BASE_URL}/thresholds`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newLimits)
+        });
+
+        if (!response.ok) throw new Error(`Threshold API returned HTTP ${response.status}`);
+
+        const saved = await response.json();
+
+        LIMITS = {
+          minTemperature: Number(saved.minTemperature),
+          maxTemperature: Number(saved.maxTemperature),
+          minHumidity: Number(saved.minHumidity),
+          maxHumidity: Number(saved.maxHumidity)
+        };
+
+        setError("");
+        renderThresholdInputs();
+        await loadData();
+      } catch (error) {
+        console.error(error);
+        setError(`Could not save thresholds: ${error.message}`);
+      } finally {
+        document.getElementById("saveThresholdsButton").disabled = false;
+        document.getElementById("saveThresholdsButton").textContent = "Save";
+      }
+    }
 
     const chartOptions = {
       responsive: true,
@@ -509,7 +841,15 @@
       },
       scales: {
         x: {
-          ticks: { color: "#94a3b8", maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          ticks: {
+            color: "#94a3b8",
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 8,
+            callback: function(value) {
+              return this.getLabelForValue(value).split("<br>");
+            }
+          },
           grid: { color: "rgba(148, 163, 184, 0.10)" }
         },
         y: {
@@ -520,9 +860,45 @@
     };
 
     function formatTime(seconds) {
-      return new Date(seconds * 1000).toLocaleString(undefined, {
+      const d = new Date(seconds * 1000);
+
+      const date = d.toLocaleDateString(undefined, {
+        day: "2-digit",
+        month: "2-digit"
+      });
+
+      const time = d.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      return `${date}<br>${time}`;
+    }
+
+    function formatTimeInline(seconds) {
+      const d = new Date(seconds * 1000);
+      const date = d.toLocaleDateString("de-CH", {
         day: "2-digit",
         month: "2-digit",
+        year: "numeric"
+      });
+      const time = d.toLocaleTimeString("de-CH", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+      return `${date} ${time}`;
+    }
+
+    function formatDateOnly(seconds) {
+      return new Date(seconds * 1000).toLocaleDateString(undefined, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function formatTimeOnly(seconds) {
+      return new Date(seconds * 1000).toLocaleTimeString(undefined, {
         hour: "2-digit",
         minute: "2-digit"
       });
@@ -536,6 +912,13 @@
         hour: "2-digit",
         minute: "2-digit"
       });
+    }
+
+    function formatVideoTimestamp(ms) {
+      const totalSeconds = Math.floor(Number(ms || 0) / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
     }
 
     function formatBytes(bytes) {
@@ -580,10 +963,12 @@
             data: temperatures,
             borderColor: "#38bdf8",
             backgroundColor: "rgba(56, 189, 248, 0.12)",
+            pointBackgroundColor: chartPointColor(temperatures, isTemperatureAlert, "#38bdf8"),
+            pointBorderColor: chartPointColor(temperatures, isTemperatureAlert, "#38bdf8"),
+            pointRadius: chartPointRadius(temperatures, isTemperatureAlert),
+            pointHoverRadius: 6,
             tension: 0.38,
-            fill: true,
-            pointRadius: 2,
-            pointHoverRadius: 5
+            fill: true
           }]
         },
         options: chartOptions
@@ -598,10 +983,12 @@
             data: humidities,
             borderColor: "#a78bfa",
             backgroundColor: "rgba(167, 139, 250, 0.12)",
+            pointBackgroundColor: chartPointColor(humidities, isHumidityAlert, "#a78bfa"),
+            pointBorderColor: chartPointColor(humidities, isHumidityAlert, "#a78bfa"),
+            pointRadius: chartPointRadius(humidities, isHumidityAlert),
+            pointHoverRadius: 6,
             tension: 0.38,
-            fill: true,
-            pointRadius: 2,
-            pointHoverRadius: 5
+            fill: true
           }]
         },
         options: chartOptions
@@ -610,14 +997,30 @@
 
     function renderTable(items) {
       const tbody = document.getElementById("readingsTable");
-      tbody.innerHTML = items.slice(-10).reverse().map(item => `
-        <tr>
-          <td>${formatTime(item.eventtime)}</td>
-          <td>${Number(item.temperature).toFixed(1)} °C</td>
-          <td>${Number(item.humidity).toFixed(1)} %</td>
-          <td>${item.deviceId}</td>
-        </tr>
-      `).join("");
+
+      tbody.innerHTML = items.slice(-10).reverse().map(item => {
+        const temperature = Number(item.temperature);
+        const humidity = Number(item.humidity);
+
+        const tempAlert = isTemperatureAlert(temperature);
+        const humidityAlert = isHumidityAlert(humidity);
+        const rowAlert = tempAlert || humidityAlert;
+
+        return `
+          <tr class="${rowAlert ? "threshold-row-alert" : ""}">
+            <td>${formatTimeInline(item.eventtime)}</td>
+            <td class="${thresholdClass(tempAlert)}">
+              ${temperature.toFixed(1)} °C
+              ${tempAlert ? `<span class="threshold-pill">Alert</span>` : ""}
+            </td>
+            <td class="${thresholdClass(humidityAlert)}">
+              ${humidity.toFixed(1)} %
+              ${humidityAlert ? `<span class="threshold-pill">Alert</span>` : ""}
+            </td>
+            <td>${item.deviceId}</td>
+          </tr>
+        `;
+      }).join("");
     }
 
     async function loadData() {
@@ -625,7 +1028,7 @@
       const url = `${API_BASE_URL}/measurements?deviceId=${encodeURIComponent(DEVICE_ID)}&hours=${hours}`;
 
       document.getElementById("statusText").textContent = "Loading data…";
-      document.getElementById("statusDot").classList.remove("online");
+      document.getElementById("statusDot").classList.remove("online", "alert");
       setError("");
 
       try {
@@ -644,14 +1047,44 @@
         const temperatures = items.map(x => Number(x.temperature));
         const humidities = items.map(x => Number(x.humidity));
 
-        document.getElementById("currentTemp").textContent = Number(latest.temperature).toFixed(1);
-        document.getElementById("currentHumidity").textContent = Number(latest.humidity).toFixed(1);
+        const latestTempAlert = isTemperatureAlert(latest.temperature);
+        const latestHumidityAlert = isHumidityAlert(latest.humidity);
+        const anyAlert = items.some(item => isTemperatureAlert(item.temperature) || isHumidityAlert(item.humidity));
+
+        const currentTemp = document.getElementById("currentTemp");
+        const currentHumidity = document.getElementById("currentHumidity");
+
+        currentTemp.textContent = Number(latest.temperature).toFixed(1);
+        currentTemp.className = thresholdClass(latestTempAlert);
+
+        currentHumidity.textContent = Number(latest.humidity).toFixed(1);
+        currentHumidity.className = thresholdClass(latestHumidityAlert);
+
         document.getElementById("measurementCount").textContent = items.length;
-        document.getElementById("lastReading").textContent = formatTime(latest.eventtime);
+        document.getElementById("lastReadingDate").textContent = formatDateOnly(latest.eventtime);
+        document.getElementById("lastReadingTime").textContent = formatTimeOnly(latest.eventtime);
         document.getElementById("tempTrend").textContent = `Trend: ${calculateTrend(items, "temperature")} °C`;
         document.getElementById("humidityTrend").textContent = `Trend: ${calculateTrend(items, "humidity")} %`;
-        document.getElementById("statusText").textContent = "Online · API reachable";
-        document.getElementById("statusDot").classList.add("online");
+
+        document.getElementById("tempThresholdInfo").textContent =
+          `Limits: ${LIMITS.minTemperature}–${LIMITS.maxTemperature} °C`;
+        document.getElementById("humidityThresholdInfo").textContent =
+          `Limits: ${LIMITS.minHumidity}–${LIMITS.maxHumidity} %`;
+
+        const measurementHealth = document.getElementById("measurementHealth");
+
+        if (anyAlert) {
+          measurementHealth.className = "threshold-pill";
+          measurementHealth.textContent = "Threshold alert";
+          document.getElementById("statusText").textContent = "Online · Threshold alert";
+          document.getElementById("statusDot").classList.add("alert");
+        } else {
+          measurementHealth.className = "pill";
+          measurementHealth.textContent = "Climate data";
+          document.getElementById("statusText").textContent = "Online · API reachable";
+          document.getElementById("statusDot").classList.add("online");
+        }
+
         document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
         renderCharts(labels, temperatures, humidities);
@@ -697,6 +1130,29 @@
       }
     }
 
+    async function loadEvents() {
+      const url = `${API_BASE_URL}/events`;
+
+      document.getElementById("eventStatus").textContent = "Events: loading…";
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Events API returned HTTP ${response.status}`);
+
+        const data = await response.json();
+        events = (data.items || []).filter(item => item.bucketMs === 10000);
+
+        document.getElementById("eventCounter").textContent = `${events.length} events`;
+        document.getElementById("eventStatus").textContent = `Events: ${events.length} available`;
+
+        renderEventsTable(events);
+      } catch (error) {
+        console.error(error);
+        document.getElementById("eventCounter").textContent = "Events API error";
+        document.getElementById("eventStatus").textContent = "Events: API error";
+      }
+    }
+
     function renderCurrentVideo() {
       if (!videos.length) return;
 
@@ -737,6 +1193,64 @@
       });
     }
 
+    function renderEventsTable(items) {
+      const tbody = document.getElementById("eventsTable");
+
+      if (!items.length) {
+        tbody.innerHTML = `<tr><td colspan="5">No detected events found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.slice(0, 30).map((item, index) => `
+        <tr>
+          <td>${formatVideoTimestamp(item.rekognitionTimestampMs)}</td>
+          <td><span class="event-label">${item.label}</span></td>
+          <td>${Number(item.confidence).toFixed(1)} %</td>
+          <td>${item.videoKey}</td>
+          <td><button data-event-index="${index}" class="play-event-button">Play</button></td>
+        </tr>
+      `).join("");
+
+      tbody.querySelectorAll(".play-event-button").forEach(button => {
+        button.addEventListener("click", () => {
+          playEvent(events[Number(button.dataset.eventIndex)]);
+        });
+      });
+    }
+
+    function toggleReadings() {
+      const content = document.getElementById("readingsContent");
+      const toggle = document.getElementById("readingsToggle");
+
+      const isOpen = content.style.display === "block";
+
+      content.style.display = isOpen ? "none" : "block";
+      toggle.textContent = isOpen ? "Show" : "Hide";
+    }
+
+    function playEvent(eventItem) {
+      if (!eventItem || !videos.length) return;
+
+      const videoIndex = videos.findIndex(v => v.key === eventItem.videoKey);
+
+      if (videoIndex === -1) {
+        alert(`Video not found in current video list: ${eventItem.videoKey}`);
+        return;
+      }
+
+      currentVideoIndex = videoIndex;
+      renderCurrentVideo();
+
+      const player = document.getElementById("videoPlayer");
+      const jumpToSeconds = Math.max(0, Math.floor(Number(eventItem.rekognitionTimestampMs || 0) / 1000));
+
+      player.addEventListener("loadedmetadata", function jumpOnce() {
+        player.currentTime = jumpToSeconds;
+        player.play().catch(() => {});
+        player.removeEventListener("loadedmetadata", jumpOnce);
+      });
+    }
+
     function setVideoButtons(enabled) {
       document.getElementById("prevVideo").disabled = !enabled;
       document.getElementById("nextVideo").disabled = !enabled;
@@ -757,15 +1271,24 @@
     document.getElementById("refreshButton").addEventListener("click", () => {
       loadData();
       loadVideos();
+      loadEvents();
     });
 
     document.getElementById("hoursSelect").addEventListener("change", loadData);
+    document.getElementById("saveThresholdsButton").addEventListener("click", saveThresholds);
 
-    loadData();
-    loadVideos();
+    async function init() {
+      await loadThresholds();
+      loadData();
+      loadVideos();
+      loadEvents();
 
-    setInterval(loadData, 60_000);
-    setInterval(loadVideos, 300_000);
+      setInterval(loadData, 60_000);
+      setInterval(loadVideos, 300_000);
+      setInterval(loadEvents, 300_000);
+    }
+
+    init();
   </script>
 </body>
 </html>
