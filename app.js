@@ -293,9 +293,11 @@ function formatDateTime(value) {
 
 function formatVideoTimestamp(ms) {
   const totalSeconds = Math.floor(Number(ms || 0) / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 function formatBytes(bytes) {
@@ -399,8 +401,136 @@ function renderTable(items) {
   }).join("");
 }
 
+
+function getLocalDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function startOfLocalDate(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day, 0, 0, 0, 0);
+}
+
+function endOfLocalDate(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day, 23, 59, 59, 999);
+}
+
+function setupDefaultDateRange() {
+  const fromInput = document.getElementById("fromDateInput");
+  const toInput = document.getElementById("toDateInput");
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (!fromInput.value) fromInput.value = getLocalDateString(yesterday);
+  if (!toInput.value) toInput.value = getLocalDateString(today);
+}
+
+function isCustomRangeSelected() {
+  return document.getElementById("rangeModeSelect").value === "custom";
+}
+
+function getCustomDateRange() {
+  const fromValue = document.getElementById("fromDateInput").value;
+  const toValue = document.getElementById("toDateInput").value;
+
+  if (!fromValue || !toValue) {
+    throw new Error("Please select both From and To date.");
+  }
+
+  const fromDate = startOfLocalDate(fromValue);
+  const toDate = endOfLocalDate(toValue);
+
+  if (fromDate > toDate) {
+    throw new Error("From date cannot be after To date.");
+  }
+
+  return { fromDate, toDate, fromValue, toValue };
+}
+
+function getSelectedHoursForApi() {
+  const rangeMode = document.getElementById("rangeModeSelect").value;
+
+  if (rangeMode !== "custom") {
+    return rangeMode;
+  }
+
+  const { fromDate } = getCustomDateRange();
+  const now = new Date();
+  const diffMs = Math.max(now.getTime() - fromDate.getTime(), 60 * 60 * 1000);
+  return Math.ceil(diffMs / (60 * 60 * 1000));
+}
+
+function filterItemsBySelectedRange(items) {
+  if (!isCustomRangeSelected()) return items;
+
+  const { fromDate, toDate } = getCustomDateRange();
+  const fromSeconds = Math.floor(fromDate.getTime() / 1000);
+  const toSeconds = Math.floor(toDate.getTime() / 1000);
+
+  return items.filter(item => {
+    const eventTime = Number(item.eventtime);
+    return eventTime >= fromSeconds && eventTime <= toSeconds;
+  });
+}
+
+function getSelectedRangeLabel() {
+  const rangeMode = document.getElementById("rangeModeSelect").value;
+
+  if (rangeMode !== "custom") {
+    const selected = document.getElementById("rangeModeSelect");
+    return selected.options[selected.selectedIndex].text;
+  }
+
+  const { fromValue, toValue } = getCustomDateRange();
+  return `${fromValue} to ${toValue}`;
+}
+
+function handleRangeModeChange() {
+  const rangeMode = document.getElementById("rangeModeSelect").value;
+
+  if (rangeMode !== "custom") {
+    const today = new Date();
+    const fromDate = new Date();
+
+    const hourMap = {
+      "6": 0,
+      "24": 1,
+      "72": 3,
+      "168": 7,
+      "720": 30
+    };
+
+    const days = hourMap[rangeMode] || 1;
+
+    fromDate.setDate(today.getDate() - days);
+
+    document.getElementById("fromDateInput").value = getLocalDateString(fromDate);
+    document.getElementById("toDateInput").value = getLocalDateString(today);
+  }
+
+  loadData();
+}
+
+function handleDateInputChange() {
+  const rangeModeSelect = document.getElementById("rangeModeSelect");
+  rangeModeSelect.value = "custom";
+
+  const fromInput = document.getElementById("fromDateInput");
+  const toInput = document.getElementById("toDateInput");
+
+  if (fromInput.value && toInput.value) {
+    loadData();
+  }
+}
+
 async function loadData() {
-  const hours = document.getElementById("hoursSelect").value;
+  const hours = getSelectedHoursForApi();
   const url = `${API_BASE_URL}/measurements?deviceId=${encodeURIComponent(DEVICE_ID)}&hours=${hours}`;
 
   document.getElementById("statusText").textContent = "Loading data…";
@@ -412,10 +542,11 @@ async function loadData() {
     if (!response.ok) throw new Error(`API returned HTTP ${response.status}`);
 
     const data = await response.json();
-    const items = (data.items || []).sort((a, b) => a.eventtime - b.eventtime);
+    const allItems = (data.items || []).sort((a, b) => a.eventtime - b.eventtime);
+    const items = filterItemsBySelectedRange(allItems);
 
     if (!items.length) {
-      throw new Error("No measurements found for the selected time range.");
+      throw new Error(`No measurements found for selected range: ${getSelectedRangeLabel()}.`);
     }
 
     const latest = items[items.length - 1];
@@ -459,7 +590,7 @@ async function loadData() {
       document.getElementById("statusDot").classList.add("online");
     }
 
-    document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+    document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleTimeString()} · Range: ${getSelectedRangeLabel()}`;
 
     renderCharts(labels, temperatures, humidities);
     renderTable(items);
@@ -568,19 +699,54 @@ function renderEventsTable(items) {
   const tbody = document.getElementById("eventsTable");
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="5">No detected events found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = items.slice(0, 30).map((item, index) => `
-    <tr>
-      <td>${formatVideoTimestamp(item.rekognitionTimestampMs)}</td>
-      <td><span class="event-label">${item.label}</span></td>
-      <td>${Number(item.confidence).toFixed(1)} %</td>
-      <td>${item.videoKey}</td>
-      <td><button data-event-index="${index}" class="play-event-button">Play</button></td>
-    </tr>
-  `).join("");
+  const groupedByVideo = items.reduce((groups, item) => {
+    const key = item.videoKey || "unknown-video";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+    return groups;
+  }, {});
+
+  let videoNumber = 0;
+
+  const rows = Object.entries(groupedByVideo).map(([videoKey, videoEvents]) => {
+    videoNumber += 1;
+
+    const sortedEvents = videoEvents
+      .slice()
+      .sort((a, b) => Number(a.rekognitionTimestampMs || 0) - Number(b.rekognitionTimestampMs || 0));
+
+    const videoHeader = `
+      <tr class="event-video-row">
+        <td colspan="4">
+          <div class="event-video-title">
+            <span>Video ${videoNumber}</span>
+            <span class="event-video-meta">${sortedEvents.length} detected label${sortedEvents.length === 1 ? "" : "s"}</span>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    const eventRows = sortedEvents.map(item => {
+      const originalIndex = events.indexOf(item);
+
+      return `
+        <tr>
+          <td><span class="event-time">${formatVideoTimestamp(item.rekognitionTimestampMs)}</span></td>
+          <td><span class="event-label">${item.label}</span></td>
+          <td>${Number(item.confidence).toFixed(1)} %</td>
+          <td><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
+        </tr>
+      `;
+    }).join("");
+
+    return videoHeader + eventRows;
+  }).join("");
+
+  tbody.innerHTML = rows;
 
   tbody.querySelectorAll(".play-event-button").forEach(button => {
     button.addEventListener("click", () => {
@@ -604,7 +770,7 @@ function playEvent(eventItem) {
   const videoIndex = videos.findIndex(v => v.key === eventItem.videoKey);
 
   if (videoIndex === -1) {
-    alert(`Video not found in current video list: ${eventItem.videoKey}`);
+    alert("Video not found in current video list.");
     return;
   }
 
@@ -639,20 +805,17 @@ function registerEventListeners() {
     renderCurrentVideo();
   });
 
-  document.getElementById("refreshButton").addEventListener("click", () => {
-    loadData();
-    loadVideos();
-    loadEvents();
-  });
-
   document.getElementById("readingsHeader").addEventListener("click", toggleReadings);
-  document.getElementById("hoursSelect").addEventListener("change", loadData);
+  document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
+  document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
+  document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);
   document.getElementById("saveThresholdsButton").addEventListener("click", () => saveThresholds(false));
   document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
   document.getElementById("resetCooldownButton").addEventListener("click", resetCooldown);
 }
 
 async function init() {
+  setupDefaultDateRange();
   registerEventListeners();
 
   await loadThresholds();
