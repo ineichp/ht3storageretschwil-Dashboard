@@ -18,29 +18,28 @@
       </div>
 
       <div class="controls">
-  <label class="date-field">
-    <span>Date Range</span>
+        <label class="date-field">
+          <span>Date Range</span>
+          <select id="rangeModeSelect" aria-label="Time range">
+            <option value="6">Last 6h</option>
+            <option value="24" selected>Last 24h</option>
+            <option value="72">Last 3 days</option>
+            <option value="168">Last 7 days</option>
+            <option value="720">Last 30 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+        </label>
 
-    <select id="rangeModeSelect" aria-label="Time range">
-      <option value="6">Last 6h</option>
-      <option value="24" selected>Last 24h</option>
-      <option value="72">Last 3 days</option>
-      <option value="168">Last 7 days</option>
-      <option value="720">Last 30 days</option>
-      <option value="custom">Custom range</option>
-    </select>
-  </label>
+        <label class="date-field">
+          <span>From</span>
+          <input id="fromDateInput" type="date" aria-label="From date">
+        </label>
 
-  <label class="date-field">
-    <span>From</span>
-    <input id="fromDateInput" type="date" aria-label="From date">
-  </label>
-
-  <label class="date-field">
-    <span>To</span>
-    <input id="toDateInput" type="date" aria-label="To date">
-  </label>
-</div>
+        <label class="date-field">
+          <span>To</span>
+          <input id="toDateInput" type="date" aria-label="To date">
+        </label>
+      </div>
     </section>
 
     <div id="errorBox" class="error"></div>
@@ -64,7 +63,7 @@
               <h2>Measurements</h2>
               <span id="measurementHealth" class="pill">Climate data</span>
             </div>
-            <div class="section-subtitle">Temperature and humidity readings from the HT sensor.</div>
+            <div class="section-subtitle">Temperature and humidity readings by HT sensor.</div>
           </div>
 
           <div class="threshold-controls">
@@ -177,36 +176,11 @@
         <div class="section-header">
           <div>
             <h2>Surveillance</h2>
-            <div class="section-subtitle">Recorded camera clips and AI-detected events from Amazon Rekognition.</div>
+            <div class="section-subtitle">AI-detected events from Amazon Rekognition.</div>
           </div>
-          <span class="pill">Camera & AI</span>
         </div>
 
         <div class="section-grid">
-          <article class="card wide">
-            <div class="chart-title">
-              <h2>Camera Videos</h2>
-              <span id="videoCounter" class="pill">Loading videos…</span>
-            </div>
-
-            <div class="video-player-wrap">
-              <video id="videoPlayer" controls playsinline preload="metadata"></video>
-
-              <div class="video-controls">
-                <button id="prevVideo">← Previous</button>
-
-                <div class="video-info">
-                  <div id="videoTitle" class="video-title">—</div>
-                  <div id="videoMeta" class="video-meta">—</div>
-                </div>
-
-                <button id="nextVideo">Next →</button>
-              </div>
-
-              <div id="videoList" class="video-list"></div>
-            </div>
-          </article>
-
           <article class="card wide">
             <div class="chart-title">
               <h2>Detected Events</h2>
@@ -217,8 +191,8 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Time (HH:MM:SS)</th>
-                    <th>Label</th>
+                    <th>Time</th>
+                    <th>Detected</th>
                     <th>Confidence</th>
                     <th>Action</th>
                   </tr>
@@ -226,11 +200,27 @@
                 <tbody id="eventsTable"></tbody>
               </table>
             </div>
+
+            <div id="eventsPagination" class="pagination"></div>
           </article>
         </div>
       </article>
     </section>
   </main>
+
+  <div id="videoModal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Detected event video">
+      <div class="modal-header">
+        <div>
+          <div id="modalVideoTitle" class="modal-title">Detected Event</div>
+          <div id="modalVideoMeta" class="modal-meta">—</div>
+        </div>
+        <button id="closeVideoModal" class="modal-close" aria-label="Close video">×</button>
+      </div>
+
+      <video id="modalVideoPlayer" controls playsinline preload="metadata"></video>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

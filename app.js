@@ -13,7 +13,8 @@ let tempChart;
 let humidityChart;
 let videos = [];
 let events = [];
-let currentVideoIndex = 0;
+let eventPage = 1;
+const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
   const n = Number(value);
@@ -401,7 +402,6 @@ function renderTable(items) {
   }).join("");
 }
 
-
 function getLocalDateString(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -498,7 +498,7 @@ function handleRangeModeChange() {
     const today = new Date();
     const fromDate = new Date();
 
-    const hourMap = {
+    const dayMap = {
       "6": 0,
       "24": 1,
       "72": 3,
@@ -506,7 +506,7 @@ function handleRangeModeChange() {
       "720": 30
     };
 
-    const days = hourMap[rangeMode] || 1;
+    const days = dayMap[rangeMode] || 1;
 
     fromDate.setDate(today.getDate() - days);
 
@@ -612,24 +612,9 @@ async function loadVideos() {
     const data = await response.json();
     videos = data.items || [];
 
-    document.getElementById("videoCounter").textContent = `${videos.length} videos`;
     document.getElementById("videoStatus").textContent = `Videos: ${videos.length} available`;
-
-    if (videos.length) {
-      currentVideoIndex = 0;
-      renderCurrentVideo();
-      renderVideoList();
-    } else {
-      document.getElementById("videoTitle").textContent = "No videos found";
-      document.getElementById("videoMeta").textContent = "—";
-      document.getElementById("videoPlayer").removeAttribute("src");
-      document.getElementById("videoPlayer").load();
-      document.getElementById("videoList").innerHTML = "";
-      setVideoButtons(false);
-    }
   } catch (error) {
     console.error(error);
-    document.getElementById("videoCounter").textContent = "Video API error";
     document.getElementById("videoStatus").textContent = "Videos: API error";
   }
 }
@@ -644,9 +629,10 @@ async function loadEvents() {
 
     const data = await response.json();
     events = (data.items || []).filter(item => item.bucketMs === 10000);
+    eventPage = 1;
 
-    document.getElementById("eventCounter").textContent = `${events.length} events`;
-    document.getElementById("eventStatus").textContent = `Events: ${events.length} available`;
+    document.getElementById("eventCounter").textContent = `${getEventGroups(events).length} clips`;
+    document.getElementById("eventStatus").textContent = `Events: ${events.length} labels available`;
 
     renderEventsTable(events);
   } catch (error) {
@@ -656,41 +642,205 @@ async function loadEvents() {
   }
 }
 
-function renderCurrentVideo() {
-  if (!videos.length) return;
-
-  const video = videos[currentVideoIndex];
-  const player = document.getElementById("videoPlayer");
-
-  player.src = video.url;
-  player.load();
-
-  document.getElementById("videoTitle").textContent = video.key;
-  document.getElementById("videoMeta").textContent = `${currentVideoIndex + 1} / ${videos.length} · ${formatBytes(video.size)} · ${formatDateTime(video.lastModified)}`;
-
-  setVideoButtons(videos.length > 1);
-  renderVideoList();
+function getVideoForEvent(eventItem) {
+  if (!eventItem || !eventItem.videoKey) return null;
+  return videos.find(video => video.key === eventItem.videoKey) || null;
 }
 
-function renderVideoList() {
-  const list = document.getElementById("videoList");
+function getEventDateValue(eventItem) {
+  const directCandidates = [
+    eventItem.eventtime,
+    eventItem.eventTime,
+    eventItem.timestamp,
+    eventItem.createdAt,
+    eventItem.detectedAt,
+    eventItem.ingestTs
+  ];
 
-  if (!videos.length) {
-    list.innerHTML = "";
+  for (const candidate of directCandidates) {
+    if (candidate === undefined || candidate === null || candidate === "") continue;
+
+    if (typeof candidate === "number") {
+      return new Date(candidate > 10_000_000_000 ? candidate : candidate * 1000);
+    }
+
+    const parsed = new Date(candidate);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  const video = getVideoForEvent(eventItem);
+  if (video && video.lastModified) {
+    const parsed = new Date(video.lastModified);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  return new Date();
+}
+
+function formatEventDay(date) {
+  return date.toLocaleDateString("de-CH", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
+function formatEventClock(date) {
+  return date.toLocaleTimeString("de-CH", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function getEventGroupTitle(videoEvents) {
+  const priority = [
+    "Person",
+    "Cat",
+    "Dog",
+    "Feline",
+    "Canine",
+    "Animal",
+    "Bird",
+    "Mammal",
+    "Vehicle",
+    "Car",
+    "Bicycle",
+    "Backpack",
+    "Bag"
+  ];
+
+  const labels = videoEvents
+    .map(item => ({
+      label: String(item.label || "Unknown"),
+      confidence: Number(item.confidence || 0)
+    }))
+    .sort((a, b) => b.confidence - a.confidence);
+
+  const uniqueLabels = [];
+  labels.forEach(item => {
+    if (!uniqueLabels.some(existing => existing.label === item.label)) {
+      uniqueLabels.push(item);
+    }
+  });
+
+  const priorityMatch = priority
+    .map(label => uniqueLabels.find(item => item.label.toLowerCase() === label.toLowerCase()))
+    .find(Boolean);
+
+  const main = priorityMatch || uniqueLabels[0] || { label: "Detected Event", confidence: 0 };
+
+  const hasPerson = uniqueLabels.some(item => item.label.toLowerCase() === "person");
+  const hasAnimal = uniqueLabels.some(item =>
+    ["cat", "dog", "animal", "feline", "canine", "bird", "mammal"].includes(item.label.toLowerCase())
+  );
+
+  if (hasPerson && hasAnimal) return "Person & Animal detected";
+  if (main.label.toLowerCase() === "person") return "Person detected";
+  if (["cat", "dog", "animal", "feline", "canine", "bird", "mammal"].includes(main.label.toLowerCase())) {
+    return `${main.label} detected`;
+  }
+
+  return `${main.label} detected`;
+}
+
+function getTopEventLabels(videoEvents, maxLabels = 5) {
+  const byLabel = {};
+
+  videoEvents.forEach(item => {
+    const label = String(item.label || "Unknown");
+    const confidence = Number(item.confidence || 0);
+
+    if (!byLabel[label] || confidence > byLabel[label]) {
+      byLabel[label] = confidence;
+    }
+  });
+
+  return Object.entries(byLabel)
+    .map(([label, confidence]) => ({ label, confidence }))
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, maxLabels);
+}
+
+function getEventGroups(items) {
+  const groupedByVideo = items.reduce((groups, item) => {
+    const key = item.videoKey || "unknown-video";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+    return groups;
+  }, {});
+
+  return Object.entries(groupedByVideo).map(([videoKey, videoEvents]) => {
+    const sortedEvents = videoEvents
+      .slice()
+      .sort((a, b) => Number(a.rekognitionTimestampMs || 0) - Number(b.rekognitionTimestampMs || 0));
+
+    const firstEvent = sortedEvents[0];
+    const eventDate = getEventDateValue(firstEvent);
+
+    return {
+      videoKey,
+      date: eventDate,
+      dayKey: getLocalDateString(eventDate),
+      events: sortedEvents
+    };
+  }).sort((a, b) => b.date - a.date);
+}
+
+function getPaginatedEventGroups(items) {
+  const groups = getEventGroups(items);
+  const totalPages = Math.max(1, Math.ceil(groups.length / EVENTS_PER_PAGE));
+
+  if (eventPage > totalPages) eventPage = totalPages;
+  if (eventPage < 1) eventPage = 1;
+
+  const start = (eventPage - 1) * EVENTS_PER_PAGE;
+  const end = start + EVENTS_PER_PAGE;
+
+  return {
+    groups: groups.slice(start, end),
+    totalGroups: groups.length,
+    totalPages
+  };
+}
+
+function renderEventsPagination(totalPages) {
+  const pagination = document.getElementById("eventsPagination");
+  if (!pagination) return;
+
+  if (totalPages <= 1) {
+    pagination.innerHTML = "";
     return;
   }
 
-  list.innerHTML = videos.map((video, index) => `
-    <div class="video-item ${index === currentVideoIndex ? "active" : ""}" data-index="${index}">
-      <span class="video-item-name">${video.key}</span>
-      <span>${formatBytes(video.size)}</span>
-    </div>
-  `).join("");
+  let buttons = `
+    <button data-page-action="prev" ${eventPage === 1 ? "disabled" : ""}>←</button>
+  `;
 
-  list.querySelectorAll(".video-item").forEach(item => {
-    item.addEventListener("click", () => {
-      currentVideoIndex = Number(item.dataset.index);
-      renderCurrentVideo();
+  for (let page = 1; page <= totalPages; page++) {
+    buttons += `
+      <button class="${page === eventPage ? "active" : ""}" data-page="${page}">${page}</button>
+    `;
+  }
+
+  buttons += `
+    <button data-page-action="next" ${eventPage === totalPages ? "disabled" : ""}>→</button>
+  `;
+
+  pagination.innerHTML = buttons;
+
+  pagination.querySelectorAll("button[data-page]").forEach(button => {
+    button.addEventListener("click", () => {
+      eventPage = Number(button.dataset.page);
+      renderEventsTable(events);
+    });
+  });
+
+  pagination.querySelectorAll("button[data-page-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.pageAction;
+      eventPage += action === "next" ? 1 : -1;
+      renderEventsTable(events);
     });
   });
 }
@@ -700,53 +850,59 @@ function renderEventsTable(items) {
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
+    renderEventsPagination(0);
     return;
   }
 
-  const groupedByVideo = items.reduce((groups, item) => {
-    const key = item.videoKey || "unknown-video";
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(item);
-    return groups;
-  }, {});
+  const { groups, totalPages } = getPaginatedEventGroups(items);
+  let currentDayKey = "";
 
-  let videoNumber = 0;
+  const rows = groups.map(group => {
+    const sortedEvents = group.events;
+    const firstEvent = sortedEvents[0];
+    const originalIndex = events.indexOf(firstEvent);
+    const topLabels = getTopEventLabels(sortedEvents);
+    const title = getEventGroupTitle(sortedEvents);
+    const firstVideoTime = formatVideoTimestamp(firstEvent.rekognitionTimestampMs);
+    const bestConfidence = Math.max(...sortedEvents.map(item => Number(item.confidence || 0)));
 
-  const rows = Object.entries(groupedByVideo).map(([videoKey, videoEvents]) => {
-    videoNumber += 1;
+    const dayHeader = group.dayKey !== currentDayKey
+      ? `
+        <tr class="event-day-row">
+          <td colspan="4">${formatEventDay(group.date)}</td>
+        </tr>
+      `
+      : "";
 
-    const sortedEvents = videoEvents
-      .slice()
-      .sort((a, b) => Number(a.rekognitionTimestampMs || 0) - Number(b.rekognitionTimestampMs || 0));
+    currentDayKey = group.dayKey;
 
-    const videoHeader = `
+    const labelChips = topLabels.map((item, index) => `
+      <span class="event-chip ${index === 0 ? "" : "secondary"}">
+        ${item.label} ${item.confidence.toFixed(0)}%
+      </span>
+    `).join("");
+
+    return `
+      ${dayHeader}
       <tr class="event-video-row">
-        <td colspan="4">
-          <div class="event-video-title">
-            <span>Video ${videoNumber}</span>
-            <span class="event-video-meta">${sortedEvents.length} detected label${sortedEvents.length === 1 ? "" : "s"}</span>
+        <td>
+          <span class="event-time">${formatEventClock(group.date)} · ${firstVideoTime}</span>
+        </td>
+        <td>
+          <div class="event-summary">
+            <div class="event-title">${title}</div>
+            <div class="event-tags">${labelChips}</div>
+            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip</div>
           </div>
         </td>
+        <td><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
+        <td><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
       </tr>
     `;
-
-    const eventRows = sortedEvents.map(item => {
-      const originalIndex = events.indexOf(item);
-
-      return `
-        <tr>
-          <td><span class="event-time">${formatVideoTimestamp(item.rekognitionTimestampMs)}</span></td>
-          <td><span class="event-label">${item.label}</span></td>
-          <td>${Number(item.confidence).toFixed(1)} %</td>
-          <td><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
-        </tr>
-      `;
-    }).join("");
-
-    return videoHeader + eventRows;
   }).join("");
 
   tbody.innerHTML = rows;
+  renderEventsPagination(totalPages);
 
   tbody.querySelectorAll(".play-event-button").forEach(button => {
     button.addEventListener("click", () => {
@@ -764,21 +920,23 @@ function toggleReadings() {
   toggle.textContent = isOpen ? "Show" : "Hide";
 }
 
-function playEvent(eventItem) {
-  if (!eventItem || !videos.length) return;
+function openVideoModal(eventItem, video, jumpToSeconds) {
+  const modal = document.getElementById("videoModal");
+  const player = document.getElementById("modalVideoPlayer");
+  const title = document.getElementById("modalVideoTitle");
+  const meta = document.getElementById("modalVideoMeta");
 
-  const videoIndex = videos.findIndex(v => v.key === eventItem.videoKey);
+  const relatedEvents = events.filter(item => item.videoKey === eventItem.videoKey);
+  const eventDate = getEventDateValue(eventItem);
 
-  if (videoIndex === -1) {
-    alert("Video not found in current video list.");
-    return;
-  }
+  title.textContent = getEventGroupTitle(relatedEvents.length ? relatedEvents : [eventItem]);
+  meta.textContent = `${formatEventDay(eventDate)} · ${formatEventClock(eventDate)} · ${formatVideoTimestamp(eventItem.rekognitionTimestampMs)}`;
 
-  currentVideoIndex = videoIndex;
-  renderCurrentVideo();
+  player.src = video.url;
+  player.load();
 
-  const player = document.getElementById("videoPlayer");
-  const jumpToSeconds = Math.max(0, Math.floor(Number(eventItem.rekognitionTimestampMs || 0) / 1000));
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
 
   player.addEventListener("loadedmetadata", function jumpOnce() {
     player.currentTime = jumpToSeconds;
@@ -787,24 +945,33 @@ function playEvent(eventItem) {
   });
 }
 
-function setVideoButtons(enabled) {
-  document.getElementById("prevVideo").disabled = !enabled;
-  document.getElementById("nextVideo").disabled = !enabled;
+function closeVideoModal() {
+  const modal = document.getElementById("videoModal");
+  const player = document.getElementById("modalVideoPlayer");
+
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function playEvent(eventItem) {
+  if (!eventItem || !videos.length) return;
+
+  const video = videos.find(v => v.key === eventItem.videoKey);
+
+  if (!video) {
+    alert("Video not found in current video list.");
+    return;
+  }
+
+  const jumpToSeconds = Math.max(0, Math.floor(Number(eventItem.rekognitionTimestampMs || 0) / 1000));
+  openVideoModal(eventItem, video, jumpToSeconds);
 }
 
 function registerEventListeners() {
-  document.getElementById("prevVideo").addEventListener("click", () => {
-    if (!videos.length) return;
-    currentVideoIndex = (currentVideoIndex - 1 + videos.length) % videos.length;
-    renderCurrentVideo();
-  });
-
-  document.getElementById("nextVideo").addEventListener("click", () => {
-    if (!videos.length) return;
-    currentVideoIndex = (currentVideoIndex + 1) % videos.length;
-    renderCurrentVideo();
-  });
-
   document.getElementById("readingsHeader").addEventListener("click", toggleReadings);
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
@@ -812,6 +979,15 @@ function registerEventListeners() {
   document.getElementById("saveThresholdsButton").addEventListener("click", () => saveThresholds(false));
   document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
   document.getElementById("resetCooldownButton").addEventListener("click", resetCooldown);
+  document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
+
+  document.getElementById("videoModal").addEventListener("click", event => {
+    if (event.target.id === "videoModal") closeVideoModal();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeVideoModal();
+  });
 }
 
 async function init() {
@@ -819,9 +995,9 @@ async function init() {
   registerEventListeners();
 
   await loadThresholds();
+  await loadVideos();
+  await loadEvents();
   loadData();
-  loadVideos();
-  loadEvents();
 
   setInterval(loadData, 60_000);
   setInterval(loadVideos, 300_000);
