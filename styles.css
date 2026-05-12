@@ -673,3 +673,29 @@ th {
   .threshold-controls { grid-template-columns: 1fr; }
   .last-reading-time { font-size: 18px; }
 }
+
+
+.pagination-info,
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 4px;
+}
+
+.pagination-info {
+  padding-left: 8px;
+}
+
+.event-tags {
+  max-width: 100%;
+}
+
+@media (max-width: 720px) {
+  .pagination-info {
+    flex-basis: 100%;
+    padding-left: 0;
+  }
+}

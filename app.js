@@ -248,7 +248,8 @@ const chartOptions = {
         autoSkip: true,
         maxTicksLimit: 8,
         callback: function(value) {
-          return this.getLabelForValue(value).split("<br>");
+          const label = this.getLabelForValue(value);
+          return label.includes(" ") ? label.split(" ") : label;
         }
       },
       grid: { color: "rgba(148, 163, 184, 0.10)" }
@@ -264,7 +265,7 @@ function formatTime(seconds) {
   const d = new Date(seconds * 1000);
   const date = d.toLocaleDateString(undefined, { day: "2-digit", month: "2-digit" });
   const time = d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-  return `${date}<br>${time}`;
+  return `${date} ${time}`;
 }
 
 function formatTimeInline(seconds) {
@@ -631,7 +632,9 @@ async function loadEvents() {
     events = (data.items || []).filter(item => item.bucketMs === 10000);
     eventPage = 1;
 
-    document.getElementById("eventCounter").textContent = `${getEventGroups(events).length} clips`;
+    const eventGroups = getEventGroups(events);
+    document.getElementById("eventCounter").textContent =
+      `${eventGroups.length} clips · ${events.length} labels`;
     document.getElementById("eventStatus").textContent = `Events: ${events.length} labels available`;
 
     renderEventsTable(events);
@@ -744,7 +747,7 @@ function getEventGroupTitle(videoEvents) {
   return `${main.label} detected`;
 }
 
-function getTopEventLabels(videoEvents, maxLabels = 5) {
+function getTopEventLabels(videoEvents) {
   const byLabel = {};
 
   videoEvents.forEach(item => {
@@ -758,8 +761,7 @@ function getTopEventLabels(videoEvents, maxLabels = 5) {
 
   return Object.entries(byLabel)
     .map(([label, confidence]) => ({ label, confidence }))
-    .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, maxLabels);
+    .sort((a, b) => b.confidence - a.confidence);
 }
 
 function getEventGroups(items) {
@@ -813,18 +815,44 @@ function renderEventsPagination(totalPages) {
     return;
   }
 
+  const pageNumbers = [];
+  const maxVisiblePages = 7;
+
+  if (totalPages <= maxVisiblePages) {
+    for (let page = 1; page <= totalPages; page++) pageNumbers.push(page);
+  } else {
+    pageNumbers.push(1);
+
+    const start = Math.max(2, eventPage - 2);
+    const end = Math.min(totalPages - 1, eventPage + 2);
+
+    if (start > 2) pageNumbers.push("ellipsis-start");
+
+    for (let page = start; page <= end; page++) pageNumbers.push(page);
+
+    if (end < totalPages - 1) pageNumbers.push("ellipsis-end");
+
+    pageNumbers.push(totalPages);
+  }
+
   let buttons = `
     <button data-page-action="prev" ${eventPage === 1 ? "disabled" : ""}>←</button>
   `;
 
-  for (let page = 1; page <= totalPages; page++) {
+  pageNumbers.forEach(page => {
+    if (typeof page === "string") {
+      buttons += `<span class="pagination-ellipsis">…</span>`;
+      return;
+    }
+
     buttons += `
       <button class="${page === eventPage ? "active" : ""}" data-page="${page}">${page}</button>
     `;
-  }
+  });
 
   buttons += `
     <button data-page-action="next" ${eventPage === totalPages ? "disabled" : ""}>→</button>
+    <span class="pagination-info">Page ${eventPage} of ${totalPages}</span>
   `;
 
   pagination.innerHTML = buttons;
@@ -892,7 +920,7 @@ function renderEventsTable(items) {
           <div class="event-summary">
             <div class="event-title">${title}</div>
             <div class="event-tags">${labelChips}</div>
-            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip</div>
+            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip · all labels shown</div>
           </div>
         </td>
         <td><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
