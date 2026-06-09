@@ -891,7 +891,6 @@ function renderEventsTable(items) {
     const originalIndex = events.indexOf(firstEvent);
     const topLabels = getTopEventLabels(sortedEvents);
     const title = getEventGroupTitle(sortedEvents);
-    const firstVideoTime = formatVideoTimestamp(firstEvent.rekognitionTimestampMs);
     const bestConfidence = Math.max(...sortedEvents.map(item => Number(item.confidence || 0)));
 
     const dayHeader = group.dayKey !== currentDayKey
@@ -914,7 +913,7 @@ function renderEventsTable(items) {
       ${dayHeader}
       <tr class="event-video-row">
         <td>
-          <span class="event-time">${formatEventClock(group.date)} · ${firstVideoTime}</span>
+          <span class="event-time">${formatEventClock(group.date)}</span>
         </td>
         <td>
           <div class="event-summary">
