@@ -14,10 +14,21 @@
       <div>
         <div class="eyebrow">Storage Monitoring</div>
         <h1>Storage Retschwil</h1>
-        <p class="subtitle">Live temperature, humidity and camera insights from the Storage in Retschwil - Deployed on AWS</p>
       </div>
 
       <div class="controls">
+        <label class="date-field">
+          <span>Cooldown WA Alert</span>
+          <select id="cooldownInput">
+            <option value="1">1h</option>
+            <option value="6">6h</option>
+            <option value="12">12h</option>
+            <option value="24">24h</option>
+          </select>
+        </label>
+
+        <button id="resetCooldownButton">Reset</button>
+
         <label class="date-field">
           <span>Date Range</span>
           <select id="rangeModeSelect" aria-label="Time range">
@@ -88,18 +99,6 @@
             </label>
 
             <button id="saveThresholdsButton">Save</button>
-
-            <label class="threshold-field">
-              <span>Cooldown WA Alert</span>
-              <select id="cooldownInput">
-                <option value="1">1h</option>
-                <option value="6">6h</option>
-                <option value="12">12h</option>
-                <option value="24">24h</option>
-              </select>
-            </label>
-
-            <button id="resetCooldownButton">Reset</button>
           </div>
         </div>
 
