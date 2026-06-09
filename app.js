@@ -14,6 +14,7 @@ let humidityChart;
 let videos = [];
 let events = [];
 let eventPage = 1;
+let eventDayOpenState = {};
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -631,6 +632,7 @@ async function loadEvents() {
     const data = await response.json();
     events = (data.items || []).filter(item => item.bucketMs === 10000);
     eventPage = 1;
+    eventDayOpenState = {};
 
     const eventGroups = getEventGroups(events);
     document.getElementById("eventCounter").textContent =
@@ -806,6 +808,16 @@ function getPaginatedEventGroups(items) {
   };
 }
 
+function setDefaultOpenEventDay(groups) {
+  if (!groups.length || Object.keys(eventDayOpenState).length) return;
+
+  eventDayOpenState[groups[0].dayKey] = true;
+}
+
+function getEventDayLabelCount(items, dayKey) {
+  return items.filter(item => getLocalDateString(getEventDateValue(item)) === dayKey).length;
+}
+
 function renderEventsPagination(totalPages) {
   const pagination = document.getElementById("eventsPagination");
   if (!pagination) return;
@@ -883,6 +895,7 @@ function renderEventsTable(items) {
   }
 
   const { groups, totalPages } = getPaginatedEventGroups(items);
+  setDefaultOpenEventDay(getEventGroups(items));
   let currentDayKey = "";
 
   const rows = groups.map(group => {
@@ -892,11 +905,19 @@ function renderEventsTable(items) {
     const topLabels = getTopEventLabels(sortedEvents);
     const title = getEventGroupTitle(sortedEvents);
     const bestConfidence = Math.max(...sortedEvents.map(item => Number(item.confidence || 0)));
+    const isDayOpen = eventDayOpenState[group.dayKey] === true;
+    const dayLabelCount = getEventDayLabelCount(items, group.dayKey);
 
     const dayHeader = group.dayKey !== currentDayKey
       ? `
         <tr class="event-day-row">
-          <td colspan="4">${formatEventDay(group.date)}</td>
+          <td colspan="4">
+            <button class="event-day-toggle" data-day-key="${group.dayKey}" aria-expanded="${isDayOpen}">
+              <span class="event-day-title">${formatEventDay(group.date)}</span>
+              <span class="event-day-meta">${dayLabelCount} label${dayLabelCount === 1 ? "" : "s"}</span>
+              <span class="event-day-chevron" aria-hidden="true">${isDayOpen ? "−" : "+"}</span>
+            </button>
+          </td>
         </tr>
       `
       : "";
@@ -911,25 +932,33 @@ function renderEventsTable(items) {
 
     return `
       ${dayHeader}
-      <tr class="event-video-row">
-        <td>
+      <tr class="event-video-row ${isDayOpen ? "" : "event-day-collapsed"}" data-day-key="${group.dayKey}">
+        <td data-label="Time">
           <span class="event-time">${formatEventClock(group.date)}</span>
         </td>
-        <td>
+        <td data-label="Detected">
           <div class="event-summary">
             <div class="event-title">${title}</div>
             <div class="event-tags">${labelChips}</div>
             <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip · all labels shown</div>
           </div>
         </td>
-        <td><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
-        <td><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
+        <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
+        <td data-label="Action"><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
       </tr>
     `;
   }).join("");
 
   tbody.innerHTML = rows;
   renderEventsPagination(totalPages);
+
+  tbody.querySelectorAll(".event-day-toggle").forEach(button => {
+    button.addEventListener("click", () => {
+      const dayKey = button.dataset.dayKey;
+      eventDayOpenState[dayKey] = eventDayOpenState[dayKey] !== true;
+      renderEventsTable(events);
+    });
+  });
 
   tbody.querySelectorAll(".play-event-button").forEach(button => {
     button.addEventListener("click", () => {
