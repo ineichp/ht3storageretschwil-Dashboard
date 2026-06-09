@@ -578,16 +578,10 @@ async function loadData() {
     document.getElementById("tempThresholdInfo").textContent = `Limits: ${LIMITS.minTemperature}–${LIMITS.maxTemperature} °C`;
     document.getElementById("humidityThresholdInfo").textContent = `Limits: ${LIMITS.minHumidity}–${LIMITS.maxHumidity} %`;
 
-    const measurementHealth = document.getElementById("measurementHealth");
-
     if (latestAlert) {
-      measurementHealth.className = "threshold-pill";
-      measurementHealth.textContent = "Threshold alert";
       document.getElementById("statusText").textContent = "Online · Current value threshold alert";
       document.getElementById("statusDot").classList.add("alert");
     } else {
-      measurementHealth.className = "pill";
-      measurementHealth.textContent = "Climate data";
       document.getElementById("statusText").textContent = "Online · API reachable";
       document.getElementById("statusDot").classList.add("online");
     }
