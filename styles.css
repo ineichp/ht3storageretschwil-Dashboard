@@ -804,6 +804,17 @@ tr:last-child td {
 
   th, td { padding: 10px 8px; font-size: 12px; }
 
+  .events-table {
+    display: block;
+    table-layout: auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .events-table colgroup {
+    display: none;
+  }
+
   .events-table thead {
     display: none;
   }
@@ -852,13 +863,14 @@ tr:last-child td {
 
   #eventsTable .event-video-row td {
     display: grid;
-    grid-template-columns: 84px minmax(0, 1fr);
+    grid-template-columns: minmax(72px, 0.34fr) minmax(0, 1fr);
     gap: 10px;
     align-items: start;
     padding: 10px 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     background: transparent;
     white-space: normal;
+    min-width: 0;
   }
 
   #eventsTable .event-video-row td::before {
@@ -888,6 +900,10 @@ tr:last-child td {
   }
 
   .event-summary { gap: 6px; min-width: 0; }
+  .event-confidence,
+  .event-time {
+    overflow-wrap: anywhere;
+  }
   .event-title { font-size: 14px; }
   .event-chip { font-size: 11px; padding: 3px 7px; }
   .pagination { justify-content: flex-start; }
