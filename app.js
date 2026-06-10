@@ -972,6 +972,27 @@ function toggleReadings() {
   toggle.textContent = isOpen ? "+" : "−";
 }
 
+function toggleSection(header) {
+  const content = document.getElementById(header.dataset.sectionTarget);
+  const toggle = document.getElementById(header.dataset.sectionToggle);
+  if (!content || !toggle) return;
+
+  const isOpen = !content.classList.contains("collapsed");
+
+  content.classList.toggle("collapsed", isOpen);
+  header.setAttribute("aria-expanded", String(!isOpen));
+  toggle.textContent = isOpen ? "+" : "−";
+}
+
+function bindToggleHeader(header, handler) {
+  header.addEventListener("click", handler);
+  header.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    handler();
+  });
+}
+
 function openVideoModal(eventItem, video, jumpToSeconds) {
   const modal = document.getElementById("videoModal");
   const player = document.getElementById("modalVideoPlayer");
@@ -1024,12 +1045,9 @@ function playEvent(eventItem) {
 }
 
 function registerEventListeners() {
-  document.getElementById("readingsHeader").addEventListener("click", toggleReadings);
-  document.getElementById("readingsHeader").addEventListener("keydown", event => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    toggleReadings();
-  });
+  bindToggleHeader(document.getElementById("readingsHeader"), toggleReadings);
+  bindToggleHeader(document.getElementById("measurementsHeader"), () => toggleSection(document.getElementById("measurementsHeader")));
+  bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
   document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);

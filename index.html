@@ -68,14 +68,17 @@
 
     <section class="grid">
       <article class="card section-card">
-        <div class="section-header">
+        <div id="measurementsHeader" class="section-header section-toggle-header" role="button" tabindex="0" aria-expanded="true" data-section-target="measurementsContent" data-section-toggle="measurementsToggle">
           <div>
             <div class="section-title-row">
               <h2>Measurements</h2>
+              <span id="measurementsToggle" class="event-day-chevron" aria-hidden="true">−</span>
             </div>
             <div class="section-subtitle">Temperature and humidity readings by HT sensor.</div>
           </div>
+        </div>
 
+        <div id="measurementsContent" class="section-content">
           <div class="threshold-controls">
             <label class="threshold-field">
               <span>Min Temp</span>
@@ -99,103 +102,112 @@
 
             <button id="saveThresholdsButton">Save</button>
           </div>
-        </div>
 
-        <div class="section-grid">
-          <article class="card metric">
-            <div class="label">Current Temperature</div>
-            <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
-            <div id="tempTrend" class="trend">Trend: —</div>
-          </article>
+          <div class="section-grid">
+            <article class="card metric">
+              <div class="label">Current Temperature</div>
+              <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+              <div id="tempTrend" class="trend">Trend: —</div>
+            </article>
 
-          <article class="card metric">
-            <div class="label">Current Humidity</div>
-            <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
-            <div id="humidityTrend" class="trend">Trend: —</div>
-          </article>
+            <article class="card metric">
+              <div class="label">Current Humidity</div>
+              <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+              <div id="humidityTrend" class="trend">Trend: —</div>
+            </article>
 
-          <article class="card metric">
-            <div class="label">Measurements</div>
-            <div class="value"><span id="measurementCount">—</span></div>
-            <div class="trend">in selected time range</div>
-          </article>
+            <article class="card metric">
+              <div class="label">Measurements</div>
+              <div class="value"><span id="measurementCount">—</span></div>
+              <div class="trend">in selected time range</div>
+            </article>
 
-          <article class="card metric">
-            <div class="label">Last Reading</div>
-            <div class="value last-reading-value">
-              <span id="lastReadingDate" class="last-reading-date">—</span>
-              <span id="lastReadingTime" class="last-reading-time">—</span>
-            </div>
-            <div class="trend">Device timestamp</div>
-          </article>
-
-          <article class="card chart-card">
-            <div class="chart-title">
-              <h2>Temperature</h2>
-              <span id="tempThresholdInfo" class="pill">°C over time</span>
-            </div>
-            <canvas id="tempChart"></canvas>
-          </article>
-
-          <article class="card chart-card">
-            <div class="chart-title">
-              <h2>Humidity</h2>
-              <span id="humidityThresholdInfo" class="pill">Relative humidity</span>
-            </div>
-            <canvas id="humidityChart"></canvas>
-          </article>
-
-          <article class="card wide">
-            <div id="readingsHeader" class="chart-title clickable reading-toggle-header" role="button" tabindex="0" aria-expanded="false">
-              <h2>Latest readings</h2>
-              <span id="readingsToggle" class="event-day-chevron" aria-hidden="true">+</span>
-            </div>
-
-            <div id="readingsContent" class="collapsed">
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Temperature</th>
-                      <th>Humidity</th>
-                      <th>Device</th>
-                    </tr>
-                  </thead>
-                  <tbody id="readingsTable"></tbody>
-                </table>
+            <article class="card metric">
+              <div class="label">Last Reading</div>
+              <div class="value last-reading-value">
+                <span id="lastReadingDate" class="last-reading-date">—</span>
+                <span id="lastReadingTime" class="last-reading-time">—</span>
               </div>
-            </div>
-          </article>
+              <div class="trend">Device timestamp</div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="chart-title">
+                <h2>Temperature</h2>
+                <span id="tempThresholdInfo" class="pill">°C over time</span>
+              </div>
+              <canvas id="tempChart"></canvas>
+            </article>
+
+            <article class="card chart-card">
+              <div class="chart-title">
+                <h2>Humidity</h2>
+                <span id="humidityThresholdInfo" class="pill">Relative humidity</span>
+              </div>
+              <canvas id="humidityChart"></canvas>
+            </article>
+
+            <article class="card wide">
+              <div id="readingsHeader" class="chart-title clickable reading-toggle-header" role="button" tabindex="0" aria-expanded="false">
+                <h2>Latest readings</h2>
+                <span id="readingsToggle" class="event-day-chevron" aria-hidden="true">+</span>
+              </div>
+
+              <div id="readingsContent" class="collapsed">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>Device</th>
+                      </tr>
+                    </thead>
+                    <tbody id="readingsTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
       </article>
 
       <article class="card section-card">
-        <div class="section-header">
+        <div id="surveillanceHeader" class="section-header section-toggle-header" role="button" tabindex="0" aria-expanded="true" data-section-target="surveillanceContent" data-section-toggle="surveillanceToggle">
           <div>
             <div class="section-title-row">
               <h2>Surveillance</h2>
               <span id="eventCounter" class="pill">Loading events…</span>
+              <span id="surveillanceToggle" class="event-day-chevron" aria-hidden="true">−</span>
             </div>
             <div class="section-subtitle">AI-detected events from Amazon Rekognition.</div>
           </div>
         </div>
 
-        <div class="table-wrap">
-          <table class="events-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Detected</th>
-                <th>Confidence</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="eventsTable"></tbody>
-          </table>
-        </div>
+        <div id="surveillanceContent" class="section-content">
+          <div class="table-wrap">
+            <table class="events-table">
+              <colgroup>
+                <col class="event-time-col">
+                <col class="event-detected-col">
+                <col class="event-confidence-col">
+                <col class="event-action-col">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Detected</th>
+                  <th>Confidence</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="eventsTable"></tbody>
+            </table>
+          </div>
 
-        <div id="eventsPagination" class="pagination"></div>
+          <div id="eventsPagination" class="pagination"></div>
+        </div>
       </article>
     </section>
   </main>
