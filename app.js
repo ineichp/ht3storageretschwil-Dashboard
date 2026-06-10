@@ -962,12 +962,14 @@ function renderEventsTable(items) {
 }
 
 function toggleReadings() {
+  const header = document.getElementById("readingsHeader");
   const content = document.getElementById("readingsContent");
   const toggle = document.getElementById("readingsToggle");
   const isOpen = !content.classList.contains("collapsed");
 
   content.classList.toggle("collapsed", isOpen);
-  toggle.textContent = isOpen ? "Show" : "Hide";
+  header.setAttribute("aria-expanded", String(!isOpen));
+  toggle.textContent = isOpen ? "+" : "−";
 }
 
 function openVideoModal(eventItem, video, jumpToSeconds) {
@@ -1023,6 +1025,11 @@ function playEvent(eventItem) {
 
 function registerEventListeners() {
   document.getElementById("readingsHeader").addEventListener("click", toggleReadings);
+  document.getElementById("readingsHeader").addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    toggleReadings();
+  });
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
   document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);

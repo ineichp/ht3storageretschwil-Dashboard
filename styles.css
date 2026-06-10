@@ -377,6 +377,20 @@ button:disabled {
 .clickable { cursor: pointer; }
 .collapsed { display: none; }
 
+.reading-toggle-header {
+  border-radius: var(--radius);
+  padding: 4px 0;
+}
+
+.reading-toggle-header:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 62%, transparent);
+  outline-offset: 4px;
+}
+
+.reading-toggle-header:hover .event-day-chevron {
+  background: rgba(45, 212, 191, 0.22);
+}
+
 .chart-title h2 {
   margin: 0;
   font-size: 18px;
@@ -447,33 +461,35 @@ tr:last-child td {
 }
 
 .event-day-row td {
-  padding: 12px;
-  background: var(--surface-raised);
+  padding: 18px 12px 8px;
+  background: transparent;
   color: var(--text);
   font-size: 15px;
   font-weight: 900;
   letter-spacing: 0;
-  border-top: 1px solid var(--border);
+  border-top: 0;
+  border-bottom: 0;
 }
 
 .event-day-toggle {
   width: 100%;
-  min-height: 44px;
+  min-height: 34px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
   text-align: left;
-  border-radius: var(--radius);
-  border-color: var(--border-strong);
-  background: var(--surface-soft);
-  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  padding: 0 0 8px;
 }
 
 .event-day-toggle:hover {
   transform: none;
   border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface-soft));
+  background: transparent;
 }
 
 .event-day-title {
@@ -701,6 +717,11 @@ tr:last-child td {
   .section-grid { gap: 12px; }
   .section-header h2 { font-size: 22px; }
   .chart-title { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .reading-toggle-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
   .chart-title h2 { font-size: 18px; }
   .pill,
   .threshold-pill { font-size: 11px; }
@@ -766,16 +787,16 @@ tr:last-child td {
   }
 
   .event-day-row td {
-    padding: 8px;
+    padding: 16px 8px 8px;
     border-bottom: 0;
-    background: var(--surface-raised);
+    background: transparent;
   }
 
   .event-day-toggle {
     grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 48px;
+    min-height: 34px;
     gap: 6px 8px;
-    padding: 11px 12px;
+    padding: 0 0 8px;
   }
 
   .event-day-meta {
