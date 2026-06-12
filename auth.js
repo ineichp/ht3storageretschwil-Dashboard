@@ -110,16 +110,6 @@ async function submitLogin(event) {
       return;
     }
 
-    if (result.ChallengeName === "SOFTWARE_TOKEN_MFA") {
-      window.StorageRetschwilAuth.pendingChallenge = {
-        name: result.ChallengeName,
-        session: result.Session,
-        username
-      };
-      setMode("mfa");
-      return;
-    }
-
     if (result.ChallengeName === "NEW_PASSWORD_REQUIRED") {
       window.StorageRetschwilAuth.pendingChallenge = {
         name: result.ChallengeName,
@@ -133,35 +123,6 @@ async function submitLogin(event) {
     throw new Error(`Unsupported login challenge: ${result.ChallengeName || "unknown"}`);
   } catch (error) {
     authMessage(error.message || "Login fehlgeschlagen.");
-  } finally {
-    button.disabled = false;
-  }
-}
-
-async function submitMfa(event) {
-  event.preventDefault();
-  authMessage("");
-
-  const pending = window.StorageRetschwilAuth.pendingChallenge;
-  if (!pending) {
-    setMode("login");
-    return;
-  }
-
-  const form = event.currentTarget;
-  const button = form.querySelector("button[type='submit']");
-  button.disabled = true;
-
-  try {
-    const result = await respondToChallenge("SOFTWARE_TOKEN_MFA", pending.session, {
-      USERNAME: pending.username,
-      SOFTWARE_TOKEN_MFA_CODE: form.code.value.trim()
-    });
-
-    if (!result.AuthenticationResult) throw new Error("Authenticator-Code konnte nicht validiert werden.");
-    window.StorageRetschwilAuth.completeLogin(writeSession(result.AuthenticationResult));
-  } catch (error) {
-    authMessage(error.message || "Authenticator-Code fehlgeschlagen.");
   } finally {
     button.disabled = false;
   }
@@ -187,10 +148,10 @@ async function submitNewPassword(event) {
       NEW_PASSWORD: form.password.value
     });
 
-    if (!result.AuthenticationResult) throw new Error("Neues Passwort konnte nicht gesetzt werden.");
+    if (!result.AuthenticationResult) throw new Error("New password could not be set.");
     window.StorageRetschwilAuth.completeLogin(writeSession(result.AuthenticationResult));
   } catch (error) {
-    authMessage(error.message || "Passwortwechsel fehlgeschlagen.");
+    authMessage(error.message || "Password change failed.");
   } finally {
     button.disabled = false;
   }
@@ -209,9 +170,7 @@ async function submitRegistration(event) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: form.email.value.trim(),
-        name: form.name.value.trim(),
-        reason: form.reason.value.trim()
+        email: form.email.value.trim()
       })
     });
 
@@ -219,9 +178,9 @@ async function submitRegistration(event) {
     if (!response.ok) throw new Error(payload.message || `HTTP ${response.status}`);
 
     form.reset();
-    authMessage("Anfrage gesendet. Die Freigabe laeuft ueber ip@skyit.ch.", "success");
+    authMessage("Request sent. Approval runs through ip@skyit.ch.", "success");
   } catch (error) {
-    authMessage(error.message || "Registrierungsanfrage fehlgeschlagen.");
+    authMessage(error.message || "Registration request failed.");
   } finally {
     button.disabled = false;
   }
@@ -235,66 +194,45 @@ function showLogin(errorMessage = "") {
         <div class="eyebrow">Storage Monitoring</div>
         <h1>Storage Retschwil</h1>
 
-        <div class="auth-tabs" role="tablist" aria-label="Authentication">
-          <button class="active" type="button" data-auth-tab="login">Login</button>
-          <button type="button" data-auth-tab="register">Registrieren</button>
-        </div>
-
         <div id="authMessage" class="auth-message">${errorMessage}</div>
 
         <form class="auth-form" data-auth-mode="login">
           <label>
-            <span>E-Mail</span>
+            <span>Email</span>
             <input name="email" type="email" autocomplete="username" required>
           </label>
           <label>
-            <span>Passwort</span>
+            <span>Password</span>
             <input name="password" type="password" autocomplete="current-password" required>
           </label>
-          <button class="auth-primary" type="submit">Anmelden</button>
-          <div class="auth-footnote">Authenticator-App und Passkey sind optional in Cognito vorbereitet.</div>
-        </form>
-
-        <form class="auth-form" data-auth-mode="mfa" hidden>
-          <label>
-            <span>Authenticator-Code</span>
-            <input name="code" inputmode="numeric" autocomplete="one-time-code" required>
-          </label>
-          <button class="auth-primary" type="submit">Code pruefen</button>
+          <button class="auth-primary" type="submit">Login</button>
+          <button class="auth-link" type="button" data-auth-link="register">Register</button>
         </form>
 
         <form class="auth-form" data-auth-mode="new-password" hidden>
           <label>
-            <span>Neues Passwort</span>
+            <span>New password</span>
             <input name="password" type="password" autocomplete="new-password" minlength="12" required>
           </label>
-          <button class="auth-primary" type="submit">Passwort setzen</button>
+          <button class="auth-primary" type="submit">Set password</button>
         </form>
 
         <form class="auth-form" data-auth-mode="register" hidden>
           <label>
-            <span>E-Mail</span>
+            <span>Email</span>
             <input name="email" type="email" autocomplete="email" required>
           </label>
-          <label>
-            <span>Name</span>
-            <input name="name" type="text" autocomplete="name">
-          </label>
-          <label>
-            <span>Grund</span>
-            <textarea name="reason" rows="3" placeholder="Wofuer brauchst du Zugriff?"></textarea>
-          </label>
-          <button class="auth-primary" type="submit">Anfrage senden</button>
+          <button class="auth-primary" type="submit">Request access</button>
+          <button class="auth-link" type="button" data-auth-link="login">Back to login</button>
         </form>
       </section>
     </main>
   `);
 
-  document.querySelectorAll("[data-auth-tab]").forEach(button => {
-    button.addEventListener("click", () => setMode(button.dataset.authTab));
+  document.querySelectorAll("[data-auth-link]").forEach(button => {
+    button.addEventListener("click", () => setMode(button.dataset.authLink));
   });
   document.querySelector("[data-auth-mode='login']").addEventListener("submit", submitLogin);
-  document.querySelector("[data-auth-mode='mfa']").addEventListener("submit", submitMfa);
   document.querySelector("[data-auth-mode='new-password']").addEventListener("submit", submitNewPassword);
   document.querySelector("[data-auth-mode='register']").addEventListener("submit", submitRegistration);
 }
