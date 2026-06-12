@@ -157,35 +157,6 @@ async function submitNewPassword(event) {
   }
 }
 
-async function submitRegistration(event) {
-  event.preventDefault();
-  authMessage("");
-
-  const form = event.currentTarget;
-  const button = form.querySelector("button[type='submit']");
-  button.disabled = true;
-
-  try {
-    const response = await fetch(`${AUTH_CONFIG.apiBaseUrl}/registration-requests`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: form.email.value.trim()
-      })
-    });
-
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.message || `HTTP ${response.status}`);
-
-    form.reset();
-    authMessage("Request sent. Approval runs through ip@skyit.ch.", "success");
-  } catch (error) {
-    authMessage(error.message || "Registration request failed.");
-  } finally {
-    button.disabled = false;
-  }
-}
-
 function showLogin(errorMessage = "") {
   document.body.classList.add("auth-required");
   document.body.insertAdjacentHTML("afterbegin", `
@@ -206,7 +177,6 @@ function showLogin(errorMessage = "") {
             <input name="password" type="password" autocomplete="current-password" required>
           </label>
           <button class="auth-primary" type="submit">Login</button>
-          <button class="auth-link" type="button" data-auth-link="register">Register</button>
         </form>
 
         <form class="auth-form" data-auth-mode="new-password" hidden>
@@ -216,25 +186,12 @@ function showLogin(errorMessage = "") {
           </label>
           <button class="auth-primary" type="submit">Set password</button>
         </form>
-
-        <form class="auth-form" data-auth-mode="register" hidden>
-          <label>
-            <span>Email</span>
-            <input name="email" type="email" autocomplete="email" required>
-          </label>
-          <button class="auth-primary" type="submit">Request access</button>
-          <button class="auth-link" type="button" data-auth-link="login">Back to login</button>
-        </form>
       </section>
     </main>
   `);
 
-  document.querySelectorAll("[data-auth-link]").forEach(button => {
-    button.addEventListener("click", () => setMode(button.dataset.authLink));
-  });
   document.querySelector("[data-auth-mode='login']").addEventListener("submit", submitLogin);
   document.querySelector("[data-auth-mode='new-password']").addEventListener("submit", submitNewPassword);
-  document.querySelector("[data-auth-mode='register']").addEventListener("submit", submitRegistration);
 }
 
 function attachFetchToken(session) {
