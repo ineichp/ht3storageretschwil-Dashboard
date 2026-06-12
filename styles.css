@@ -414,8 +414,10 @@ button:disabled {
   font-size: 32px;
 }
 
-.audit-cost-drivers {
-  background: var(--surface-raised);
+.audit-service-value {
+  font-size: 28px;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .chart-card {

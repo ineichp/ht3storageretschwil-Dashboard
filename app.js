@@ -45,12 +45,10 @@ function renderFloodState(state = {}) {
 
   if (state.updatedAt) {
     meta.textContent = `Last update: ${formatDateTime(state.updatedAt)}`;
-    renderAuditCosts();
     return;
   }
 
   meta.textContent = "Last update: —";
-  renderAuditCosts();
 }
 
 async function loadFloodState() {
@@ -66,7 +64,6 @@ async function loadFloodState() {
     document.getElementById("floorFloodMeta").textContent = "Flood API error";
     latestFloodState = {};
     renderBatteryStatus("flood", null);
-    renderAuditCosts();
   }
 }
 
@@ -123,48 +120,66 @@ function renderBatteryStatus(prefix, percentValue) {
   value.textContent = `${percent}%`;
 }
 
-function renderAuditCosts() {
-  const table = document.getElementById("auditCostDriversTable");
-  if (!table) return;
+function formatMoney(amount, currency = "USD") {
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return "—";
 
-  const measurementCount = document.getElementById("measurementCount")?.textContent || "—";
-  const cooldown = Number.isFinite(Number(LIMITS.cooldownHours)) ? `${LIMITS.cooldownHours}h` : "—";
-  const floodStatus = latestFloodState.flood === true ? "Flood" : "Dry";
-  const floodUpdated = latestFloodState.updatedAt ? formatDateTime(latestFloodState.updatedAt) : "No live update";
+  return new Intl.NumberFormat("de-CH", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value);
+}
 
-  setText("auditMonthCost", "Setup");
-  setText("auditDailyCost", "Setup");
-  setText("auditRecognitionEvents", String(events.length || 0));
-  setText("auditVideoClips", String(videos.length || 0));
-  setText("auditCostStatus", "Estimated view");
+function formatDateShort(value) {
+  if (!value) return "—";
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
 
-  table.innerHTML = `
-    <tr>
-      <td>Amazon Rekognition</td>
-      <td>${events.length || 0} detections</td>
-      <td>Review label volume and false positives</td>
-    </tr>
-    <tr>
-      <td>S3 video storage</td>
-      <td>${videos.length || 0} clips</td>
-      <td>Check retention and lifecycle rules</td>
-    </tr>
-    <tr>
-      <td>Measurements API</td>
-      <td>${measurementCount} readings in range</td>
-      <td>Monitor Lambda and DynamoDB usage</td>
-    </tr>
-    <tr>
-      <td>WhatsApp alerts</td>
-      <td>Cooldown: ${cooldown}</td>
-      <td>Limits duplicate alert cost and noise</td>
-    </tr>
-    <tr>
-      <td>Floor flood</td>
-      <td>${floodStatus}</td>
-      <td>${floodUpdated}</td>
-    </tr>
-  `;
+  return date.toLocaleDateString("de-CH", {
+    day: "2-digit",
+    month: "2-digit"
+  });
+}
+
+function renderAuditCosts(data = {}) {
+  const currency = data.currency || "USD";
+  const lastDay = data.lastDay || {};
+  const topService = data.topService || {};
+
+  setText("auditMonthCost", formatMoney(data.monthToDate, currency));
+  setText("auditDailyCost", formatMoney(data.dailyAverage, currency));
+  setText("auditLastDayCost", formatMoney(lastDay.amount, currency));
+  setText("auditTopServiceCost", formatMoney(topService.amount, currency));
+
+  setText("auditMonthCostMeta", data.updatedAt ? `Updated: ${formatDateTime(data.updatedAt)}` : "Loaded from Cost Explorer");
+  setText("auditDailyCostMeta", "Current month average");
+  setText("auditLastDayMeta", lastDay.date ? `${formatDateShort(lastDay.date)}${lastDay.estimated ? " · estimated" : ""}` : "No daily cost data");
+  setText("auditTopServiceMeta", topService.name || "No service data");
+}
+
+function renderAuditCostsError(message) {
+  setText("auditMonthCost", "—");
+  setText("auditDailyCost", "—");
+  setText("auditLastDayCost", "—");
+  setText("auditTopServiceCost", "—");
+  setText("auditMonthCostMeta", message || "Cost Explorer API error");
+  setText("auditDailyCostMeta", "Cost Explorer unavailable");
+  setText("auditLastDayMeta", "Cost Explorer unavailable");
+  setText("auditTopServiceMeta", "Cost Explorer unavailable");
+}
+
+async function loadAuditCosts() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/audit-costs`);
+    if (!response.ok) throw new Error(`Cost API returned HTTP ${response.status}`);
+
+    renderAuditCosts(await response.json());
+  } catch (error) {
+    console.error(error);
+    renderAuditCostsError(error.message);
+  }
 }
 
 function chartPointColor(values, checkFn, normalColor) {
@@ -204,7 +219,6 @@ function renderThresholdInputs() {
   document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
   document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
   document.getElementById("cooldownInput").value = LIMITS.cooldownHours || 24;
-  renderAuditCosts();
 }
 
 function getLimitsFromInputs() {
@@ -719,13 +733,11 @@ async function loadData() {
 
     renderCharts(labels, temperatures, humidities);
     renderTable(items);
-    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("statusText").textContent = "Offline or API error";
     setError(error.message);
     renderBatteryStatus("ht3", null);
-    renderAuditCosts();
   }
 }
 
@@ -741,11 +753,9 @@ async function loadVideos() {
     videos = data.items || [];
 
     document.getElementById("videoStatus").textContent = `Videos: ${videos.length} available`;
-    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("videoStatus").textContent = "Videos: API error";
-    renderAuditCosts();
   }
 }
 
@@ -765,11 +775,9 @@ async function loadEvents() {
     document.getElementById("eventStatus").textContent = "Events: loaded";
 
     renderEventsTable(events);
-    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("eventStatus").textContent = "Events: API error";
-    renderAuditCosts();
   }
 }
 
@@ -1208,12 +1216,14 @@ async function init() {
   await loadFloodState();
   await loadVideos();
   await loadEvents();
+  await loadAuditCosts();
   loadData();
 
   setInterval(loadData, 60_000);
   setInterval(loadFloodState, 60_000);
   setInterval(loadVideos, 300_000);
   setInterval(loadEvents, 300_000);
+  setInterval(loadAuditCosts, 1_800_000);
 }
 
 if (window.StorageRetschwilAuth) {
