@@ -76,6 +76,8 @@ function setText(id, value) {
 }
 
 function toBatteryPercent(value) {
+  if (value === null || value === undefined || value === "") return null;
+
   const n = Number(value);
   if (!Number.isFinite(n)) return null;
   return Math.max(0, Math.min(100, Math.round(n)));
