@@ -80,6 +80,26 @@
           </div>
 
           <div class="threshold-controls">
+            <div class="battery-status" aria-label="Flood sensor battery">
+              <span>Flood</span>
+              <div class="battery-readout">
+                <div id="floodBatteryIcon" class="battery-icon unknown" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i>
+                </div>
+                <strong id="floodBatteryValue">—</strong>
+              </div>
+            </div>
+
+            <div class="battery-status" aria-label="HT3 sensor battery">
+              <span>HT3</span>
+              <div class="battery-readout">
+                <div id="ht3BatteryIcon" class="battery-icon unknown" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i>
+                </div>
+                <strong id="ht3BatteryValue">—</strong>
+              </div>
+            </div>
+
             <label class="threshold-field">
               <span>Min Temp</span>
               <input id="minTempInput" type="number" min="0" max="99" step="1">

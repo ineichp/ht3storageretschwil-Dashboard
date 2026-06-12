@@ -34,6 +34,7 @@ function thresholdClass(isAlert) {
 
 function renderFloodState(state = {}) {
   latestFloodState = state;
+  renderBatteryStatus("flood", pickBatteryPercent(state));
 
   const isFlood = state.flood === true;
   const status = document.getElementById("floorFloodStatus");
@@ -64,6 +65,7 @@ async function loadFloodState() {
     document.getElementById("floorFloodStatus").className = thresholdClass(false);
     document.getElementById("floorFloodMeta").textContent = "Flood API error";
     latestFloodState = {};
+    renderBatteryStatus("flood", null);
     renderAuditCosts();
   }
 }
@@ -71,6 +73,52 @@ async function loadFloodState() {
 function setText(id, value) {
   const element = document.getElementById(id);
   if (element) element.textContent = value;
+}
+
+function toBatteryPercent(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function pickBatteryPercent(source = {}) {
+  const candidates = [
+    source.batteryPercent,
+    source.battery,
+    source.battery_pct,
+    source.batteryPct,
+    source.batteryLevel,
+    source.bat,
+    source.devicepower?.battery?.percent,
+    source["devicepower:0"]?.battery?.percent
+  ];
+
+  for (const candidate of candidates) {
+    const percent = toBatteryPercent(candidate);
+    if (percent !== null) return percent;
+  }
+
+  return null;
+}
+
+function renderBatteryStatus(prefix, percentValue) {
+  const icon = document.getElementById(`${prefix}BatteryIcon`);
+  const value = document.getElementById(`${prefix}BatteryValue`);
+  if (!icon || !value) return;
+
+  const percent = toBatteryPercent(percentValue);
+
+  if (percent === null) {
+    icon.className = "battery-icon unknown";
+    value.textContent = "—";
+    return;
+  }
+
+  const level = Math.max(1, Math.ceil(percent / 25));
+  const state = percent <= 10 ? "critical" : percent <= 25 ? "warning" : "";
+
+  icon.className = `battery-icon level-${level}${state ? ` ${state}` : ""}`;
+  value.textContent = `${percent}%`;
 }
 
 function renderAuditCosts() {
@@ -648,6 +696,8 @@ async function loadData() {
     currentHumidity.className = thresholdClass(latestHumidityAlert);
 
     document.getElementById("measurementCount").textContent = items.length;
+    renderBatteryStatus("ht3", pickBatteryPercent(latest));
+
     const latestReadingTime = formatTimeInline(latest.eventtime);
     document.getElementById("tempTrend").textContent = `Last update: ${latestReadingTime}`;
     document.getElementById("humidityTrend").textContent = `Last update: ${latestReadingTime}`;
@@ -672,6 +722,7 @@ async function loadData() {
     console.error(error);
     document.getElementById("statusText").textContent = "Offline or API error";
     setError(error.message);
+    renderBatteryStatus("ht3", null);
     renderAuditCosts();
   }
 }

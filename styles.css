@@ -100,6 +100,87 @@ h1 {
   margin-left: auto;
 }
 
+.battery-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 82px;
+}
+
+.battery-status span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.battery-readout {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+}
+
+.battery-readout strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  min-width: 32px;
+}
+
+.battery-icon {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  width: 34px;
+  height: 18px;
+  padding: 3px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--field);
+}
+
+.battery-icon::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: -5px;
+  width: 3px;
+  height: 8px;
+  border-radius: 0 2px 2px 0;
+  background: var(--border-strong);
+}
+
+.battery-icon i {
+  display: block;
+  border-radius: 1px;
+  background: rgba(154, 167, 184, 0.2);
+}
+
+.battery-icon.level-1 i:nth-child(-n + 1),
+.battery-icon.level-2 i:nth-child(-n + 2),
+.battery-icon.level-3 i:nth-child(-n + 3),
+.battery-icon.level-4 i:nth-child(-n + 4) {
+  background: var(--good);
+}
+
+.battery-icon.warning i,
+.battery-icon.critical i,
+.battery-icon.unknown i {
+  background: rgba(154, 167, 184, 0.18);
+}
+
+.battery-icon.warning.level-1 i:nth-child(-n + 1) {
+  background: var(--warning);
+}
+
+.battery-icon.critical.level-1 i:nth-child(-n + 1) {
+  background: var(--danger);
+}
+
 .date-field,
 .threshold-field {
   display: flex;
@@ -853,6 +934,7 @@ tr:last-child td {
   .threshold-field,
   .threshold-field input,
   .threshold-field select,
+  .battery-status,
   .threshold-controls button { width: 100%; }
 
   .threshold-field input,
