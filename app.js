@@ -1079,4 +1079,8 @@ async function init() {
   setInterval(loadEvents, 300_000);
 }
 
-init();
+if (window.StorageRetschwilAuth) {
+  window.StorageRetschwilAuth.bootstrap(init);
+} else {
+  init();
+}

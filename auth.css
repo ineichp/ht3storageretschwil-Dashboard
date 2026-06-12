@@ -1,0 +1,53 @@
+.auth-required > .shell,
+.auth-required > .modal-overlay {
+  display: none;
+}
+
+.auth-shell {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  place-items: center;
+}
+
+.auth-panel {
+  width: min(520px, 100%);
+  background: rgba(18, 23, 34, 0.88);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.auth-copy {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.auth-primary {
+  width: 100%;
+  min-height: 46px;
+}
+
+.auth-error {
+  display: block;
+}
+
+.auth-signout {
+  align-self: flex-end;
+}
+
+@media (max-width: 720px) {
+  .auth-shell {
+    min-height: calc(100vh - 24px);
+  }
+
+  .auth-panel {
+    padding: 18px;
+  }
+
+  .auth-signout {
+    width: 100%;
+  }
+}
