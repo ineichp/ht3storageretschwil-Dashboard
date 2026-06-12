@@ -57,6 +57,7 @@ h1 {
   line-height: 0.98;
   margin: 0 0 10px;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .subtitle {
@@ -82,6 +83,11 @@ h1 {
 
 .controls {
   align-items: flex-end;
+}
+
+.controls .auth-signout {
+  margin-left: auto;
+  order: 99;
 }
 
 .controls button {
@@ -772,6 +778,13 @@ tr:last-child td {
     gap: 8px;
     border-radius: var(--radius);
     padding: 8px;
+  }
+
+  .controls .auth-signout {
+    margin-left: 0;
+    order: initial;
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .controls select {

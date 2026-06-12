@@ -119,7 +119,6 @@
 
 .auth-signout {
   align-self: flex-end;
-  order: -1;
 }
 
 @media (max-width: 720px) {
