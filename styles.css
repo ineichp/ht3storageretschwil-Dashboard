@@ -305,6 +305,18 @@ button:disabled {
   background: var(--surface-raised);
 }
 
+.metric-row {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metric-row .metric {
+  grid-column: auto;
+  min-width: 0;
+}
+
 .chart-card {
   grid-column: span 6;
   min-height: 390px;
@@ -741,6 +753,7 @@ tr:last-child td {
   .threshold-controls { width: 100%; justify-content: flex-start; }
   .metric,
   .chart-card { grid-column: span 12; }
+  .metric-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 720px) {
@@ -775,9 +788,9 @@ tr:last-child td {
   .threshold-pill { font-size: 11px; }
   .value { font-size: 34px; }
   .metric {
-    grid-column: span 6;
     min-height: 118px;
   }
+  .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .chart-card { min-height: 340px; }
   canvas { max-height: 260px; }
 
@@ -943,6 +956,7 @@ tr:last-child td {
   .controls { grid-template-columns: 1fr; }
   .threshold-controls { grid-template-columns: 1fr; }
   .metric { grid-column: span 12; }
+  .metric-row { grid-template-columns: 1fr; }
   .last-reading-time { font-size: 18px; }
 }
 

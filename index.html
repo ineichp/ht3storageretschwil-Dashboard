@@ -109,32 +109,40 @@
         <div id="measurementsContent" class="section-content">
 
           <div class="section-grid">
-            <article class="card metric">
-              <div class="label">Current Temperature</div>
-              <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
-              <div id="tempTrend" class="trend">Trend: —</div>
-            </article>
+            <div class="metric-row">
+              <article class="card metric">
+                <div class="label">Current Temperature</div>
+                <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+                <div id="tempTrend" class="trend">Trend: —</div>
+              </article>
 
-            <article class="card metric">
-              <div class="label">Current Humidity</div>
-              <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
-              <div id="humidityTrend" class="trend">Trend: —</div>
-            </article>
+              <article class="card metric">
+                <div class="label">Current Humidity</div>
+                <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+                <div id="humidityTrend" class="trend">Trend: —</div>
+              </article>
 
-            <article class="card metric">
-              <div class="label">Measurements</div>
-              <div class="value"><span id="measurementCount">—</span></div>
-              <div class="trend">in selected time range</div>
-            </article>
+              <article class="card metric">
+                <div class="label">Measurements</div>
+                <div class="value"><span id="measurementCount">—</span></div>
+                <div class="trend">in selected time range</div>
+              </article>
 
-            <article class="card metric">
-              <div class="label">Last Reading</div>
-              <div class="value last-reading-value">
-                <span id="lastReadingDate" class="last-reading-date">—</span>
-                <span id="lastReadingTime" class="last-reading-time">—</span>
-              </div>
-              <div class="trend">Device timestamp</div>
-            </article>
+              <article class="card metric">
+                <div class="label">Floor Flood</div>
+                <div class="value"><span id="floorFloodStatus">Dry</span></div>
+                <div id="floorFloodMeta" class="trend">Last update: —</div>
+              </article>
+
+              <article class="card metric">
+                <div class="label">Last Reading</div>
+                <div class="value last-reading-value">
+                  <span id="lastReadingDate" class="last-reading-date">—</span>
+                  <span id="lastReadingTime" class="last-reading-time">—</span>
+                </div>
+                <div class="trend">Device timestamp</div>
+              </article>
+            </div>
 
             <article class="card chart-card">
               <div class="chart-title">

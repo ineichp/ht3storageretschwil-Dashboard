@@ -31,6 +31,36 @@ function thresholdClass(isAlert) {
   return isAlert ? "threshold-alert" : "threshold-ok";
 }
 
+function renderFloodState(state = {}) {
+  const isFlood = state.flood === true;
+  const status = document.getElementById("floorFloodStatus");
+  const meta = document.getElementById("floorFloodMeta");
+
+  status.textContent = isFlood ? "Flood" : "Dry";
+  status.className = thresholdClass(isFlood);
+
+  if (state.updatedAt) {
+    meta.textContent = `Last update: ${formatDateTime(state.updatedAt)}`;
+    return;
+  }
+
+  meta.textContent = "Last update: —";
+}
+
+async function loadFloodState() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/flood`);
+    if (!response.ok) throw new Error(`Flood API returned HTTP ${response.status}`);
+
+    renderFloodState(await response.json());
+  } catch (error) {
+    console.error(error);
+    document.getElementById("floorFloodStatus").textContent = "Dry";
+    document.getElementById("floorFloodStatus").className = thresholdClass(false);
+    document.getElementById("floorFloodMeta").textContent = "Flood API error";
+  }
+}
+
 function chartPointColor(values, checkFn, normalColor) {
   return values.map(value => checkFn(value) ? "#fb7185" : normalColor);
 }
@@ -1068,11 +1098,13 @@ async function init() {
   registerEventListeners();
 
   await loadThresholds();
+  await loadFloodState();
   await loadVideos();
   await loadEvents();
   loadData();
 
   setInterval(loadData, 60_000);
+  setInterval(loadFloodState, 60_000);
   setInterval(loadVideos, 300_000);
   setInterval(loadEvents, 300_000);
 }
