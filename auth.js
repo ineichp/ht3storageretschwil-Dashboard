@@ -64,15 +64,6 @@ async function passwordLogin(username, password) {
   });
 }
 
-async function respondToChallenge(challengeName, session, challengeResponses) {
-  return cognitoRequest("RespondToAuthChallenge", {
-    ChallengeName: challengeName,
-    ClientId: AUTH_CONFIG.clientId,
-    Session: session,
-    ChallengeResponses: challengeResponses
-  });
-}
-
 function authMessage(text = "", type = "error") {
   const node = document.getElementById("authMessage");
   if (!node) return;
@@ -110,48 +101,9 @@ async function submitLogin(event) {
       return;
     }
 
-    if (result.ChallengeName === "NEW_PASSWORD_REQUIRED") {
-      window.StorageRetschwilAuth.pendingChallenge = {
-        name: result.ChallengeName,
-        session: result.Session,
-        username
-      };
-      setMode("new-password");
-      return;
-    }
-
     throw new Error(`Unsupported login challenge: ${result.ChallengeName || "unknown"}`);
   } catch (error) {
     authMessage(error.message || "Login fehlgeschlagen.");
-  } finally {
-    button.disabled = false;
-  }
-}
-
-async function submitNewPassword(event) {
-  event.preventDefault();
-  authMessage("");
-
-  const pending = window.StorageRetschwilAuth.pendingChallenge;
-  if (!pending) {
-    setMode("login");
-    return;
-  }
-
-  const form = event.currentTarget;
-  const button = form.querySelector("button[type='submit']");
-  button.disabled = true;
-
-  try {
-    const result = await respondToChallenge("NEW_PASSWORD_REQUIRED", pending.session, {
-      USERNAME: pending.username,
-      NEW_PASSWORD: form.password.value
-    });
-
-    if (!result.AuthenticationResult) throw new Error("New password could not be set.");
-    window.StorageRetschwilAuth.completeLogin(writeSession(result.AuthenticationResult));
-  } catch (error) {
-    authMessage(error.message || "Password change failed.");
   } finally {
     button.disabled = false;
   }
@@ -178,20 +130,11 @@ function showLogin(errorMessage = "") {
           </label>
           <button class="auth-primary" type="submit">Login</button>
         </form>
-
-        <form class="auth-form" data-auth-mode="new-password" hidden>
-          <label>
-            <span>New password</span>
-            <input name="password" type="password" autocomplete="new-password" minlength="12" required>
-          </label>
-          <button class="auth-primary" type="submit">Set password</button>
-        </form>
       </section>
     </main>
   `);
 
   document.querySelector("[data-auth-mode='login']").addEventListener("submit", submitLogin);
-  document.querySelector("[data-auth-mode='new-password']").addEventListener("submit", submitNewPassword);
 }
 
 function attachFetchToken(session) {
@@ -220,7 +163,6 @@ function configureSignOut() {
 }
 
 window.StorageRetschwilAuth = {
-  pendingChallenge: null,
   completeLogin(session) {
     document.body.classList.remove("auth-required");
     document.querySelector(".auth-shell")?.remove();
