@@ -15,6 +15,7 @@ let videos = [];
 let events = [];
 let eventPage = 1;
 let eventDayOpenState = {};
+let latestFloodState = {};
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -32,6 +33,8 @@ function thresholdClass(isAlert) {
 }
 
 function renderFloodState(state = {}) {
+  latestFloodState = state;
+
   const isFlood = state.flood === true;
   const status = document.getElementById("floorFloodStatus");
   const meta = document.getElementById("floorFloodMeta");
@@ -41,10 +44,12 @@ function renderFloodState(state = {}) {
 
   if (state.updatedAt) {
     meta.textContent = `Last update: ${formatDateTime(state.updatedAt)}`;
+    renderAuditCosts();
     return;
   }
 
   meta.textContent = "Last update: —";
+  renderAuditCosts();
 }
 
 async function loadFloodState() {
@@ -58,7 +63,58 @@ async function loadFloodState() {
     document.getElementById("floorFloodStatus").textContent = "Dry";
     document.getElementById("floorFloodStatus").className = thresholdClass(false);
     document.getElementById("floorFloodMeta").textContent = "Flood API error";
+    latestFloodState = {};
+    renderAuditCosts();
   }
+}
+
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+
+function renderAuditCosts() {
+  const table = document.getElementById("auditCostDriversTable");
+  if (!table) return;
+
+  const measurementCount = document.getElementById("measurementCount")?.textContent || "—";
+  const cooldown = Number.isFinite(Number(LIMITS.cooldownHours)) ? `${LIMITS.cooldownHours}h` : "—";
+  const floodStatus = latestFloodState.flood === true ? "Flood" : "Dry";
+  const floodUpdated = latestFloodState.updatedAt ? formatDateTime(latestFloodState.updatedAt) : "No live update";
+
+  setText("auditMonthCost", "Setup");
+  setText("auditDailyCost", "Setup");
+  setText("auditRecognitionEvents", String(events.length || 0));
+  setText("auditVideoClips", String(videos.length || 0));
+  setText("auditCostStatus", "Estimated view");
+
+  table.innerHTML = `
+    <tr>
+      <td>Amazon Rekognition</td>
+      <td>${events.length || 0} detections</td>
+      <td>Review label volume and false positives</td>
+    </tr>
+    <tr>
+      <td>S3 video storage</td>
+      <td>${videos.length || 0} clips</td>
+      <td>Check retention and lifecycle rules</td>
+    </tr>
+    <tr>
+      <td>Measurements API</td>
+      <td>${measurementCount} readings in range</td>
+      <td>Monitor Lambda and DynamoDB usage</td>
+    </tr>
+    <tr>
+      <td>WhatsApp alerts</td>
+      <td>Cooldown: ${cooldown}</td>
+      <td>Limits duplicate alert cost and noise</td>
+    </tr>
+    <tr>
+      <td>Floor flood</td>
+      <td>${floodStatus}</td>
+      <td>${floodUpdated}</td>
+    </tr>
+  `;
 }
 
 function chartPointColor(values, checkFn, normalColor) {
@@ -98,6 +154,7 @@ function renderThresholdInputs() {
   document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
   document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
   document.getElementById("cooldownInput").value = LIMITS.cooldownHours || 24;
+  renderAuditCosts();
 }
 
 function getLimitsFromInputs() {
@@ -610,10 +667,12 @@ async function loadData() {
 
     renderCharts(labels, temperatures, humidities);
     renderTable(items);
+    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("statusText").textContent = "Offline or API error";
     setError(error.message);
+    renderAuditCosts();
   }
 }
 
@@ -629,9 +688,11 @@ async function loadVideos() {
     videos = data.items || [];
 
     document.getElementById("videoStatus").textContent = `Videos: ${videos.length} available`;
+    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("videoStatus").textContent = "Videos: API error";
+    renderAuditCosts();
   }
 }
 
@@ -651,9 +712,11 @@ async function loadEvents() {
     document.getElementById("eventStatus").textContent = "Events: loaded";
 
     renderEventsTable(events);
+    renderAuditCosts();
   } catch (error) {
     console.error(error);
     document.getElementById("eventStatus").textContent = "Events: API error";
+    renderAuditCosts();
   }
 }
 
@@ -1064,6 +1127,7 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("readingsHeader"), toggleReadings);
   bindToggleHeader(document.getElementById("measurementsHeader"), () => toggleSection(document.getElementById("measurementsHeader")));
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
+  bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
   document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);

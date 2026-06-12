@@ -212,6 +212,89 @@
           <div id="eventsPagination" class="pagination"></div>
         </div>
       </article>
+
+      <article class="card section-card">
+        <div id="auditCostsHeader" class="section-header section-toggle-header" role="button" tabindex="0" aria-expanded="true" data-section-target="auditCostsContent" data-section-toggle="auditCostsToggle">
+          <div class="section-heading-copy">
+            <div class="section-title-row">
+              <h2>Audit Costs</h2>
+            </div>
+            <div class="section-subtitle">Estimated operating signals for the Storage Retschwil AWS resources.</div>
+          </div>
+          <span id="auditCostsToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
+        </div>
+
+        <div id="auditCostsContent" class="section-content">
+          <div class="section-grid">
+            <div class="audit-cost-row">
+              <article class="card metric audit-cost-card">
+                <div class="label">Month to date</div>
+                <div class="value"><span id="auditMonthCost">—</span></div>
+                <div class="trend">AWS Cost Explorer not connected</div>
+              </article>
+
+              <article class="card metric audit-cost-card">
+                <div class="label">Daily average</div>
+                <div class="value"><span id="auditDailyCost">—</span></div>
+                <div class="trend">Estimated after cost API setup</div>
+              </article>
+
+              <article class="card metric audit-cost-card">
+                <div class="label">Recognition events</div>
+                <div class="value"><span id="auditRecognitionEvents">—</span></div>
+                <div class="trend">Loaded from surveillance data</div>
+              </article>
+
+              <article class="card metric audit-cost-card">
+                <div class="label">Video clips</div>
+                <div class="value"><span id="auditVideoClips">—</span></div>
+                <div class="trend">Available clips in storage</div>
+              </article>
+            </div>
+
+            <article class="card wide audit-cost-drivers">
+              <div class="chart-title">
+                <h2>Cost drivers</h2>
+                <span id="auditCostStatus" class="pill">Waiting for live data</span>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Area</th>
+                      <th>Signal</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auditCostDriversTable">
+                    <tr>
+                      <td>Amazon Rekognition</td>
+                      <td>—</td>
+                      <td>Waiting for events</td>
+                    </tr>
+                    <tr>
+                      <td>S3 video storage</td>
+                      <td>—</td>
+                      <td>Waiting for videos</td>
+                    </tr>
+                    <tr>
+                      <td>WhatsApp alerts</td>
+                      <td>Cooldown: —</td>
+                      <td>Waiting for thresholds</td>
+                    </tr>
+                    <tr>
+                      <td>Floor flood</td>
+                      <td>—</td>
+                      <td>Waiting for flood state</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </article>
     </section>
   </main>
 
