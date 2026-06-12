@@ -72,16 +72,13 @@
     <section class="grid">
       <article class="card section-card">
         <div id="measurementsHeader" class="section-header section-toggle-header" role="button" tabindex="0" aria-expanded="true" data-section-target="measurementsContent" data-section-toggle="measurementsToggle">
-          <div>
+          <div class="section-heading-copy">
             <div class="section-title-row">
               <h2>Measurements</h2>
-              <span id="measurementsToggle" class="event-day-chevron" aria-hidden="true">−</span>
             </div>
             <div class="section-subtitle">Temperature and humidity readings by HT sensor.</div>
           </div>
-        </div>
 
-        <div id="measurementsContent" class="section-content">
           <div class="threshold-controls">
             <label class="threshold-field">
               <span>Min Temp</span>
@@ -105,6 +102,11 @@
 
             <button id="saveThresholdsButton">Save</button>
           </div>
+
+          <span id="measurementsToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
+        </div>
+
+        <div id="measurementsContent" class="section-content">
 
           <div class="section-grid">
             <article class="card metric">
@@ -178,14 +180,13 @@
 
       <article class="card section-card">
         <div id="surveillanceHeader" class="section-header section-toggle-header" role="button" tabindex="0" aria-expanded="true" data-section-target="surveillanceContent" data-section-toggle="surveillanceToggle">
-          <div>
+          <div class="section-heading-copy">
             <div class="section-title-row">
               <h2>Surveillance</h2>
-              <span id="eventCounter" class="pill">Loading events…</span>
-              <span id="surveillanceToggle" class="event-day-chevron" aria-hidden="true">−</span>
             </div>
             <div class="section-subtitle">AI-detected events from Amazon Rekognition.</div>
           </div>
+          <span id="surveillanceToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
         </div>
 
         <div id="surveillanceContent" class="section-content">

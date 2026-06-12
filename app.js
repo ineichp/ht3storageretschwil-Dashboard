@@ -628,15 +628,11 @@ async function loadEvents() {
     eventPage = 1;
     eventDayOpenState = {};
 
-    const eventGroups = getEventGroups(events);
-    document.getElementById("eventCounter").textContent =
-      `${eventGroups.length} clips · ${events.length} labels`;
-    document.getElementById("eventStatus").textContent = `Events: ${events.length} labels available`;
+    document.getElementById("eventStatus").textContent = "Events: loaded";
 
     renderEventsTable(events);
   } catch (error) {
     console.error(error);
-    document.getElementById("eventCounter").textContent = "Events API error";
     document.getElementById("eventStatus").textContent = "Events: API error";
   }
 }
@@ -1051,6 +1047,8 @@ function registerEventListeners() {
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
   document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);
+  document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
+  document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
   document.getElementById("saveThresholdsButton").addEventListener("click", () => saveThresholds(false));
   document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
   document.getElementById("resetCooldownButton").addEventListener("click", resetCooldown);

@@ -97,7 +97,7 @@ h1 {
 .threshold-controls {
   align-items: flex-end;
   justify-content: flex-end;
-  margin-bottom: 14px;
+  margin-left: auto;
 }
 
 .date-field,
@@ -243,11 +243,15 @@ button:disabled {
   z-index: 1;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 18px;
   margin-bottom: 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--border);
+}
+
+.section-heading-copy {
+  min-width: 0;
 }
 
 .section-toggle-header {
@@ -280,6 +284,10 @@ button:disabled {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.section-chevron {
+  flex: 0 0 auto;
 }
 
 .section-subtitle {
@@ -729,6 +737,7 @@ tr:last-child td {
   .date-field { flex: 1; }
   .date-field input { width: 100%; }
   .section-header { align-items: flex-start; flex-direction: column; }
+  .section-chevron { position: absolute; top: 0; right: 0; }
   .threshold-controls { width: 100%; justify-content: flex-start; }
   .metric,
   .chart-card { grid-column: span 12; }
