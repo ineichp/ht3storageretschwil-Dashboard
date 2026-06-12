@@ -347,15 +347,6 @@ function formatBytes(bytes) {
   return `${value.toFixed(1)} ${units[index]}`;
 }
 
-function calculateTrend(items, field) {
-  if (items.length < 2) return "—";
-  const first = Number(items[0][field]);
-  const last = Number(items[items.length - 1][field]);
-  const diff = last - first;
-  const sign = diff > 0 ? "+" : "";
-  return `${sign}${diff.toFixed(1)} in range`;
-}
-
 function setError(message) {
   const box = document.getElementById("errorBox");
   box.textContent = message;
@@ -600,10 +591,9 @@ async function loadData() {
     currentHumidity.className = thresholdClass(latestHumidityAlert);
 
     document.getElementById("measurementCount").textContent = items.length;
-    document.getElementById("lastReadingDate").textContent = formatDateOnly(latest.eventtime);
-    document.getElementById("lastReadingTime").textContent = formatTimeOnly(latest.eventtime);
-    document.getElementById("tempTrend").textContent = `Trend: ${calculateTrend(items, "temperature")} °C`;
-    document.getElementById("humidityTrend").textContent = `Trend: ${calculateTrend(items, "humidity")} %`;
+    const latestReadingTime = formatTimeInline(latest.eventtime);
+    document.getElementById("tempTrend").textContent = `Last update: ${latestReadingTime}`;
+    document.getElementById("humidityTrend").textContent = `Last update: ${latestReadingTime}`;
 
     document.getElementById("tempThresholdInfo").textContent = `Limits: ${LIMITS.minTemperature}–${LIMITS.maxTemperature} °C`;
     document.getElementById("humidityThresholdInfo").textContent = `Limits: ${LIMITS.minHumidity}–${LIMITS.maxHumidity} %`;
