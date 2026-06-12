@@ -10,7 +10,7 @@
 }
 
 .auth-panel {
-  width: min(520px, 100%);
+  width: min(560px, 100%);
   background: rgba(18, 23, 34, 0.88);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -18,11 +18,70 @@
   padding: 24px;
 }
 
-.auth-copy {
-  margin: 0 0 20px;
+.auth-panel h1 {
+  margin-bottom: 18px;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 6px;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.auth-tabs button {
+  min-height: 38px;
+  background: transparent;
+  border-color: transparent;
+}
+
+.auth-tabs button.active {
+  background: color-mix(in srgb, var(--accent) 20%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 5px;
+}
+
+.auth-form span {
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.auth-form input,
+.auth-form textarea {
+  width: 100%;
+}
+
+.auth-form textarea {
+  resize: vertical;
+  min-height: 92px;
+  border: 1px solid var(--border);
+  background: var(--field);
+  color: #ffffff;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.auth-form textarea::placeholder {
+  color: var(--muted);
 }
 
 .auth-primary {
@@ -30,12 +89,37 @@
   min-height: 46px;
 }
 
-.auth-error {
+.auth-message {
+  display: none;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.auth-message:not(:empty) {
   display: block;
+  border: 1px solid rgba(251, 113, 133, 0.38);
+  background: rgba(251, 113, 133, 0.12);
+  color: #fecdd3;
+}
+
+.auth-message.success {
+  border-color: rgba(52, 211, 153, 0.36);
+  background: rgba(52, 211, 153, 0.12);
+  color: #bbf7d0;
+}
+
+.auth-footnote {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .auth-signout {
   align-self: flex-end;
+  order: -1;
 }
 
 @media (max-width: 720px) {
