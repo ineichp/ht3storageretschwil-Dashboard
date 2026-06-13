@@ -45,11 +45,13 @@ body {
 
 .title-cluster {
   min-width: 0;
+  width: 100%;
 }
 
 .title-row {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
   flex-wrap: nowrap;
 }
@@ -73,11 +75,32 @@ h1 {
 
 .cooldown-field {
   flex: 0 0 auto;
+  width: max-content;
+  margin-left: auto;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 8px;
+  padding: 7px;
   box-shadow: var(--shadow);
+}
+
+.cooldown-actions {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.cooldown-actions select,
+.cooldown-actions button {
+  min-height: 38px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.cooldown-actions select {
+  width: 72px;
+  padding: 8px 9px;
 }
 
 .subtitle {
@@ -122,9 +145,10 @@ h1 {
 
 .measurement-controls {
   display: grid;
-  grid-template-columns: auto minmax(330px, 0.92fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(146px, auto);
   gap: 10px;
   align-items: end;
+  width: min(100%, 590px);
 }
 
 .battery-status {
@@ -215,24 +239,55 @@ h1 {
   background: var(--danger);
 }
 
+.threshold-panel,
+.date-range-picker {
+  border: 1px solid rgba(210, 222, 240, 0.1);
+  border-radius: var(--radius);
+  background: rgba(15, 20, 32, 0.72);
+  padding: 7px;
+  min-width: 0;
+}
+
+.control-panel-title,
+.date-range-picker > span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
 .threshold-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(54px, 1fr));
-  gap: 8px;
-  align-items: end;
+  gap: 6px;
+  align-items: center;
 }
 
-.range-grid {
-  display: grid;
-  grid-template-columns: minmax(128px, 1.2fr) minmax(116px, 1fr) minmax(116px, 1fr);
-  gap: 8px;
-  align-items: end;
+.compact-threshold-field {
+  gap: 4px;
+  min-width: 0;
 }
 
-.range-grid select,
-.range-grid input {
+.threshold-grid input {
   width: 100%;
   min-width: 0;
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.date-range-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.date-range-picker select {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 9px;
 }
 
 .battery-metric-stack {
@@ -456,6 +511,7 @@ button:disabled {
   min-height: 138px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background: var(--surface-raised);
 }
 
@@ -519,7 +575,7 @@ button:disabled {
   letter-spacing: 0;
   position: relative;
   z-index: 1;
-  min-height: 42px;
+  min-height: 54px;
   display: flex;
   align-items: center;
 }
@@ -532,7 +588,7 @@ button:disabled {
 }
 
 .trend {
-  margin-top: auto;
+  margin-top: 0;
   padding-top: 14px;
   color: var(--muted);
   font-size: 13px;
@@ -661,9 +717,8 @@ table {
 }
 
 .event-time-col { width: 16%; }
-.event-detected-col { width: 52%; }
-.event-confidence-col { width: 16%; }
-.event-action-col { width: 16%; }
+.event-detected-col { width: 66%; }
+.event-confidence-col { width: 18%; }
 
 th, td {
   padding: 13px 12px;
@@ -775,6 +830,15 @@ tr:last-child td {
   flex-direction: column;
   gap: 8px;
   white-space: normal;
+  min-width: 0;
+}
+
+.event-detected-cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
 }
 
 .event-title {
@@ -916,6 +980,15 @@ tr:last-child td {
   .controls {
     flex-wrap: nowrap;
   }
+
+  .measurement-controls {
+    grid-template-columns: minmax(360px, 1fr) minmax(146px, 176px);
+    width: min(100%, 650px);
+  }
+
+  .threshold-grid {
+    grid-template-columns: repeat(4, minmax(54px, 1fr));
+  }
 }
 
 @media (max-width: 980px) {
@@ -942,12 +1015,28 @@ tr:last-child td {
   .topbar { margin-bottom: 18px; }
   .eyebrow { font-size: 10px; margin-bottom: 8px; }
   h1 { font-size: 28px; line-height: 0.98; }
+  .title-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
   .cooldown-field {
-    min-width: 118px;
+    width: max-content;
+    align-self: flex-end;
+    min-width: 0;
     padding: 7px;
   }
+  .cooldown-actions {
+    grid-template-columns: 72px auto auto;
+    gap: 6px;
+  }
+  .cooldown-actions button {
+    min-width: 0;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
   .cooldown-field select {
-    min-width: 86px;
+    min-width: 0;
+    width: 72px;
     min-height: 38px;
     padding: 8px 10px;
   }
@@ -1009,6 +1098,10 @@ tr:last-child td {
     width: 100%;
   }
 
+  .cooldown-field {
+    width: max-content;
+  }
+
   .threshold-controls {
     display: grid;
     grid-template-columns: 1fr;
@@ -1030,32 +1123,65 @@ tr:last-child td {
 
   .threshold-grid {
     width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .range-grid {
-    width: 100%;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .range-grid .date-field:first-child {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .threshold-field,
   .threshold-field input,
   .threshold-field select,
-  .range-grid .date-field,
-  .range-grid select,
-  .range-grid input,
+  .date-range-picker,
+  .date-range-picker select,
   .battery-status,
   .threshold-controls button { width: 100%; }
 
   .threshold-field input,
   .threshold-field select,
   .threshold-controls button { min-height: 42px; }
+
+  .readings-table {
+    display: block;
+    table-layout: auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .readings-table thead {
+    display: none;
+  }
+
+  #readingsTable,
+  #readingsTable tr,
+  #readingsTable td {
+    display: block;
+    width: 100%;
+  }
+
+  #readingsTable tr {
+    margin: 8px 0 12px;
+    border: 1px solid rgba(45, 212, 191, 0.18);
+    border-radius: var(--radius);
+    background: rgba(45, 212, 191, 0.055);
+    overflow: hidden;
+  }
+
+  #readingsTable td {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.42fr) minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    white-space: normal;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  #readingsTable td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
 
   th, td { padding: 10px 8px; font-size: 12px; }
 
@@ -1141,16 +1267,21 @@ tr:last-child td {
     border-bottom: 0;
   }
 
-  #eventsTable .event-video-row td[data-label="Action"] {
+  #eventsTable .event-video-row td[data-label="Detected"] {
     grid-template-columns: 1fr;
   }
 
-  #eventsTable .event-video-row td[data-label="Action"]::before {
+  #eventsTable .event-video-row td[data-label="Detected"]::before {
     display: none;
   }
 
+  .event-detected-cell {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
   .play-event-button {
-    width: 100%;
+    width: auto;
     min-height: 42px;
   }
 
@@ -1174,7 +1305,16 @@ tr:last-child td {
   body { padding: 10px; }
   h1 { font-size: 25px; }
   .title-row { gap: 8px; }
-  .cooldown-field { min-width: 112px; }
+  .cooldown-field { min-width: 0; }
+  .cooldown-actions {
+    grid-template-columns: 66px auto auto;
+  }
+  .cooldown-actions select,
+  .cooldown-field select { width: 66px; }
+  .cooldown-actions button {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
   .controls { grid-template-columns: 1fr; }
   .threshold-controls { grid-template-columns: 1fr; }
   .metric { grid-column: span 12; }

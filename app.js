@@ -542,16 +542,15 @@ function renderTable(items) {
 
     return `
       <tr class="${rowAlert ? "threshold-row-alert" : ""}">
-        <td>${formatTimeInline(item.eventtime)}</td>
-        <td class="${thresholdClass(tempAlert)}">
+        <td data-label="Time">${formatTimeInline(item.eventtime)}</td>
+        <td data-label="Temperature" class="${thresholdClass(tempAlert)}">
           ${temperature.toFixed(1)} °C
           ${tempAlert ? `<span class="threshold-pill">Alert</span>` : ""}
         </td>
-        <td class="${thresholdClass(humidityAlert)}">
+        <td data-label="Humidity" class="${thresholdClass(humidityAlert)}">
           ${humidity.toFixed(1)} %
           ${humidityAlert ? `<span class="threshold-pill">Alert</span>` : ""}
         </td>
-        <td>${item.deviceId}</td>
       </tr>
     `;
   }).join("");
@@ -564,124 +563,24 @@ function getLocalDateString(date) {
   return `${year}-${month}-${day}`;
 }
 
-function startOfLocalDate(dateString) {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day, 0, 0, 0, 0);
-}
-
-function endOfLocalDate(dateString) {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day, 23, 59, 59, 999);
-}
-
 function setupDefaultDateRange() {
-  const fromInput = document.getElementById("fromDateInput");
-  const toInput = document.getElementById("toDateInput");
-
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-
-  if (!fromInput.value) fromInput.value = getLocalDateString(yesterday);
-  if (!toInput.value) toInput.value = getLocalDateString(today);
-}
-
-function isCustomRangeSelected() {
-  return document.getElementById("rangeModeSelect").value === "custom";
-}
-
-function getCustomDateRange() {
-  const fromValue = document.getElementById("fromDateInput").value;
-  const toValue = document.getElementById("toDateInput").value;
-
-  if (!fromValue || !toValue) {
-    throw new Error("Please select both From and To date.");
-  }
-
-  const fromDate = startOfLocalDate(fromValue);
-  const toDate = endOfLocalDate(toValue);
-
-  if (fromDate > toDate) {
-    throw new Error("From date cannot be after To date.");
-  }
-
-  return { fromDate, toDate, fromValue, toValue };
 }
 
 function getSelectedHoursForApi() {
-  const rangeMode = document.getElementById("rangeModeSelect").value;
-
-  if (rangeMode !== "custom") {
-    return rangeMode;
-  }
-
-  const { fromDate } = getCustomDateRange();
-  const now = new Date();
-  const diffMs = Math.max(now.getTime() - fromDate.getTime(), 60 * 60 * 1000);
-  return Math.ceil(diffMs / (60 * 60 * 1000));
+  return document.getElementById("rangeModeSelect").value;
 }
 
 function filterItemsBySelectedRange(items) {
-  if (!isCustomRangeSelected()) return items;
-
-  const { fromDate, toDate } = getCustomDateRange();
-  const fromSeconds = Math.floor(fromDate.getTime() / 1000);
-  const toSeconds = Math.floor(toDate.getTime() / 1000);
-
-  return items.filter(item => {
-    const eventTime = Number(item.eventtime);
-    return eventTime >= fromSeconds && eventTime <= toSeconds;
-  });
+  return items;
 }
 
 function getSelectedRangeLabel() {
-  const rangeMode = document.getElementById("rangeModeSelect").value;
-
-  if (rangeMode !== "custom") {
-    const selected = document.getElementById("rangeModeSelect");
-    return selected.options[selected.selectedIndex].text;
-  }
-
-  const { fromValue, toValue } = getCustomDateRange();
-  return `${fromValue} to ${toValue}`;
+  const selected = document.getElementById("rangeModeSelect");
+  return selected.options[selected.selectedIndex].text;
 }
 
 function handleRangeModeChange() {
-  const rangeMode = document.getElementById("rangeModeSelect").value;
-
-  if (rangeMode !== "custom") {
-    const today = new Date();
-    const fromDate = new Date();
-
-    const dayMap = {
-      "6": 0,
-      "24": 1,
-      "72": 3,
-      "168": 7,
-      "720": 30
-    };
-
-    const days = dayMap[rangeMode] || 1;
-
-    fromDate.setDate(today.getDate() - days);
-
-    document.getElementById("fromDateInput").value = getLocalDateString(fromDate);
-    document.getElementById("toDateInput").value = getLocalDateString(today);
-  }
-
   loadData();
-}
-
-function handleDateInputChange() {
-  const rangeModeSelect = document.getElementById("rangeModeSelect");
-  rangeModeSelect.value = "custom";
-
-  const fromInput = document.getElementById("fromDateInput");
-  const toInput = document.getElementById("toDateInput");
-
-  if (fromInput.value && toInput.value) {
-    loadData();
-  }
 }
 
 async function loadData() {
@@ -1033,7 +932,7 @@ function renderEventsTable(items) {
   const tbody = document.getElementById("eventsTable");
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3">No detected events found.</td></tr>`;
     renderEventsPagination(0);
     return;
   }
@@ -1055,7 +954,7 @@ function renderEventsTable(items) {
     const dayHeader = group.dayKey !== currentDayKey
       ? `
         <tr class="event-day-row">
-          <td colspan="4">
+          <td colspan="3">
             <button class="event-day-toggle" data-day-key="${group.dayKey}" aria-expanded="${isDayOpen}">
               <span class="event-day-title">${formatEventDay(group.date)}</span>
               <span class="event-day-meta">${dayLabelCount} label${dayLabelCount === 1 ? "" : "s"}</span>
@@ -1081,14 +980,16 @@ function renderEventsTable(items) {
           <span class="event-time">${formatEventClock(group.date)}</span>
         </td>
         <td data-label="Detected">
-          <div class="event-summary">
-            <div class="event-title">${title}</div>
-            <div class="event-tags">${labelChips}</div>
-            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip · all labels shown</div>
+          <div class="event-detected-cell">
+            <div class="event-summary">
+              <div class="event-title">${title}</div>
+              <div class="event-tags">${labelChips}</div>
+              <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip · all labels shown</div>
+            </div>
+            <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
           </div>
         </td>
         <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
-        <td data-label="Action"><button data-event-index="${originalIndex}" class="play-event-button">Play</button></td>
       </tr>
     `;
   }).join("");
@@ -1200,8 +1101,6 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
-  document.getElementById("fromDateInput").addEventListener("change", handleDateInputChange);
-  document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
   document.querySelectorAll(".threshold-grid input").forEach(input => {

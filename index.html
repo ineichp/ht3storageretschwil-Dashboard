@@ -19,21 +19,18 @@
 
           <label class="date-field cooldown-field">
             <span>Cooldown WA Alert</span>
-            <select id="cooldownInput">
-              <option value="1">1h</option>
-              <option value="6">6h</option>
-              <option value="12">12h</option>
-              <option value="24">24h</option>
-            </select>
+            <div class="cooldown-actions">
+              <select id="cooldownInput">
+                <option value="1">1h</option>
+                <option value="6">6h</option>
+                <option value="12">12h</option>
+                <option value="24">24h</option>
+              </select>
+              <button id="resetCooldownButton" type="button">Reset</button>
+              <button id="signOutButton" class="auth-signout" type="button">Logout</button>
+            </div>
           </label>
         </div>
-      </div>
-
-      <div class="controls">
-        <button id="signOutButton" class="auth-signout" type="button">Logout</button>
-
-        <button id="resetCooldownButton">Reset</button>
-
       </div>
     </section>
 
@@ -57,54 +54,43 @@
             <div class="section-title-row">
               <h2>Measurements</h2>
             </div>
-            <div class="section-subtitle">Temperature and humidity readings by HT sensor.</div>
           </div>
 
           <div class="threshold-controls measurement-controls">
-            <div class="threshold-grid">
-              <label class="threshold-field">
-                <span>Min Temp</span>
-                <input id="minTempInput" type="number" min="0" max="99" step="1">
-              </label>
+            <div class="threshold-panel">
+              <div class="threshold-grid">
+                <label class="threshold-field compact-threshold-field">
+                  <span>Temp Min</span>
+                  <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
+                </label>
 
-              <label class="threshold-field">
-                <span>Max Temp</span>
-                <input id="maxTempInput" type="number" min="0" max="99" step="1">
-              </label>
+                <label class="threshold-field compact-threshold-field">
+                  <span>Temp Max</span>
+                  <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
+                </label>
 
-              <label class="threshold-field">
-                <span>Min Hum</span>
-                <input id="minHumidityInput" type="number" min="0" max="99" step="1">
-              </label>
+                <label class="threshold-field compact-threshold-field">
+                  <span>Hum Min</span>
+                  <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
+                </label>
 
-              <label class="threshold-field">
-                <span>Max Hum</span>
-                <input id="maxHumidityInput" type="number" min="0" max="99" step="1">
-              </label>
+                <label class="threshold-field compact-threshold-field">
+                  <span>Hum Max</span>
+                  <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
+                </label>
+              </div>
             </div>
 
-            <div class="range-grid">
-              <label class="date-field">
-                <span>Date Range</span>
-                <select id="rangeModeSelect" aria-label="Time range">
-                  <option value="6">Last 6h</option>
-                  <option value="24" selected>Last 24h</option>
-                  <option value="72">Last 3 days</option>
-                  <option value="168">Last 7 days</option>
-                  <option value="720">Last 30 days</option>
-                  <option value="custom">Custom range</option>
-                </select>
-              </label>
-
-              <label class="date-field">
-                <span>From</span>
-                <input id="fromDateInput" type="date" aria-label="From date">
-              </label>
-
-              <label class="date-field">
-                <span>To</span>
-                <input id="toDateInput" type="date" aria-label="To date">
-              </label>
+            <div class="date-range-picker">
+              <span>Date Range</span>
+              <select id="rangeModeSelect" aria-label="Time range">
+                <option value="6">Last 6h</option>
+                <option value="24" selected>Last 24h</option>
+                <option value="72">Last 3 days</option>
+                <option value="168">Last 7 days</option>
+                <option value="336">Last 14 days</option>
+                <option value="720">Last 30 days</option>
+              </select>
             </div>
           </div>
 
@@ -184,13 +170,12 @@
 
               <div id="readingsContent" class="collapsed">
                 <div class="table-wrap">
-                  <table>
+                  <table class="readings-table">
                     <thead>
                       <tr>
                         <th>Time</th>
                         <th>Temperature</th>
                         <th>Humidity</th>
-                        <th>Device</th>
                       </tr>
                     </thead>
                     <tbody id="readingsTable"></tbody>
@@ -208,7 +193,6 @@
             <div class="section-title-row">
               <h2>Surveillance</h2>
             </div>
-            <div class="section-subtitle">AI-detected events from Amazon Rekognition.</div>
           </div>
           <span id="surveillanceToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
         </div>
@@ -220,14 +204,12 @@
                 <col class="event-time-col">
                 <col class="event-detected-col">
                 <col class="event-confidence-col">
-                <col class="event-action-col">
               </colgroup>
               <thead>
                 <tr>
                   <th>Time</th>
                   <th>Detected</th>
                   <th>Confidence</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="eventsTable"></tbody>
@@ -244,7 +226,6 @@
             <div class="section-title-row">
               <h2>Audit Costs</h2>
             </div>
-            <div class="section-subtitle">AWS Cost Explorer values for the current month.</div>
           </div>
           <span id="auditCostsToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
         </div>
