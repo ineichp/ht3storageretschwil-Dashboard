@@ -14,24 +14,22 @@
     <section class="topbar">
       <div class="title-cluster">
         <div class="eyebrow">Storage Monitoring</div>
-        <div class="title-row">
-          <h1>Storage Retschwil</h1>
-
-          <label class="date-field cooldown-field">
-            <span>Cooldown WA Alert</span>
-            <div class="cooldown-actions">
-              <select id="cooldownInput">
-                <option value="1">1h</option>
-                <option value="6">6h</option>
-                <option value="12">12h</option>
-                <option value="24">24h</option>
-              </select>
-              <button id="resetCooldownButton" type="button">Reset</button>
-              <button id="signOutButton" class="auth-signout" type="button">Logout</button>
-            </div>
-          </label>
-        </div>
+        <h1>Storage Retschwil</h1>
       </div>
+
+      <label class="date-field cooldown-field">
+        <span>Cooldown WA Alert</span>
+        <div class="cooldown-actions">
+          <select id="cooldownInput">
+            <option value="1">1h</option>
+            <option value="6">6h</option>
+            <option value="12">12h</option>
+            <option value="24">24h</option>
+          </select>
+          <button id="resetCooldownButton" type="button">Reset</button>
+          <button id="signOutButton" class="auth-signout" type="button">Logout</button>
+        </div>
+      </label>
     </section>
 
     <div id="errorBox" class="error"></div>
@@ -56,45 +54,45 @@
             </div>
           </div>
 
-          <div class="threshold-controls measurement-controls">
-            <div class="threshold-panel">
-              <div class="threshold-grid">
-                <label class="threshold-field compact-threshold-field">
-                  <span>Temp Min</span>
-                  <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
-                </label>
+          <span id="measurementsToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
+        </div>
 
-                <label class="threshold-field compact-threshold-field">
-                  <span>Temp Max</span>
-                  <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
-                </label>
+        <div class="threshold-controls measurement-controls">
+          <div class="threshold-panel">
+            <div class="threshold-grid">
+              <label class="threshold-field compact-threshold-field">
+                <span>Temp Min</span>
+                <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
+              </label>
 
-                <label class="threshold-field compact-threshold-field">
-                  <span>Hum Min</span>
-                  <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
-                </label>
+              <label class="threshold-field compact-threshold-field">
+                <span>Temp Max</span>
+                <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
+              </label>
 
-                <label class="threshold-field compact-threshold-field">
-                  <span>Hum Max</span>
-                  <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
-                </label>
-              </div>
-            </div>
+              <label class="threshold-field compact-threshold-field">
+                <span>Hum Min</span>
+                <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
+              </label>
 
-            <div class="date-range-picker">
-              <span>Date Range</span>
-              <select id="rangeModeSelect" aria-label="Time range">
-                <option value="6">Last 6h</option>
-                <option value="24" selected>Last 24h</option>
-                <option value="72">Last 3 days</option>
-                <option value="168">Last 7 days</option>
-                <option value="336">Last 14 days</option>
-                <option value="720">Last 30 days</option>
-              </select>
+              <label class="threshold-field compact-threshold-field">
+                <span>Hum Max</span>
+                <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
+              </label>
             </div>
           </div>
 
-          <span id="measurementsToggle" class="event-day-chevron section-chevron" aria-hidden="true">−</span>
+          <div class="date-range-picker">
+            <span>Date Range</span>
+            <select id="rangeModeSelect" aria-label="Time range">
+              <option value="6">Last 6h</option>
+              <option value="24" selected>Last 24h</option>
+              <option value="72">Last 3 days</option>
+              <option value="168">Last 7 days</option>
+              <option value="336">Last 14 days</option>
+              <option value="720">Last 30 days</option>
+            </select>
+          </div>
         </div>
 
         <div id="measurementsContent" class="section-content">
@@ -201,12 +199,14 @@
           <div class="table-wrap">
             <table class="events-table">
               <colgroup>
+                <col class="event-play-col">
                 <col class="event-time-col">
                 <col class="event-detected-col">
                 <col class="event-confidence-col">
               </colgroup>
               <thead>
                 <tr>
+                  <th></th>
                   <th>Time</th>
                   <th>Detected</th>
                   <th>Confidence</th>

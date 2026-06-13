@@ -932,7 +932,7 @@ function renderEventsTable(items) {
   const tbody = document.getElementById("eventsTable");
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="3">No detected events found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
     renderEventsPagination(0);
     return;
   }
@@ -954,7 +954,7 @@ function renderEventsTable(items) {
     const dayHeader = group.dayKey !== currentDayKey
       ? `
         <tr class="event-day-row">
-          <td colspan="3">
+          <td colspan="4">
             <button class="event-day-toggle" data-day-key="${group.dayKey}" aria-expanded="${isDayOpen}">
               <span class="event-day-title">${formatEventDay(group.date)}</span>
               <span class="event-day-meta">${dayLabelCount} label${dayLabelCount === 1 ? "" : "s"}</span>
@@ -976,17 +976,19 @@ function renderEventsTable(items) {
     return `
       ${dayHeader}
       <tr class="event-video-row ${isDayOpen ? "" : "event-day-collapsed"}" data-day-key="${group.dayKey}">
+        <td data-label="Play">
+          <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
+        </td>
         <td data-label="Time">
           <span class="event-time">${formatEventClock(group.date)}</span>
         </td>
         <td data-label="Detected">
-          <div class="event-detected-cell">
-            <div class="event-summary">
+          <div class="event-summary">
+            <div class="event-title-row">
               <div class="event-title">${title}</div>
               <div class="event-tags">${labelChips}</div>
-              <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip · all labels shown</div>
             </div>
-            <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
+            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip</div>
           </div>
         </td>
         <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
