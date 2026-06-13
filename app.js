@@ -976,9 +976,6 @@ function renderEventsTable(items) {
     return `
       ${dayHeader}
       <tr class="event-video-row ${isDayOpen ? "" : "event-day-collapsed"}" data-day-key="${group.dayKey}">
-        <td data-label="Play">
-          <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
-        </td>
         <td data-label="Time">
           <span class="event-time">${formatEventClock(group.date)}</span>
         </td>
@@ -992,6 +989,9 @@ function renderEventsTable(items) {
           </div>
         </td>
         <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
+        <td data-label="Play">
+          <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
+        </td>
       </tr>
     `;
   }).join("");
