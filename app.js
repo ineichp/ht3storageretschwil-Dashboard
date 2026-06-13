@@ -261,9 +261,9 @@ async function saveThresholds(resetCooldown = false) {
   if (!validateLimits(newLimits)) return;
 
   try {
-    const saveBtn = document.getElementById("saveThresholdsButton");
-    saveBtn.disabled = true;
-    saveBtn.textContent = "Saving…";
+    document.querySelectorAll(".threshold-grid input").forEach(input => {
+      input.disabled = true;
+    });
 
     const response = await fetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
@@ -290,9 +290,9 @@ async function saveThresholds(resetCooldown = false) {
     console.error(error);
     setError(`Could not save thresholds: ${error.message}`);
   } finally {
-    const saveBtn = document.getElementById("saveThresholdsButton");
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save";
+    document.querySelectorAll(".threshold-grid input").forEach(input => {
+      input.disabled = false;
+    });
   }
 }
 
@@ -421,10 +421,7 @@ function formatTime(seconds) {
 }
 
 function formatTimeInline(seconds) {
-  const d = new Date(seconds * 1000);
-  const date = d.toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const time = d.toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" });
-  return `${date} ${time}`;
+  return formatDateTime(seconds * 1000);
 }
 
 function formatDateOnly(seconds) {
@@ -436,7 +433,7 @@ function formatTimeOnly(seconds) {
 }
 
 function formatDateTime(value) {
-  return new Date(value).toLocaleString(undefined, {
+  return new Date(value).toLocaleString("de-CH", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -470,8 +467,22 @@ function formatBytes(bytes) {
 
 function setError(message) {
   const box = document.getElementById("errorBox");
-  box.textContent = message;
-  box.style.display = message ? "block" : "none";
+  const statusRow = document.querySelector(".status-row");
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+
+  if (box) {
+    box.textContent = "";
+    box.style.display = "none";
+  }
+
+  statusRow?.classList.toggle("status-error", Boolean(message));
+
+  if (message) {
+    statusDot?.classList.remove("online");
+    statusDot?.classList.add("alert");
+    statusText.textContent = `Offline or API error · ${message}`;
+  }
 }
 
 function renderCharts(labels, temperatures, humidities) {
@@ -711,7 +722,6 @@ async function loadData() {
     currentHumidity.textContent = Number(latest.humidity).toFixed(1);
     currentHumidity.className = thresholdClass(latestHumidityAlert);
 
-    document.getElementById("measurementCount").textContent = items.length;
     renderBatteryStatus("ht3", pickBatteryPercent(latest));
 
     const latestReadingTime = formatTimeInline(latest.eventtime);
@@ -1194,7 +1204,9 @@ function registerEventListeners() {
   document.getElementById("toDateInput").addEventListener("change", handleDateInputChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
-  document.getElementById("saveThresholdsButton").addEventListener("click", () => saveThresholds(false));
+  document.querySelectorAll(".threshold-grid input").forEach(input => {
+    input.addEventListener("change", () => saveThresholds(false));
+  });
   document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
   document.getElementById("resetCooldownButton").addEventListener("click", resetCooldown);
   document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
