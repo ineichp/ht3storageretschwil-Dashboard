@@ -9,14 +9,17 @@ let pendingAuth = null;
 
 const AUTH_MODE_COPY = {
   login: {
-    title: "Login",
-    copy: "Sign in with username and password."
+    stage: "",
+    title: "",
+    copy: ""
   },
   "mfa-code": {
-    title: "Authentication code",
-    copy: "Enter the 6-digit code from your authenticator app."
+    stage: "",
+    title: "",
+    copy: ""
   },
   "mfa-setup": {
+    stage: "Required MFA",
     title: "Setup MFA",
     copy: "Scan the QR code with your authenticator app, then enter the first 6-digit code."
   }
@@ -123,10 +126,23 @@ function setMode(mode) {
     panel.hidden = panel.dataset.authMode !== mode;
   });
 
+  const copyConfig = AUTH_MODE_COPY[mode] || AUTH_MODE_COPY.login;
+  const stage = document.getElementById("authStepStage");
   const title = document.getElementById("authStepTitle");
   const copy = document.getElementById("authStepCopy");
-  if (title) title.textContent = AUTH_MODE_COPY[mode]?.title || "Login";
-  if (copy) copy.textContent = AUTH_MODE_COPY[mode]?.copy || "";
+
+  if (stage) {
+    stage.textContent = copyConfig.stage || "";
+    stage.hidden = !copyConfig.stage;
+  }
+  if (title) {
+    title.textContent = copyConfig.title || "";
+    title.hidden = !copyConfig.title;
+  }
+  if (copy) {
+    copy.textContent = copyConfig.copy || "";
+    copy.hidden = !copyConfig.copy;
+  }
 
   authMessage("");
 }
@@ -293,9 +309,9 @@ function showLogin(errorMessage = "") {
       <section class="auth-panel">
         <div class="eyebrow">Storage Monitoring</div>
         <h1>Storage Retschwil</h1>
-        <div class="auth-stage">Required MFA</div>
-        <h2 id="authStepTitle">Login</h2>
-        <p id="authStepCopy" class="auth-copy">Sign in with username and password.</p>
+        <div id="authStepStage" class="auth-stage" hidden></div>
+        <h2 id="authStepTitle" hidden></h2>
+        <p id="authStepCopy" class="auth-copy" hidden></p>
 
         <div id="authMessage" class="auth-message">${errorMessage}</div>
 
@@ -313,7 +329,7 @@ function showLogin(errorMessage = "") {
 
         <form class="auth-form" data-auth-mode="mfa-code" hidden>
           <label>
-            <span>Authentication code</span>
+            <span>Code</span>
             <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
           </label>
           <button class="auth-primary" type="submit">Verify</button>
