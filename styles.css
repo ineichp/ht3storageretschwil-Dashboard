@@ -137,10 +137,11 @@ h1 {
 
 .measurement-controls {
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(146px, auto);
+  grid-template-columns: max-content minmax(146px, auto);
   gap: 8px;
   align-items: center;
-  width: min(100%, 560px);
+  width: max-content;
+  max-width: 100%;
   margin: 0 42px 0 auto;
   padding: 0;
   border: 0;
@@ -258,8 +259,8 @@ h1 {
 
 .threshold-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(54px, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(4, 60px);
+  gap: 8px;
   align-items: center;
 }
 
@@ -1004,12 +1005,13 @@ tr:last-child td {
   }
 
   .measurement-controls {
-    grid-template-columns: minmax(330px, 1fr) minmax(138px, 168px);
-    width: min(100%, 610px);
+    grid-template-columns: max-content minmax(138px, 168px);
+    width: max-content;
+    max-width: calc(100% - 42px);
   }
 
   .threshold-grid {
-    grid-template-columns: repeat(4, minmax(54px, 1fr));
+    grid-template-columns: repeat(4, 60px);
   }
 }
 
@@ -1147,8 +1149,9 @@ tr:last-child td {
 
   .threshold-grid {
     width: 100%;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(4, minmax(54px, 60px));
+    justify-content: start;
+    gap: 8px;
   }
 
   .threshold-field,
