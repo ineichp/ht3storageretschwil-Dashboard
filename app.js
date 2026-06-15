@@ -100,6 +100,57 @@ function pickBatteryPercent(source = {}) {
   return null;
 }
 
+function toPowerPresent(value) {
+  if (value === true || value === false) return value;
+  if (value === 1 || value === "1") return true;
+  if (value === 0 || value === "0") return false;
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "yes", "on", "present", "external", "power"].includes(normalized)) return true;
+    if (["false", "no", "off", "absent", "battery"].includes(normalized)) return false;
+  }
+
+  return null;
+}
+
+function pickExternalPowerPresent(source = {}) {
+  const candidates = [
+    source.externalPowerPresent,
+    source.externalPower,
+    source.powerPresent,
+    source.acPower,
+    source.usbPower,
+    source.devicepower?.external?.present,
+    source["devicepower:0"]?.external?.present
+  ];
+
+  for (const candidate of candidates) {
+    const present = toPowerPresent(candidate);
+    if (present !== null) return present;
+  }
+
+  return null;
+}
+
+function renderPowerStatus(prefix, isPresent) {
+  const value = document.getElementById(`${prefix}PowerStatus`);
+  if (!value) return;
+
+  const present = toPowerPresent(isPresent);
+
+  if (present === null) {
+    value.textContent = "—";
+    value.className = "power-status unknown";
+    value.title = "External power status unknown";
+    return;
+  }
+
+  value.textContent = present ? "Power" : "Battery";
+  value.className = `power-status ${present ? "connected" : "battery"}`;
+  value.title = present ? "External power connected" : "Running on battery";
+}
+
 function renderBatteryStatus(prefix, percentValue) {
   const icon = document.getElementById(`${prefix}BatteryIcon`);
   const value = document.getElementById(`${prefix}BatteryValue`);
@@ -622,6 +673,7 @@ async function loadData() {
     currentHumidity.className = thresholdClass(latestHumidityAlert);
 
     renderBatteryStatus("ht3", pickBatteryPercent(latest));
+    renderPowerStatus("ht3", pickExternalPowerPresent(latest));
 
     const latestReadingTime = formatTimeInline(latest.eventtime);
     document.getElementById("tempTrend").textContent = `Last update: ${latestReadingTime}`;
@@ -647,6 +699,7 @@ async function loadData() {
     document.getElementById("statusText").textContent = "Offline or API error";
     setError(error.message);
     renderBatteryStatus("ht3", null);
+    renderPowerStatus("ht3", null);
   }
 }
 
