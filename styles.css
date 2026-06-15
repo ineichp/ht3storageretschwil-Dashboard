@@ -138,10 +138,10 @@ h1 {
 .measurement-controls {
   display: grid;
   grid-template-columns: minmax(320px, 1fr) minmax(146px, auto);
-  gap: 10px;
-  align-items: end;
-  width: min(100%, 590px);
-  margin: 10px 0 18px auto;
+  gap: 8px;
+  align-items: center;
+  width: min(100%, 560px);
+  margin: 0 42px 0 auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -241,7 +241,7 @@ h1 {
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
-  padding: 7px;
+  padding: 6px;
   min-width: 0;
 }
 
@@ -253,13 +253,13 @@ h1 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .threshold-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(54px, 1fr));
-  gap: 6px;
+  gap: 5px;
   align-items: center;
 }
 
@@ -272,7 +272,8 @@ h1 {
   width: 100%;
   min-width: 0;
   text-align: center;
-  padding: 8px 6px;
+  min-height: 32px;
+  padding: 5px 6px;
 }
 
 .date-range-picker {
@@ -283,8 +284,8 @@ h1 {
 .date-range-picker select {
   width: 100%;
   min-width: 0;
-  min-height: 38px;
-  padding: 8px 9px;
+  min-height: 32px;
+  padding: 5px 8px;
 }
 
 .battery-metric-stack {
@@ -980,8 +981,8 @@ tr:last-child td {
   }
 
   .measurement-controls {
-    grid-template-columns: minmax(360px, 1fr) minmax(146px, 176px);
-    width: min(100%, 650px);
+    grid-template-columns: minmax(330px, 1fr) minmax(138px, 168px);
+    width: min(100%, 610px);
   }
 
   .threshold-grid {
@@ -1000,6 +1001,10 @@ tr:last-child td {
   .section-header { align-items: flex-start; flex-direction: column; }
   .section-chevron { position: absolute; top: 0; right: 0; }
   .threshold-controls { width: 100%; justify-content: flex-start; }
+  .measurement-controls {
+    margin: 0;
+    padding-right: 42px;
+  }
   .metric,
   .chart-card { grid-column: span 12; }
   .metric-row,
@@ -1109,6 +1114,7 @@ tr:last-child td {
   .measurement-controls {
     grid-template-columns: 1fr;
     gap: 10px;
+    padding-right: 0;
   }
 
   .battery-status {
