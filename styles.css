@@ -241,7 +241,7 @@ h1 {
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
-  padding: 6px;
+  padding: 5px 6px;
   min-width: 0;
 }
 
@@ -249,22 +249,22 @@ h1 {
 .date-range-picker > span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .threshold-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(54px, 1fr));
-  gap: 5px;
+  gap: 4px;
   align-items: center;
 }
 
 .compact-threshold-field {
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -272,8 +272,9 @@ h1 {
   width: 100%;
   min-width: 0;
   text-align: center;
-  min-height: 32px;
-  padding: 5px 6px;
+  min-height: 28px;
+  padding: 3px 5px;
+  font-size: 12px;
 }
 
 .date-range-picker {
@@ -284,21 +285,37 @@ h1 {
 .date-range-picker select {
   width: 100%;
   min-width: 0;
-  min-height: 32px;
-  padding: 5px 8px;
+  min-height: 28px;
+  padding: 3px 7px;
+  font-size: 12px;
 }
 
 .battery-metric-stack {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 5px;
   position: relative;
   z-index: 1;
 }
 
 .battery-metric-stack .battery-status {
   min-width: 0;
-  min-height: 46px;
+  min-height: 28px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 4px 7px;
+}
+
+.battery-metric-stack .battery-status span {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.battery-metric-stack .battery-readout {
+  justify-content: flex-end;
+  min-height: 20px;
 }
 
 .date-field,
@@ -311,7 +328,7 @@ h1 {
 .date-field span,
 .threshold-field span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -506,11 +523,13 @@ button:disabled {
 
 .metric {
   grid-column: span 3;
-  min-height: 138px;
+  min-height: 104px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: var(--surface-raised);
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .metric-row {
@@ -557,23 +576,23 @@ button:disabled {
 
 .label {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 7px;
   position: relative;
   z-index: 1;
 }
 
 .value {
-  font-size: 38px;
+  font-size: 34px;
   line-height: 1;
   font-weight: 800;
   letter-spacing: 0;
   position: relative;
   z-index: 1;
-  min-height: 54px;
+  min-height: 38px;
   display: flex;
   align-items: center;
 }
@@ -587,9 +606,9 @@ button:disabled {
 
 .trend {
   margin-top: 0;
-  padding-top: 14px;
+  padding-top: 8px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
   position: relative;
   z-index: 1;
 }
@@ -1067,7 +1086,7 @@ tr:last-child td {
   .threshold-pill { font-size: 11px; }
   .value { font-size: 34px; }
   .metric {
-    min-height: 118px;
+    min-height: 98px;
   }
   .metric-row,
   .audit-cost-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -1119,7 +1138,7 @@ tr:last-child td {
 
   .battery-status {
     min-width: 0;
-    min-height: 58px;
+    min-height: 30px;
   }
 
   .threshold-grid {
@@ -1138,7 +1157,7 @@ tr:last-child td {
 
   .threshold-field input,
   .threshold-field select,
-  .threshold-controls button { min-height: 42px; }
+  .threshold-controls button { min-height: 30px; }
 
   .readings-table {
     display: block;
