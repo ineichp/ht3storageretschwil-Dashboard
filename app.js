@@ -140,15 +140,15 @@ function renderPowerStatus(prefix, isPresent) {
   const present = toPowerPresent(isPresent);
 
   if (present === null) {
-    value.textContent = "—";
     value.className = "power-status unknown";
     value.title = "External power status unknown";
+    value.setAttribute("aria-label", "External power status unknown");
     return;
   }
 
-  value.textContent = present ? "Power" : "Battery";
-  value.className = `power-status ${present ? "connected" : "battery"}`;
-  value.title = present ? "External power connected" : "Running on battery";
+  value.className = `power-status ${present ? "connected" : "disconnected"}`;
+  value.title = present ? "External power connected" : "External power disconnected";
+  value.setAttribute("aria-label", value.title);
 }
 
 function renderBatteryStatus(prefix, percentValue) {

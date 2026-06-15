@@ -321,17 +321,34 @@ h1 {
 }
 
 .power-status {
-  min-width: 46px;
-  padding: 2px 5px;
-  border-radius: 5px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
   border: 1px solid rgba(210, 222, 240, 0.12);
   background: rgba(15, 20, 32, 0.78);
   color: var(--muted);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0;
-  text-align: center;
-  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.power-plug-icon {
+  width: 15px;
+  height: 15px;
+  display: block;
+  overflow: visible;
+}
+
+.power-plug-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.power-status .plug-slash {
+  opacity: 0;
 }
 
 .power-status.connected {
@@ -340,10 +357,15 @@ h1 {
   color: #bbf7d0;
 }
 
-.power-status.battery {
+.power-status.disconnected {
   border-color: rgba(245, 158, 11, 0.36);
   background: rgba(245, 158, 11, 0.12);
   color: #fde68a;
+}
+
+.power-status.disconnected .plug-slash,
+.power-status.unknown .plug-slash {
+  opacity: 1;
 }
 
 .date-field,

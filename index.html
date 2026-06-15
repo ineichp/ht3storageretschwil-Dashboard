@@ -10,9 +10,9 @@
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="qrcode-generator.js?v=20260615-5"></script>
-  <link rel="stylesheet" href="styles.css?v=20260615-5" />
-  <link rel="stylesheet" href="auth.css?v=20260615-5" />
+  <script src="qrcode-generator.js?v=20260615-6"></script>
+  <link rel="stylesheet" href="styles.css?v=20260615-6" />
+  <link rel="stylesheet" href="auth.css?v=20260615-6" />
 </head>
 
 <body>
@@ -123,7 +123,12 @@
                   <div class="battery-status" aria-label="HT3 sensor battery">
                     <span>HT3</span>
                     <div class="battery-readout">
-                      <strong id="ht3PowerStatus" class="power-status unknown">—</strong>
+                      <span id="ht3PowerStatus" class="power-status unknown" title="External power status unknown" aria-label="External power status unknown">
+                        <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M9 7v5m6-5v5m-8 0h10v3a5 5 0 0 1-10 0v-3Zm5 8v3" />
+                          <path class="plug-slash" d="M4 4l16 16" />
+                        </svg>
+                      </span>
                       <div id="ht3BatteryIcon" class="battery-icon unknown" aria-hidden="true">
                         <i></i><i></i><i></i><i></i>
                       </div>
@@ -284,8 +289,8 @@
     </div>
   </div>
 
-  <script src="auth.js?v=20260615-5"></script>
-  <script src="app.js?v=20260615-5"></script>
+  <script src="auth.js?v=20260615-6"></script>
+  <script src="app.js?v=20260615-6"></script>
 </body>
 </html>
 
