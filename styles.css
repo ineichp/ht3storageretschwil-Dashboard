@@ -149,6 +149,10 @@ h1 {
   box-shadow: none;
 }
 
+.measurement-controls[hidden] {
+  display: none;
+}
+
 .battery-status {
   display: flex;
   flex-direction: column;
@@ -239,11 +243,17 @@ h1 {
 
 .threshold-panel,
 .date-range-picker {
+  height: 60px;
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
   padding: 5px 6px;
   min-width: 0;
+}
+
+.threshold-panel {
+  display: grid;
+  align-items: center;
 }
 
 .control-panel-title,
@@ -261,7 +271,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(4, 60px);
   gap: 8px;
-  align-items: center;
+  align-items: end;
 }
 
 .compact-threshold-field {
@@ -281,6 +291,9 @@ h1 {
 .date-range-picker {
   position: relative;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .date-range-picker select {

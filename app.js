@@ -1084,8 +1084,10 @@ function toggleSection(header) {
   if (!content || !toggle) return;
 
   const isOpen = !content.classList.contains("collapsed");
+  const controls = header.querySelector(".measurement-controls");
 
   content.classList.toggle("collapsed", isOpen);
+  if (controls) controls.hidden = isOpen;
   header.setAttribute("aria-expanded", String(!isOpen));
   toggle.textContent = isOpen ? "+" : "−";
 }
