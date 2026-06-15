@@ -296,6 +296,7 @@ h1 {
   gap: 5px;
   position: relative;
   z-index: 1;
+  align-self: center;
 }
 
 .battery-metric-stack .battery-status {
@@ -524,9 +525,9 @@ button:disabled {
 .metric {
   grid-column: span 3;
   min-height: 104px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: auto minmax(61px, 1fr) auto;
+  align-items: center;
   background: var(--surface-raised);
   padding-top: 12px;
   padding-bottom: 12px;
@@ -583,6 +584,7 @@ button:disabled {
   margin-bottom: 7px;
   position: relative;
   z-index: 1;
+  align-self: start;
 }
 
 .value {
@@ -595,6 +597,7 @@ button:disabled {
   min-height: 38px;
   display: flex;
   align-items: center;
+  align-self: center;
 }
 
 .unit {
@@ -611,6 +614,7 @@ button:disabled {
   font-size: 12px;
   position: relative;
   z-index: 1;
+  align-self: end;
 }
 
 .last-reading-value {
