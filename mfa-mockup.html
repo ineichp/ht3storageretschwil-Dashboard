@@ -135,27 +135,6 @@
       background: var(--field);
     }
 
-    .mockup-progress {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .mockup-progress button {
-      min-height: 34px;
-      padding: 7px 8px;
-      font-size: 12px;
-      color: var(--muted);
-      background: var(--field);
-    }
-
-    .mockup-progress button.active {
-      color: #99f6e4;
-      border-color: rgba(45, 212, 191, 0.44);
-      background: rgba(45, 212, 191, 0.14);
-    }
-
     @media (max-width: 720px) {
       .mockup-shell {
         padding: 12px;
@@ -163,10 +142,6 @@
 
       .mockup-header {
         flex-direction: column;
-      }
-
-      .mockup-progress {
-        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -186,16 +161,10 @@
     </section>
 
     <section class="auth-panel mockup-panel">
-      <div class="mockup-progress">
-        <button type="button" class="active" data-step-button="login">Login</button>
-        <button type="button" data-step-button="code">Code</button>
-        <button type="button" data-step-button="setup">Setup</button>
-      </div>
-
       <article data-step-panel="login">
         <div class="mockup-stage">Step 1</div>
         <h2>Login</h2>
-        <p class="mockup-copy">Normaler Login mit Email und Passwort. Danach entscheidet Cognito, ob MFA erforderlich ist.</p>
+        <p class="mockup-copy">Zuerst immer Email und Passwort. Erst nach erfolgreichem Login kommt der MFA-Schritt.</p>
 
         <form class="auth-form">
           <label>
@@ -206,14 +175,17 @@
             <span>Password</span>
             <input type="password" value="storage-retschwil" autocomplete="current-password">
           </label>
-          <button class="auth-primary" type="button" data-next-step="code">Login</button>
+          <div class="mockup-actions">
+            <button class="auth-primary" type="button" data-next-step="setup">Login</button>
+            <button class="mockup-secondary" type="button" data-next-step="code">Existing MFA</button>
+          </div>
         </form>
       </article>
 
       <article data-step-panel="code" hidden>
-        <div class="mockup-stage">Step 2A</div>
+        <div class="mockup-stage">Step 2</div>
         <h2>Authenticator Code</h2>
-        <p class="mockup-copy">Wenn MFA bereits eingerichtet ist, erscheint nur noch der 6-stellige Code aus der Authenticator App.</p>
+        <p class="mockup-copy">Dieser Schritt erscheint nach dem Passwort-Login, wenn MFA bereits eingerichtet ist.</p>
 
         <form class="auth-form">
           <label>
@@ -228,9 +200,9 @@
       </article>
 
       <article data-step-panel="setup" hidden>
-        <div class="mockup-stage">Step 2B</div>
+        <div class="mockup-stage">Step 2</div>
         <h2>Setup MFA</h2>
-        <p class="mockup-copy">Beim ersten Setup scannt der User den QR-Code, danach wird der erste 6-stellige Code verifiziert.</p>
+        <p class="mockup-copy">Dieser Schritt erscheint nach dem Passwort-Login, wenn MFA noch nicht eingerichtet ist.</p>
 
         <div class="mockup-qr" aria-label="Mock QR code">
           <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
@@ -265,23 +237,18 @@
 
   <script>
     const panels = document.querySelectorAll("[data-step-panel]");
-    const buttons = document.querySelectorAll("[data-step-button]");
 
-    function showStep(step) {
-      panels.forEach(panel => {
-        panel.hidden = panel.dataset.stepPanel !== step;
-      });
+      function showStep(step) {
+        panels.forEach(panel => {
+          panel.hidden = panel.dataset.stepPanel !== step;
+        });
+      }
 
-      buttons.forEach(button => {
-        button.classList.toggle("active", button.dataset.stepButton === step);
-      });
-    }
-
-    document.addEventListener("click", event => {
-      const target = event.target.closest("[data-next-step], [data-step-button]");
+      document.addEventListener("click", event => {
+      const target = event.target.closest("[data-next-step]");
       if (!target) return;
-      showStep(target.dataset.nextStep || target.dataset.stepButton);
-    });
+      showStep(target.dataset.nextStep);
+      });
   </script>
 </body>
 </html>
