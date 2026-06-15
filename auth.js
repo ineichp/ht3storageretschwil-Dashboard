@@ -7,6 +7,21 @@ const AUTH_CONFIG = {
 const AUTH_STORAGE_KEY = "storageRetschwilAuth";
 let pendingAuth = null;
 
+const AUTH_MODE_COPY = {
+  login: {
+    title: "Login",
+    copy: "Sign in with email and password."
+  },
+  "mfa-code": {
+    title: "Authenticator Code",
+    copy: "Enter the 6-digit code from your authenticator app."
+  },
+  "mfa-setup": {
+    title: "Setup MFA",
+    copy: "Scan the QR code with your authenticator app, then enter the first 6-digit code."
+  }
+};
+
 function readSession() {
   try {
     const value = JSON.parse(sessionStorage.getItem(AUTH_STORAGE_KEY) || "null");
@@ -108,9 +123,10 @@ function setMode(mode) {
     panel.hidden = panel.dataset.authMode !== mode;
   });
 
-  document.querySelectorAll("[data-auth-tab]").forEach(button => {
-    button.classList.toggle("active", button.dataset.authTab === mode);
-  });
+  const title = document.getElementById("authStepTitle");
+  const copy = document.getElementById("authStepCopy");
+  if (title) title.textContent = AUTH_MODE_COPY[mode]?.title || "Login";
+  if (copy) copy.textContent = AUTH_MODE_COPY[mode]?.copy || "";
 
   authMessage("");
 }
@@ -128,20 +144,20 @@ async function completeAuthentication(authenticationResult, setMfaPreference = f
 }
 
 function renderTotpQr(secretCode) {
-  const canvas = document.getElementById("mfaQrCode");
+  const node = document.getElementById("mfaQrCode");
   const issuer = "Storage Retschwil";
   const account = pendingAuth?.username || "dashboard";
   const otpauth = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(account)}?secret=${encodeURIComponent(secretCode)}&issuer=${encodeURIComponent(issuer)}`;
 
-  if (!canvas || !window.QRCode) return;
-  window.QRCode.toCanvas(canvas, otpauth, {
-    width: 156,
-    margin: 1,
-    color: {
-      dark: "#0d1118",
-      light: "#ffffff"
-    }
-  });
+  if (!node || !window.qrcode) {
+    authMessage("QR code renderer could not be loaded. Use the secret key manually.", "error");
+    return;
+  }
+
+  const qr = window.qrcode(0, "M");
+  qr.addData(otpauth);
+  qr.make();
+  node.innerHTML = qr.createSvgTag(4, 1).replace("<svg", "<svg role=\"img\" aria-label=\"Authenticator setup QR code\"");
 }
 
 function showMfaCode(result, username) {
@@ -277,6 +293,9 @@ function showLogin(errorMessage = "") {
       <section class="auth-panel">
         <div class="eyebrow">Storage Monitoring</div>
         <h1>Storage Retschwil</h1>
+        <div class="auth-stage">Required MFA</div>
+        <h2 id="authStepTitle">Login</h2>
+        <p id="authStepCopy" class="auth-copy">Sign in with email and password.</p>
 
         <div id="authMessage" class="auth-message">${errorMessage}</div>
 
@@ -293,7 +312,6 @@ function showLogin(errorMessage = "") {
         </form>
 
         <form class="auth-form" data-auth-mode="mfa-code" hidden>
-          <p class="auth-copy">Enter the 6-digit code from your authenticator app.</p>
           <label>
             <span>Authenticator Code</span>
             <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
@@ -302,8 +320,7 @@ function showLogin(errorMessage = "") {
         </form>
 
         <form class="auth-form" data-auth-mode="mfa-setup" hidden>
-          <p class="auth-copy">Scan this QR code with your authenticator app, then enter the first 6-digit code.</p>
-          <canvas id="mfaQrCode" class="auth-qr" width="156" height="156" aria-label="Authenticator setup QR code"></canvas>
+          <div id="mfaQrCode" class="auth-qr" aria-label="Authenticator setup QR code"></div>
           <div class="auth-secret">
             <span id="mfaSecret">—</span>
           </div>
