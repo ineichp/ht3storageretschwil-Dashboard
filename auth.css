@@ -44,6 +44,32 @@
   width: 100%;
 }
 
+.auth-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.auth-qr {
+  width: 156px;
+  height: 156px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.auth-secret {
+  border: 1px solid rgba(210, 222, 240, 0.1);
+  border-radius: var(--radius);
+  background: rgba(15, 20, 32, 0.72);
+  padding: 9px 10px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
 .auth-primary {
   width: 100%;
   min-height: 46px;
