@@ -164,32 +164,29 @@
       <article data-step-panel="login">
         <div class="mockup-stage">Step 1</div>
         <h2>Login</h2>
-        <p class="mockup-copy">Zuerst immer Email und Passwort. Erst nach erfolgreichem Login kommt der MFA-Schritt.</p>
+        <p class="mockup-copy">Zuerst immer Username und Passwort. Erst nach erfolgreichem Login kommt der MFA-Schritt.</p>
 
         <form class="auth-form">
           <label>
-            <span>Email</span>
+            <span>Username</span>
             <input type="email" value="ip@skyit.ch" autocomplete="username">
           </label>
           <label>
             <span>Password</span>
             <input type="password" value="storage-retschwil" autocomplete="current-password">
           </label>
-          <div class="mockup-actions">
-            <button class="auth-primary" type="button" data-next-step="setup">Login</button>
-            <button class="mockup-secondary" type="button" data-next-step="code">Existing MFA</button>
-          </div>
+          <button class="auth-primary" type="button" data-next-step="setup">Login</button>
         </form>
       </article>
 
       <article data-step-panel="code" hidden>
         <div class="mockup-stage">Step 2</div>
-        <h2>Authenticator Code</h2>
+        <h2>Authentication code</h2>
         <p class="mockup-copy">Dieser Schritt erscheint nach dem Passwort-Login, wenn MFA bereits eingerichtet ist.</p>
 
         <form class="auth-form">
           <label>
-            <span>Authenticator Code</span>
+            <span>Authentication code</span>
             <input type="text" inputmode="numeric" maxlength="6" value="123456" autocomplete="one-time-code">
           </label>
           <div class="mockup-actions">
@@ -202,7 +199,7 @@
       <article data-step-panel="setup" hidden>
         <div class="mockup-stage">Step 2</div>
         <h2>Setup MFA</h2>
-        <p class="mockup-copy">Dieser Schritt erscheint nach dem Passwort-Login, wenn MFA noch nicht eingerichtet ist.</p>
+        <p class="mockup-copy">Dieser Schritt erscheint nach dem Passwort-Login, wenn MFA noch nicht eingerichtet ist. Wenn MFA bereits vorhanden ist, zeigt Cognito stattdessen nur das Feld Authentication code.</p>
 
         <div class="mockup-qr" aria-label="Mock QR code">
           <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>

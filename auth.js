@@ -10,10 +10,10 @@ let pendingAuth = null;
 const AUTH_MODE_COPY = {
   login: {
     title: "Login",
-    copy: "Sign in with email and password."
+    copy: "Sign in with username and password."
   },
   "mfa-code": {
-    title: "Authenticator Code",
+    title: "Authentication code",
     copy: "Enter the 6-digit code from your authenticator app."
   },
   "mfa-setup": {
@@ -295,13 +295,13 @@ function showLogin(errorMessage = "") {
         <h1>Storage Retschwil</h1>
         <div class="auth-stage">Required MFA</div>
         <h2 id="authStepTitle">Login</h2>
-        <p id="authStepCopy" class="auth-copy">Sign in with email and password.</p>
+        <p id="authStepCopy" class="auth-copy">Sign in with username and password.</p>
 
         <div id="authMessage" class="auth-message">${errorMessage}</div>
 
         <form class="auth-form" data-auth-mode="login">
           <label>
-            <span>Email</span>
+            <span>Username</span>
             <input name="email" type="email" autocomplete="username" required>
           </label>
           <label>
@@ -313,7 +313,7 @@ function showLogin(errorMessage = "") {
 
         <form class="auth-form" data-auth-mode="mfa-code" hidden>
           <label>
-            <span>Authenticator Code</span>
+            <span>Authentication code</span>
             <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
           </label>
           <button class="auth-primary" type="submit">Verify</button>
