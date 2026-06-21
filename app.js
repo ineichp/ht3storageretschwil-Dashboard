@@ -177,16 +177,20 @@ function renderDeviceStatusMeta() {
   if (!meta) return;
 
   const updates = [
-    latestHt3Update,
-    latestFloodState?.updatedAt ? new Date(latestFloodState.updatedAt).getTime() : null
-  ].filter((value) => Number.isFinite(value));
+    { time: latestHt3Update, source: "HT3" },
+    {
+      time: latestFloodState?.updatedAt ? new Date(latestFloodState.updatedAt).getTime() : null,
+      source: "Flood"
+    }
+  ].filter((item) => Number.isFinite(item.time));
 
   if (!updates.length) {
     meta.textContent = "Last update: —";
     return;
   }
 
-  meta.textContent = `Last update: ${formatDateTime(Math.max(...updates))}`;
+  const latest = updates.reduce((newest, item) => item.time > newest.time ? item : newest);
+  meta.textContent = `Last update: ${formatDateTime(latest.time)} from ${latest.source}`;
 }
 
 function renderBatteryStatus(prefix, percentValue) {
