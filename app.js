@@ -16,6 +16,7 @@ let events = [];
 let eventPage = 1;
 let eventDayOpenState = {};
 let latestFloodState = {};
+let latestHt3Update = null;
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -36,6 +37,7 @@ function renderFloodState(state = {}) {
   latestFloodState = state;
   renderBatteryStatus("flood", pickBatteryPercent(state));
   renderCableStatus("flood", state.cableUnplugged);
+  renderDeviceStatusMeta();
 
   const isFlood = state.flood === true;
   const status = document.getElementById("floorFloodStatus");
@@ -66,6 +68,7 @@ async function loadFloodState() {
     latestFloodState = {};
     renderBatteryStatus("flood", null);
     renderCableStatus("flood", null);
+    renderDeviceStatusMeta();
   }
 }
 
@@ -167,6 +170,15 @@ function renderCableStatus(prefix, isUnplugged) {
   value.className = `power-status ${isUnplugged ? "disconnected" : "connected"}`;
   value.title = isUnplugged ? "Flood cable unplugged" : "Flood cable connected";
   value.setAttribute("aria-label", value.title);
+}
+
+function renderDeviceStatusMeta() {
+  const meta = document.getElementById("deviceStatusMetaValues");
+  if (!meta) return;
+
+  const ht3 = latestHt3Update ? formatDateTime(latestHt3Update) : "—";
+  const flood = latestFloodState?.updatedAt ? formatDateTime(latestFloodState.updatedAt) : "—";
+  meta.textContent = `HT3 ${ht3} · Flood ${flood}`;
 }
 
 function renderBatteryStatus(prefix, percentValue) {
@@ -694,6 +706,8 @@ async function loadData() {
     renderPowerStatus("ht3", pickExternalPowerPresent(latest));
 
     const latestReadingTime = formatTimeInline(latest.eventtime);
+    latestHt3Update = latest.eventtime * 1000;
+    renderDeviceStatusMeta();
     document.getElementById("tempTrend").textContent = `Last update: ${latestReadingTime}`;
     document.getElementById("humidityTrend").textContent = `Last update: ${latestReadingTime}`;
 
@@ -718,6 +732,8 @@ async function loadData() {
     setError(error.message);
     renderBatteryStatus("ht3", null);
     renderPowerStatus("ht3", null);
+    latestHt3Update = null;
+    renderDeviceStatusMeta();
   }
 }
 

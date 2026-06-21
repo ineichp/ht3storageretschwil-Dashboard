@@ -10,9 +10,9 @@
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="qrcode-generator.js?v=20260621-1"></script>
-  <link rel="stylesheet" href="styles.css?v=20260621-1" />
-  <link rel="stylesheet" href="auth.css?v=20260621-1" />
+  <script src="qrcode-generator.js?v=20260621-2"></script>
+  <link rel="stylesheet" href="styles.css?v=20260621-2" />
+  <link rel="stylesheet" href="auth.css?v=20260621-2" />
 </head>
 
 <body>
@@ -118,7 +118,7 @@
               </article>
 
               <article class="card metric">
-                <div class="label">Device Battery</div>
+                <div class="label">Device Status</div>
                 <div class="battery-metric-stack">
                   <div class="battery-status" aria-label="HT3 sensor battery">
                     <span>HT3</span>
@@ -152,7 +152,10 @@
                     </div>
                   </div>
                 </div>
-                <div class="trend">Battery status</div>
+                <div class="trend device-status-meta">
+                  <span>Last update</span>
+                  <span id="deviceStatusMetaValues">HT3 — · Flood —</span>
+                </div>
               </article>
 
               <article class="card metric">
@@ -295,8 +298,8 @@
     </div>
   </div>
 
-  <script src="auth.js?v=20260621-1"></script>
-  <script src="app.js?v=20260621-1"></script>
+  <script src="auth.js?v=20260621-2"></script>
+  <script src="app.js?v=20260621-2"></script>
 </body>
 </html>
 
