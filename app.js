@@ -173,12 +173,20 @@ function renderCableStatus(prefix, isUnplugged) {
 }
 
 function renderDeviceStatusMeta() {
-  const meta = document.getElementById("deviceStatusMetaValues");
+  const meta = document.getElementById("deviceStatusMeta");
   if (!meta) return;
 
-  const ht3 = latestHt3Update ? formatDateTime(latestHt3Update) : "—";
-  const flood = latestFloodState?.updatedAt ? formatDateTime(latestFloodState.updatedAt) : "—";
-  meta.textContent = `HT3 ${ht3} · Flood ${flood}`;
+  const updates = [
+    latestHt3Update,
+    latestFloodState?.updatedAt ? new Date(latestFloodState.updatedAt).getTime() : null
+  ].filter((value) => Number.isFinite(value));
+
+  if (!updates.length) {
+    meta.textContent = "Last update: —";
+    return;
+  }
+
+  meta.textContent = `Last update: ${formatDateTime(Math.max(...updates))}`;
 }
 
 function renderBatteryStatus(prefix, percentValue) {
