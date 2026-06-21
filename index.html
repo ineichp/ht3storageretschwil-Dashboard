@@ -10,9 +10,9 @@
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="qrcode-generator.js?v=20260615-10"></script>
-  <link rel="stylesheet" href="styles.css?v=20260615-10" />
-  <link rel="stylesheet" href="auth.css?v=20260615-10" />
+  <script src="qrcode-generator.js?v=20260621-1"></script>
+  <link rel="stylesheet" href="styles.css?v=20260621-1" />
+  <link rel="stylesheet" href="auth.css?v=20260621-1" />
 </head>
 
 <body>
@@ -139,6 +139,12 @@
                   <div class="battery-status" aria-label="Flood sensor battery">
                     <span>Flood</span>
                     <div class="battery-readout">
+                      <span id="floodCableStatus" class="power-status unknown" title="Flood cable status unknown" aria-label="Flood cable status unknown">
+                        <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M9 7v5m6-5v5m-8 0h10v3a5 5 0 0 1-10 0v-3Zm5 8v3" />
+                          <path class="plug-slash" d="M4 4l16 16" />
+                        </svg>
+                      </span>
                       <div id="floodBatteryIcon" class="battery-icon unknown" aria-hidden="true">
                         <i></i><i></i><i></i><i></i>
                       </div>
@@ -289,8 +295,8 @@
     </div>
   </div>
 
-  <script src="auth.js?v=20260615-10"></script>
-  <script src="app.js?v=20260615-10"></script>
+  <script src="auth.js?v=20260621-1"></script>
+  <script src="app.js?v=20260621-1"></script>
 </body>
 </html>
 

@@ -35,6 +35,7 @@ function thresholdClass(isAlert) {
 function renderFloodState(state = {}) {
   latestFloodState = state;
   renderBatteryStatus("flood", pickBatteryPercent(state));
+  renderCableStatus("flood", state.cableUnplugged);
 
   const isFlood = state.flood === true;
   const status = document.getElementById("floorFloodStatus");
@@ -64,6 +65,7 @@ async function loadFloodState() {
     document.getElementById("floorFloodMeta").textContent = "Flood API error";
     latestFloodState = {};
     renderBatteryStatus("flood", null);
+    renderCableStatus("flood", null);
   }
 }
 
@@ -148,6 +150,22 @@ function renderPowerStatus(prefix, isPresent) {
 
   value.className = `power-status ${present ? "connected" : "disconnected"}`;
   value.title = present ? "External power connected" : "External power disconnected";
+  value.setAttribute("aria-label", value.title);
+}
+
+function renderCableStatus(prefix, isUnplugged) {
+  const value = document.getElementById(`${prefix}CableStatus`);
+  if (!value) return;
+
+  if (isUnplugged !== true && isUnplugged !== false) {
+    value.className = "power-status unknown";
+    value.title = "Flood cable status unknown";
+    value.setAttribute("aria-label", "Flood cable status unknown");
+    return;
+  }
+
+  value.className = `power-status ${isUnplugged ? "disconnected" : "connected"}`;
+  value.title = isUnplugged ? "Flood cable unplugged" : "Flood cable connected";
   value.setAttribute("aria-label", value.title);
 }
 
