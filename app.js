@@ -780,7 +780,7 @@ async function loadEvents() {
     eventPage = 1;
     eventDayOpenState = {};
 
-    document.getElementById("eventStatus").textContent = "Events: loaded";
+    document.getElementById("eventStatus").textContent = "";
 
     renderEventsTable(events);
   } catch (error) {
