@@ -891,10 +891,34 @@ function getEventGroupTitle(videoEvents) {
   return `${main.label} detected`;
 }
 
-function getTopEventLabels(videoEvents) {
+function getEventLabels(videoEvents) {
   const byLabel = {};
 
   videoEvents.forEach(item => {
+    if (Array.isArray(item.detectedLabelDetails) && item.detectedLabelDetails.length) {
+      item.detectedLabelDetails.forEach(detail => {
+        const label = String(detail.name || detail.label || "Unknown");
+        const confidence = Number(detail.confidence || 0);
+
+        if (!byLabel[label] || confidence > byLabel[label]) {
+          byLabel[label] = confidence;
+        }
+      });
+      return;
+    }
+
+    if (Array.isArray(item.detectedLabels) && item.detectedLabels.length) {
+      item.detectedLabels.forEach(labelName => {
+        const label = String(labelName || "Unknown");
+        const confidence = Number(item.confidence || 0);
+
+        if (!byLabel[label] || confidence > byLabel[label]) {
+          byLabel[label] = confidence;
+        }
+      });
+      return;
+    }
+
     const label = String(item.label || "Unknown");
     const confidence = Number(item.confidence || 0);
 
@@ -906,6 +930,18 @@ function getTopEventLabels(videoEvents) {
   return Object.entries(byLabel)
     .map(([label, confidence]) => ({ label, confidence }))
     .sort((a, b) => b.confidence - a.confidence);
+}
+
+function getConfidenceChipStyle(confidenceValue) {
+  const confidence = Math.max(0, Math.min(100, Number(confidenceValue) || 0));
+  const lightness = Math.min(92, 79 + ((100 - confidence) * 0.6));
+  const backgroundAlpha = Math.max(0.06, 0.14 - ((100 - confidence) * 0.004));
+
+  return [
+    `color: hsl(166 84% ${lightness.toFixed(1)}%)`,
+    `border-color: hsl(166 84% ${Math.max(52, lightness - 20).toFixed(1)}% / 0.32)`,
+    `background: hsl(166 84% ${lightness.toFixed(1)}% / ${backgroundAlpha.toFixed(2)})`
+  ].join(";");
 }
 
 function getEventGroups(items) {
@@ -1044,7 +1080,7 @@ function renderEventsTable(items) {
     const sortedEvents = group.events;
     const firstEvent = sortedEvents[0];
     const originalIndex = events.indexOf(firstEvent);
-    const topLabels = getTopEventLabels(sortedEvents);
+    const detectionLabels = getEventLabels(sortedEvents);
     const title = getEventGroupTitle(sortedEvents);
     const bestConfidence = Math.max(...sortedEvents.map(item => Number(item.confidence || 0)));
     const isDayOpen = eventDayOpenState[group.dayKey] === true;
@@ -1066,8 +1102,8 @@ function renderEventsTable(items) {
 
     currentDayKey = group.dayKey;
 
-    const labelChips = topLabels.map((item, index) => `
-      <span class="event-chip ${index === 0 ? "" : "secondary"}">
+    const labelChips = detectionLabels.map(item => `
+      <span class="event-chip" style="${getConfidenceChipStyle(item.confidence)}">
         ${item.label} ${item.confidence.toFixed(0)}%
       </span>
     `).join("");
@@ -1082,9 +1118,9 @@ function renderEventsTable(items) {
           <div class="event-summary">
             <div class="event-title-row">
               <div class="event-title">${title}</div>
-              <div class="event-tags">${labelChips}</div>
             </div>
-            <div class="event-meta">${sortedEvents.length} label${sortedEvents.length === 1 ? "" : "s"} in this clip</div>
+            <div class="event-tags">${labelChips}</div>
+            <div class="event-meta">${detectionLabels.length} label${detectionLabels.length === 1 ? "" : "s"} in this clip</div>
           </div>
         </td>
         <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
