@@ -992,10 +992,6 @@ function setDefaultOpenEventDay(groups) {
   eventDayOpenState[groups[0].dayKey] = true;
 }
 
-function getEventDayLabelCount(items, dayKey) {
-  return items.filter(item => getLocalDateString(getEventDateValue(item)) === dayKey).length;
-}
-
 function renderEventsPagination(totalPages) {
   const pagination = document.getElementById("eventsPagination");
   if (!pagination) return;
@@ -1084,7 +1080,6 @@ function renderEventsTable(items) {
     const title = getEventGroupTitle(sortedEvents);
     const bestConfidence = Math.max(...sortedEvents.map(item => Number(item.confidence || 0)));
     const isDayOpen = eventDayOpenState[group.dayKey] === true;
-    const dayLabelCount = getEventDayLabelCount(items, group.dayKey);
 
     const dayHeader = group.dayKey !== currentDayKey
       ? `
@@ -1092,7 +1087,6 @@ function renderEventsTable(items) {
           <td colspan="4">
             <button class="event-day-toggle" data-day-key="${group.dayKey}" aria-expanded="${isDayOpen}">
               <span class="event-day-title">${formatEventDay(group.date)}</span>
-              <span class="event-day-meta">${dayLabelCount} label${dayLabelCount === 1 ? "" : "s"}</span>
               <span class="event-day-chevron" aria-hidden="true">${isDayOpen ? "−" : "+"}</span>
             </button>
           </td>
@@ -1120,7 +1114,6 @@ function renderEventsTable(items) {
               <div class="event-title">${title}</div>
             </div>
             <div class="event-tags">${labelChips}</div>
-            <div class="event-meta">${detectionLabels.length} label${detectionLabels.length === 1 ? "" : "s"} in this clip</div>
           </div>
         </td>
         <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>

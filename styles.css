@@ -877,13 +877,6 @@ tr:last-child td {
   overflow-wrap: anywhere;
 }
 
-.event-day-meta {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
 .event-day-chevron {
   width: 28px;
   height: 28px;
@@ -1319,14 +1312,9 @@ tr:last-child td {
     padding: 0 0 8px;
   }
 
-  .event-day-meta {
-    grid-column: 1;
-    font-size: 11px;
-  }
-
   .event-day-chevron {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 1;
   }
 
   .event-video-row {
