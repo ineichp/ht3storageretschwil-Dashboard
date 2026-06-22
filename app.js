@@ -769,7 +769,7 @@ async function loadVideos() {
 
 async function loadEvents() {
   const url = `${API_BASE_URL}/events`;
-  document.getElementById("eventStatus").textContent = "Events: loading…";
+  document.getElementById("eventStatus").textContent = "";
 
   try {
     const response = await fetch(url);
