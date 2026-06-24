@@ -1,5 +1,6 @@
 const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com";
 const DEVICE_ID = "shellyhtg3-e4b3232fa628";
+const POWER_IOT_DEVICE_ID = "plugsstorageretschwil";
 
 let LIMITS = {
   maxTemperature: 20,
@@ -213,6 +214,26 @@ function renderBatteryStatus(prefix, percentValue) {
   value.textContent = `${percent}%`;
 }
 
+function setPowerIotStatus(isOn) {
+  const button = document.getElementById("powerIotSwitch");
+  const value = document.getElementById("powerIotStatus");
+  if (!button || !value) return;
+
+  button.className = `iot-switch ${isOn ? "on" : "off"}`;
+  button.setAttribute("aria-pressed", String(isOn));
+  button.setAttribute("aria-label", `${POWER_IOT_DEVICE_ID} Power IoT is ${isOn ? "on" : "off"}`);
+  value.textContent = isOn ? "ON" : "OFF";
+}
+
+function bindPowerIotMockup() {
+  const button = document.getElementById("powerIotSwitch");
+  if (!button) return;
+
+  button.addEventListener("click", () => {
+    setPowerIotStatus(button.getAttribute("aria-pressed") !== "true");
+  });
+}
+
 function formatMoney(amount, currency = "USD") {
   const value = Number(amount);
   if (!Number.isFinite(value)) return "—";
@@ -246,7 +267,7 @@ function renderAuditCosts(data = {}) {
   setText("auditLastDayCost", formatMoney(lastDay.amount, currency));
   setText("auditTopServiceCost", formatMoney(topService.amount, currency));
 
-  setText("auditMonthCostMeta", data.updatedAt ? `Updated: ${formatDateTime(data.updatedAt)}` : "Loaded from Cost Explorer");
+  setText("auditMonthCostMeta", data.updatedAt ? `Updated: ${formatDateTime(data.updatedAt)}` : "Loaded");
   setText("auditDailyCostMeta", "Current month average");
   setText("auditLastDayMeta", lastDay.date ? `${formatDateShort(lastDay.date)}${lastDay.estimated ? " · estimated" : ""}` : "No daily cost data");
   setText("auditTopServiceMeta", topService.name || "No service data");
@@ -257,10 +278,10 @@ function renderAuditCostsError(message) {
   setText("auditDailyCost", "—");
   setText("auditLastDayCost", "—");
   setText("auditTopServiceCost", "—");
-  setText("auditMonthCostMeta", message || "Cost Explorer API error");
-  setText("auditDailyCostMeta", "Cost Explorer unavailable");
-  setText("auditLastDayMeta", "Cost Explorer unavailable");
-  setText("auditTopServiceMeta", "Cost Explorer unavailable");
+  setText("auditMonthCostMeta", message || "Cost API error");
+  setText("auditDailyCostMeta", "Cost unavailable");
+  setText("auditLastDayMeta", "Cost unavailable");
+  setText("auditTopServiceMeta", "Cost unavailable");
 }
 
 async function loadAuditCosts() {
@@ -1232,6 +1253,7 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("measurementsHeader"), () => toggleSection(document.getElementById("measurementsHeader")));
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
+  bindPowerIotMockup();
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());

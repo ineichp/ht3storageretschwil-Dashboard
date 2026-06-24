@@ -387,6 +387,50 @@ h1 {
   opacity: 1;
 }
 
+button.iot-switch {
+  width: 42px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 222, 240, 0.14);
+  background: rgba(15, 20, 32, 0.78);
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  font-size: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+button.iot-switch span {
+  width: 14px;
+  height: 14px;
+  margin: 2px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+button.iot-switch.on {
+  justify-content: flex-end;
+  border-color: rgba(52, 211, 153, 0.34);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+button.iot-switch.on span {
+  background: #34d399;
+}
+
+button.iot-switch.off {
+  border-color: rgba(245, 158, 11, 0.36);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+button.iot-switch.off span {
+  background: #f59e0b;
+}
+
 .date-field,
 .threshold-field {
   display: flex;
@@ -618,6 +662,40 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+}
+
+.energy-cost-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.audit-cost-group {
+  grid-column: span 12;
+  display: grid;
+  gap: 10px;
+}
+
+.audit-subsection-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.audit-subsection-title h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.audit-subsection-title span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .audit-cost-card {

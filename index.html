@@ -150,6 +150,16 @@
                       <strong id="floodBatteryValue">—</strong>
                     </div>
                   </div>
+
+                  <div class="battery-status" aria-label="Power IoT switch status">
+                    <span>Power IoT</span>
+                    <div class="battery-readout">
+                      <button id="powerIotSwitch" class="iot-switch on" type="button" aria-label="Power IoT is on" aria-pressed="true">
+                        <span></span>
+                      </button>
+                      <strong id="powerIotStatus">ON</strong>
+                    </div>
+                  </div>
                 </div>
                 <div id="deviceStatusMeta" class="trend">Last update: —</div>
               </article>
@@ -249,30 +259,60 @@
 
         <div id="auditCostsContent" class="section-content">
           <div class="section-grid">
-            <div class="audit-cost-row">
-              <article class="card metric audit-cost-card">
-                <div class="label">Month to date</div>
-                <div class="value"><span id="auditMonthCost">—</span></div>
-                <div id="auditMonthCostMeta" class="trend">Loading Cost Explorer</div>
-              </article>
+            <div class="audit-cost-group">
+              <div class="audit-subsection-title">
+                <h3>AWS</h3>
+              </div>
+              <div class="audit-cost-row">
+                <article class="card metric audit-cost-card">
+                  <div class="label">Month to date</div>
+                  <div class="value"><span id="auditMonthCost">—</span></div>
+                  <div id="auditMonthCostMeta" class="trend">Loading costs</div>
+                </article>
 
-              <article class="card metric audit-cost-card">
-                <div class="label">Daily average</div>
-                <div class="value"><span id="auditDailyCost">—</span></div>
-                <div id="auditDailyCostMeta" class="trend">Current month average</div>
-              </article>
+                <article class="card metric audit-cost-card">
+                  <div class="label">Daily average</div>
+                  <div class="value"><span id="auditDailyCost">—</span></div>
+                  <div id="auditDailyCostMeta" class="trend">Current month average</div>
+                </article>
 
-              <article class="card metric audit-cost-card">
-                <div class="label">Last day</div>
-                <div class="value"><span id="auditLastDayCost">—</span></div>
-                <div id="auditLastDayMeta" class="trend">Most recent Cost Explorer day</div>
-              </article>
+                <article class="card metric audit-cost-card">
+                  <div class="label">Last day</div>
+                  <div class="value"><span id="auditLastDayCost">—</span></div>
+                  <div id="auditLastDayMeta" class="trend">Most recent cost day</div>
+                </article>
 
-              <article class="card metric audit-cost-card">
-                <div class="label">Top service</div>
-                <div class="value audit-service-value"><span id="auditTopServiceCost">—</span></div>
-                <div id="auditTopServiceMeta" class="trend">Highest month-to-date service</div>
-              </article>
+                <article class="card metric audit-cost-card">
+                  <div class="label">Top service</div>
+                  <div class="value audit-service-value"><span id="auditTopServiceCost">—</span></div>
+                  <div id="auditTopServiceMeta" class="trend">Highest month-to-date service</div>
+                </article>
+              </div>
+            </div>
+
+            <div class="audit-cost-group">
+              <div class="audit-subsection-title">
+                <h3>Energy</h3>
+              </div>
+              <div class="audit-cost-row energy-cost-row">
+                <article class="card metric audit-cost-card">
+                  <div class="label">Current power</div>
+                  <div class="value"><span id="energyCurrentPower">42</span><span class="unit">W</span></div>
+                  <div class="trend">Live reading</div>
+                </article>
+
+                <article class="card metric audit-cost-card">
+                  <div class="label">Today</div>
+                  <div class="value"><span id="energyTodayCost">CHF 0.08</span></div>
+                  <div class="trend">0.25 kWh</div>
+                </article>
+
+                <article class="card metric audit-cost-card">
+                  <div class="label">Month estimate</div>
+                  <div class="value"><span id="energyMonthEstimate">CHF 2.40</span></div>
+                  <div class="trend">Based on current usage</div>
+                </article>
+              </div>
             </div>
           </div>
         </div>
