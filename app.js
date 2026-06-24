@@ -228,6 +228,34 @@ function setPowerIotStatus(isOn, options = {}) {
   value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
 }
 
+function formatChf(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return new Intl.NumberFormat("de-CH", {
+    style: "currency",
+    currency: "CHF",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(n);
+}
+
+function formatKwh(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return new Intl.NumberFormat("de-CH", {
+    minimumFractionDigits: n < 1 ? 3 : 2,
+    maximumFractionDigits: n < 1 ? 3 : 2
+  }).format(n);
+}
+
+function formatWatts(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return new Intl.NumberFormat("de-CH", {
+    maximumFractionDigits: n < 10 ? 1 : 0
+  }).format(n);
+}
+
 function renderPowerIotState(state = {}) {
   latestPowerIotState = state;
   const isOn = state.output === true || state.status === "on";
@@ -235,9 +263,14 @@ function renderPowerIotState(state = {}) {
 
   setPowerIotStatus(isOn ? true : isOff ? false : null);
 
-  if (Number.isFinite(Number(state.apower))) {
-    setText("energyCurrentPower", `${Math.round(Number(state.apower))}`);
-  }
+  setText("energyCurrentPower", formatWatts(state.apower));
+  setText("energyCurrentMeta", Number.isFinite(Number(state.voltage)) ? `${formatWatts(state.voltage)} V · ${formatWatts(state.current)} A` : "Live reading");
+  setText("energyTodayCost", formatChf(state.todayCostChf));
+  setText("energyTodayMeta", `${formatKwh(state.todayKwh)} kWh today`);
+  setText("energyMonthEstimate", formatChf(state.monthEstimateChf));
+  setText("energyMonthMeta", `${formatKwh(state.monthEstimateKwh)} kWh estimate · ${formatChf(state.tariffChfPerKwh)}/kWh`);
+  setText("energyTotalKwh", formatKwh(state.totalKwh));
+  setText("energyTotalMeta", state.updatedAt ? `Updated: ${formatDateTime(state.updatedAt)}` : "Shelly total counter");
 }
 
 async function loadPowerIotState() {

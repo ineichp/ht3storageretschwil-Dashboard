@@ -297,20 +297,26 @@
               <div class="audit-cost-row energy-cost-row">
                 <article class="card metric audit-cost-card">
                   <div class="label">Current power</div>
-                  <div class="value"><span id="energyCurrentPower">42</span><span class="unit">W</span></div>
-                  <div class="trend">Live reading</div>
+                  <div class="value"><span id="energyCurrentPower">—</span><span class="unit">W</span></div>
+                  <div id="energyCurrentMeta" class="trend">Live reading</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Today</div>
-                  <div class="value"><span id="energyTodayCost">CHF 0.08</span></div>
-                  <div class="trend">0.25 kWh</div>
+                  <div class="value"><span id="energyTodayCost">—</span></div>
+                  <div id="energyTodayMeta" class="trend">— kWh</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Month estimate</div>
-                  <div class="value"><span id="energyMonthEstimate">CHF 2.40</span></div>
-                  <div class="trend">Based on current usage</div>
+                  <div class="value"><span id="energyMonthEstimate">—</span></div>
+                  <div id="energyMonthMeta" class="trend">Based on current usage</div>
+                </article>
+
+                <article class="card metric audit-cost-card">
+                  <div class="label">Total energy</div>
+                  <div class="value"><span id="energyTotalKwh">—</span><span class="unit">kWh</span></div>
+                  <div id="energyTotalMeta" class="trend">Shelly total counter</div>
                 </article>
               </div>
             </div>
