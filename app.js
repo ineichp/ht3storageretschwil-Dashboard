@@ -18,6 +18,7 @@ let eventPage = 1;
 let eventDayOpenState = {};
 let latestFloodState = {};
 let latestHt3Update = null;
+let latestPowerIotState = {};
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -214,23 +215,69 @@ function renderBatteryStatus(prefix, percentValue) {
   value.textContent = `${percent}%`;
 }
 
-function setPowerIotStatus(isOn) {
+function setPowerIotStatus(isOn, options = {}) {
   const button = document.getElementById("powerIotSwitch");
   const value = document.getElementById("powerIotStatus");
   if (!button || !value) return;
 
-  button.className = `iot-switch ${isOn ? "on" : "off"}`;
-  button.setAttribute("aria-pressed", String(isOn));
-  button.setAttribute("aria-label", `${POWER_IOT_DEVICE_ID} Power IoT is ${isOn ? "on" : "off"}`);
-  value.textContent = isOn ? "ON" : "OFF";
+  const known = typeof isOn === "boolean";
+  button.className = `iot-switch ${known && isOn ? "on" : "off"}`;
+  button.disabled = Boolean(options.pending);
+  button.setAttribute("aria-pressed", String(known && isOn));
+  button.setAttribute("aria-label", `${POWER_IOT_DEVICE_ID} Power IoT is ${known ? (isOn ? "on" : "off") : "unknown"}`);
+  value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
 }
 
-function bindPowerIotMockup() {
+function renderPowerIotState(state = {}) {
+  latestPowerIotState = state;
+  const isOn = state.output === true || state.status === "on";
+  const isOff = state.output === false || state.status === "off";
+
+  setPowerIotStatus(isOn ? true : isOff ? false : null);
+
+  if (Number.isFinite(Number(state.apower))) {
+    setText("energyCurrentPower", `${Math.round(Number(state.apower))}`);
+  }
+}
+
+async function loadPowerIotState() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/power-iot`);
+    if (!response.ok) throw new Error(`Power IoT API returned HTTP ${response.status}`);
+
+    renderPowerIotState(await response.json());
+  } catch (error) {
+    console.error(error);
+    renderPowerIotState({});
+  }
+}
+
+async function setPowerIotOutput(on) {
+  setPowerIotStatus(on, { pending: true });
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/power-iot`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ on })
+    });
+
+    if (!response.ok) throw new Error(`Power IoT API returned HTTP ${response.status}`);
+    renderPowerIotState(await response.json());
+  } catch (error) {
+    console.error(error);
+    renderPowerIotState(latestPowerIotState);
+  }
+}
+
+function bindPowerIotControl() {
   const button = document.getElementById("powerIotSwitch");
   if (!button) return;
 
   button.addEventListener("click", () => {
-    setPowerIotStatus(button.getAttribute("aria-pressed") !== "true");
+    setPowerIotOutput(button.getAttribute("aria-pressed") !== "true");
   });
 }
 
@@ -1253,7 +1300,7 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("measurementsHeader"), () => toggleSection(document.getElementById("measurementsHeader")));
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
-  bindPowerIotMockup();
+  bindPowerIotControl();
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
@@ -1279,6 +1326,7 @@ async function init() {
 
   await loadThresholds();
   await loadFloodState();
+  await loadPowerIotState();
   await loadVideos();
   await loadEvents();
   await loadAuditCosts();
@@ -1286,6 +1334,7 @@ async function init() {
 
   setInterval(loadData, 60_000);
   setInterval(loadFloodState, 60_000);
+  setInterval(loadPowerIotState, 60_000);
   setInterval(loadVideos, 300_000);
   setInterval(loadEvents, 300_000);
   setInterval(loadAuditCosts, 1_800_000);
