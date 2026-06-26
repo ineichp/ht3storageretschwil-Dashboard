@@ -221,15 +221,62 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 9px;
 }
 
 .control-switch-row strong {
-  min-width: 32px;
+  min-width: 42px;
   color: var(--text);
   font-size: 13px;
   font-weight: 900;
   text-align: right;
+}
+
+.cloud-status {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 222, 240, 0.12);
+  background: rgba(15, 20, 32, 0.78);
+  color: var(--muted);
+}
+
+.cloud-status svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  overflow: visible;
+}
+
+.cloud-status path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cloud-status .cloud-slash {
+  opacity: 0;
+}
+
+.cloud-status.online {
+  border-color: rgba(52, 211, 153, 0.34);
+  background: rgba(52, 211, 153, 0.12);
+  color: #bbf7d0;
+}
+
+.cloud-status.offline {
+  border-color: rgba(154, 167, 184, 0.24);
+  background: rgba(154, 167, 184, 0.1);
+  color: #94a3b8;
+}
+
+.cloud-status.offline .cloud-slash {
+  opacity: 1;
 }
 
 .control-switch-meta {

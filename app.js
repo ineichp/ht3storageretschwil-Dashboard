@@ -215,34 +215,33 @@ function renderBatteryStatus(prefix, percentValue) {
   value.textContent = `${percent}%`;
 }
 
-function setPowerIotStatus(isOn, options = {}) {
-  const button = document.getElementById("powerIotSwitch");
-  const value = document.getElementById("powerIotStatus");
-  if (!button || !value) return;
-
-  const known = typeof isOn === "boolean";
-  button.className = `iot-switch ${known && isOn ? "on" : "off"}`;
-  button.disabled = Boolean(options.pending);
-  button.setAttribute("aria-pressed", String(known && isOn));
-  button.setAttribute("aria-label", `${POWER_IOT_DEVICE_ID} Power IoT is ${known ? (isOn ? "on" : "off") : "unknown"}`);
-  value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
-}
-
-function setSwitchStatus(buttonId, valueId, label, isOn, options = {}) {
+function setSwitchStatus(buttonId, valueId, cloudId, label, isOn, options = {}) {
   const button = document.getElementById(buttonId);
   const value = document.getElementById(valueId);
+  const cloud = document.getElementById(cloudId);
   if (!button || !value) return;
 
   const known = typeof isOn === "boolean";
+  const isOnline = options.online !== false;
   button.className = `iot-switch ${known && isOn ? "on" : "off"}`;
-  button.disabled = Boolean(options.pending);
+  button.disabled = Boolean(options.pending) || !isOnline;
   button.setAttribute("aria-pressed", String(known && isOn));
-  button.setAttribute("aria-label", `${label} is ${known ? (isOn ? "on" : "off") : "unknown"}`);
-  value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
+  button.setAttribute("aria-label", `${label} is ${isOnline ? (known ? (isOn ? "on" : "off") : "unknown") : "offline"}`);
+  value.textContent = isOnline ? (known ? (isOn ? "ON" : "OFF") : "—") : "OFFLINE";
+
+  if (cloud) {
+    cloud.className = `cloud-status ${isOnline ? "online" : "offline"}`;
+    cloud.title = `${label} ${isOnline ? "online" : "offline"}`;
+    cloud.setAttribute("aria-label", cloud.title);
+  }
+}
+
+function setPowerIotStatus(isOn, options = {}) {
+  setSwitchStatus("powerIotSwitch", "powerIotStatus", "powerIotCloud", POWER_IOT_DEVICE_ID, isOn, options);
 }
 
 function setDehumidifierStatus(isOn, options = {}) {
-  setSwitchStatus("dehumidifierSwitch", "dehumidifierStatus", "Dehumidifier", isOn, options);
+  setSwitchStatus("dehumidifierSwitch", "dehumidifierStatus", "dehumidifierCloud", "Dehumidifier", isOn, options);
 }
 
 function formatChf(value) {
@@ -278,7 +277,7 @@ function renderPowerIotState(state = {}) {
   const isOn = state.output === true || state.status === "on";
   const isOff = state.output === false || state.status === "off";
 
-  setPowerIotStatus(isOn ? true : isOff ? false : null);
+  setPowerIotStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
 
   setText("energyCurrentPower", formatWatts(state.apower));
   setText("energyCurrentMeta", Number.isFinite(Number(state.voltage)) ? `${formatWatts(state.voltage)} V · ${formatWatts(state.current)} A` : "Live reading");
