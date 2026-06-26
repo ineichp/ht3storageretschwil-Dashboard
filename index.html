@@ -40,14 +40,77 @@
 
     <div id="errorBox" class="error"></div>
 
-    <div class="status-row">
-      <span id="statusDot" class="dot"></span>
-      <span id="statusText">Loading data…</span>
-      <span>·</span>
-      <span id="lastUpdated">Last updated: —</span>
-      <span>·</span>
-      <span id="videoStatus">Videos: loading…</span>
-      <span id="eventStatus"></span>
+    <div class="control-console">
+      <div class="status-row control-status">
+        <span id="statusDot" class="dot"></span>
+        <span id="statusText">Loading data…</span>
+        <span>·</span>
+        <span id="lastUpdated">Last updated: —</span>
+        <span>·</span>
+        <span id="videoStatus">Videos: loading…</span>
+      </div>
+
+      <div class="console-grid">
+        <div class="threshold-controls measurement-controls">
+          <div class="threshold-panel">
+            <div class="threshold-grid">
+              <label class="threshold-field compact-threshold-field">
+                <span>Temp Min</span>
+                <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
+              </label>
+
+              <label class="threshold-field compact-threshold-field">
+                <span>Temp Max</span>
+                <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
+              </label>
+
+              <label class="threshold-field compact-threshold-field">
+                <span>Hum Min</span>
+                <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
+              </label>
+
+              <label class="threshold-field compact-threshold-field">
+                <span>Hum Max</span>
+                <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
+              </label>
+            </div>
+          </div>
+
+          <div class="date-range-picker">
+            <span>Date Range</span>
+            <select id="rangeModeSelect" aria-label="Time range">
+              <option value="6">Last 6h</option>
+              <option value="24" selected>Last 24h</option>
+              <option value="72">Last 3 days</option>
+              <option value="168">Last 7 days</option>
+              <option value="336">Last 14 days</option>
+              <option value="720">Last 30 days</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-switch-card" aria-label="Power IoT switch status">
+          <span>Power IoT</span>
+          <div class="control-switch-row">
+            <button id="powerIotSwitch" class="iot-switch on" type="button" aria-label="Power IoT is on" aria-pressed="true">
+              <span></span>
+            </button>
+            <strong id="powerIotStatus">ON</strong>
+          </div>
+          <div class="control-switch-meta">Shelly PlugS</div>
+        </div>
+
+        <div class="control-switch-card" aria-label="Dehumidifier switch status">
+          <span>Dehumidifier</span>
+          <div class="control-switch-row">
+            <button id="dehumidifierSwitch" class="iot-switch off" type="button" aria-label="Dehumidifier is off" aria-pressed="false">
+              <span></span>
+            </button>
+            <strong id="dehumidifierStatus">OFF</strong>
+          </div>
+          <div class="control-switch-meta">UniPlus Power</div>
+        </div>
+      </div>
     </div>
 
     <section class="grid">
@@ -56,44 +119,6 @@
           <div class="section-heading-copy">
             <div class="section-title-row">
               <h2>Measurements</h2>
-            </div>
-          </div>
-
-          <div class="threshold-controls measurement-controls">
-            <div class="threshold-panel">
-              <div class="threshold-grid">
-                <label class="threshold-field compact-threshold-field">
-                  <span>Temp Min</span>
-                  <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
-                </label>
-
-                <label class="threshold-field compact-threshold-field">
-                  <span>Temp Max</span>
-                  <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
-                </label>
-
-                <label class="threshold-field compact-threshold-field">
-                  <span>Hum Min</span>
-                  <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
-                </label>
-
-                <label class="threshold-field compact-threshold-field">
-                  <span>Hum Max</span>
-                  <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
-                </label>
-              </div>
-            </div>
-
-            <div class="date-range-picker">
-              <span>Date Range</span>
-              <select id="rangeModeSelect" aria-label="Time range">
-                <option value="6">Last 6h</option>
-                <option value="24" selected>Last 24h</option>
-                <option value="72">Last 3 days</option>
-                <option value="168">Last 7 days</option>
-                <option value="336">Last 14 days</option>
-                <option value="720">Last 30 days</option>
-              </select>
             </div>
           </div>
 
@@ -151,15 +176,6 @@
                     </div>
                   </div>
 
-                  <div class="battery-status" aria-label="Power IoT switch status">
-                    <span>Power IoT</span>
-                    <div class="battery-readout">
-                      <button id="powerIotSwitch" class="iot-switch on" type="button" aria-label="Power IoT is on" aria-pressed="true">
-                        <span></span>
-                      </button>
-                      <strong id="powerIotStatus">ON</strong>
-                    </div>
-                  </div>
                 </div>
                 <div id="deviceStatusMeta" class="trend">Last update: —</div>
               </article>

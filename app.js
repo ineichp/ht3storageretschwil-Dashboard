@@ -228,6 +228,23 @@ function setPowerIotStatus(isOn, options = {}) {
   value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
 }
 
+function setSwitchStatus(buttonId, valueId, label, isOn, options = {}) {
+  const button = document.getElementById(buttonId);
+  const value = document.getElementById(valueId);
+  if (!button || !value) return;
+
+  const known = typeof isOn === "boolean";
+  button.className = `iot-switch ${known && isOn ? "on" : "off"}`;
+  button.disabled = Boolean(options.pending);
+  button.setAttribute("aria-pressed", String(known && isOn));
+  button.setAttribute("aria-label", `${label} is ${known ? (isOn ? "on" : "off") : "unknown"}`);
+  value.textContent = known ? (isOn ? "ON" : "OFF") : "—";
+}
+
+function setDehumidifierStatus(isOn, options = {}) {
+  setSwitchStatus("dehumidifierSwitch", "dehumidifierStatus", "Dehumidifier", isOn, options);
+}
+
 function formatChf(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
@@ -311,6 +328,15 @@ function bindPowerIotControl() {
 
   button.addEventListener("click", () => {
     setPowerIotOutput(button.getAttribute("aria-pressed") !== "true");
+  });
+}
+
+function bindDehumidifierMockup() {
+  const button = document.getElementById("dehumidifierSwitch");
+  if (!button) return;
+
+  button.addEventListener("click", () => {
+    setDehumidifierStatus(button.getAttribute("aria-pressed") !== "true");
   });
 }
 
@@ -870,7 +896,6 @@ async function loadVideos() {
 
 async function loadEvents() {
   const url = `${API_BASE_URL}/events`;
-  document.getElementById("eventStatus").textContent = "";
 
   try {
     const response = await fetch(url);
@@ -881,12 +906,9 @@ async function loadEvents() {
     eventPage = 1;
     eventDayOpenState = {};
 
-    document.getElementById("eventStatus").textContent = "";
-
     renderEventsTable(events);
   } catch (error) {
     console.error(error);
-    document.getElementById("eventStatus").textContent = "Events: API error";
   }
 }
 
@@ -1334,6 +1356,7 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
   bindPowerIotControl();
+  bindDehumidifierMockup();
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());

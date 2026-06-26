@@ -153,6 +153,91 @@ h1 {
   display: none;
 }
 
+.control-console {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(18, 23, 34, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.control-status {
+  margin-bottom: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(210, 222, 240, 0.1);
+  border-radius: 0;
+  background: transparent;
+  padding: 2px 2px 9px;
+}
+
+.console-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content max-content;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.control-console .measurement-controls {
+  width: auto;
+  margin: 0;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.control-console .threshold-panel,
+.control-console .date-range-picker,
+.control-switch-card {
+  height: 58px;
+}
+
+.control-switch-card {
+  min-width: 148px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  align-content: center;
+  border: 1px solid rgba(210, 222, 240, 0.1);
+  border-radius: var(--radius);
+  background: rgba(15, 20, 32, 0.72);
+  padding: 6px 9px;
+}
+
+.control-switch-card > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.control-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.control-switch-row strong {
+  min-width: 32px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.control-switch-meta {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1;
+}
+
 .battery-status {
   display: flex;
   flex-direction: column;
@@ -1159,6 +1244,12 @@ tr:last-child td {
   .topbar { gap: 12px; }
   .title-cluster { width: auto; }
   .cooldown-field { min-width: 0; }
+  .console-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .control-console .measurement-controls {
+    grid-column: 1 / -1;
+  }
   .controls { width: 100%; justify-content: space-between; }
   .date-field { flex: 1; }
   .date-field input { width: 100%; }
@@ -1212,9 +1303,28 @@ tr:last-child td {
     line-height: 1.45;
     margin-bottom: 14px;
   }
+  .control-status {
+    margin-bottom: 0;
+  }
   .status-row span:nth-child(3),
   .status-row span:nth-child(5),
   .status-row span:nth-child(7) { display: none; }
+  .console-grid {
+    grid-template-columns: 1fr;
+  }
+  .control-console .measurement-controls {
+    grid-template-columns: 1fr;
+    padding-right: 0;
+  }
+  .control-console .threshold-panel,
+  .control-console .date-range-picker,
+  .control-switch-card {
+    height: auto;
+    min-height: 58px;
+  }
+  .control-switch-card {
+    min-width: 0;
+  }
   .card,
   .section-card { border-radius: var(--radius); padding: 14px; }
   .grid,
