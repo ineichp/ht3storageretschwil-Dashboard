@@ -19,6 +19,7 @@ let eventDayOpenState = {};
 let latestFloodState = {};
 let latestHt3Update = null;
 let latestPowerIotState = {};
+let latestAuditCosts = {};
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -281,23 +282,50 @@ function formatAmps(value) {
   }).format(n);
 }
 
-function renderEnergyYearList(years = [], tariff) {
+function renderEnergyYearList() {
   const list = document.getElementById("energyYearList");
   if (!list) return;
 
-  const visibleYears = years.filter(item => Number(item.year) <= new Date().getFullYear());
-  if (!visibleYears.length) {
+  const currentYear = new Date().getFullYear();
+  const energyByYear = new Map((latestPowerIotState.annualCosts || [])
+    .filter(item => Number(item.year) <= currentYear)
+    .map(item => [String(item.year), item]));
+  const awsByYear = new Map((latestAuditCosts.annualCosts || [])
+    .filter(item => Number(item.year) <= currentYear)
+    .map(item => [String(item.year), item]));
+  const years = [...new Set([...energyByYear.keys(), ...awsByYear.keys()])]
+    .sort((a, b) => Number(a) - Number(b));
+
+  if (!years.length) {
     list.innerHTML = "";
     return;
   }
 
-  list.innerHTML = visibleYears.map(item => `
-    <div class="energy-year-row">
-      <span>Costs ${item.year}</span>
-      <strong>${formatChf(item.costChf)}</strong>
-      <small>${formatKwh(item.kwh)} kWh${Number.isFinite(Number(tariff)) ? ` · ${formatChf(tariff)}/kWh` : ""}</small>
+  list.innerHTML = `
+    <div class="energy-year-row energy-year-header">
+      <span>Year</span>
+      <span>AWS</span>
+      <span>Energy</span>
+      <span>Total</span>
     </div>
-  `).join("");
+    ${years.map(year => {
+      const energy = energyByYear.get(year) || {};
+      const aws = awsByYear.get(year) || {};
+      const energyCost = Number(energy.costChf || 0);
+      const awsCost = Number(aws.amount || 0);
+      const total = awsCost + energyCost;
+
+      return `
+    <div class="energy-year-row">
+      <span>Costs ${year}</span>
+      <strong>${formatMoney(awsCost, aws.currency || latestAuditCosts.currency || "USD")}</strong>
+      <strong>${formatChf(energyCost)}</strong>
+      <strong>${formatMoney(total, aws.currency || latestAuditCosts.currency || "USD")}</strong>
+      <small>${formatKwh(energy.kwh)} kWh${Number.isFinite(Number(latestPowerIotState.tariffChfPerKwh)) ? ` · ${formatChf(latestPowerIotState.tariffChfPerKwh)}/kWh` : ""}</small>
+    </div>
+      `;
+    }).join("")}
+  `;
 }
 
 function renderPowerIotState(state = {}) {
@@ -313,7 +341,9 @@ function renderPowerIotState(state = {}) {
   setText("energyMonthMeta", `${formatKwh(state.monthEstimateKwh)} kWh estimate · ${formatChf(state.tariffChfPerKwh)}/kWh`);
   setText("energyTotalCost", formatChf(state.totalSinceStartCostChf));
   setText("energyTotalMeta", state.energyPeriodStartAt ? `Since ${formatDateTime(state.energyPeriodStartAt)}` : "Since reset");
-  renderEnergyYearList(state.annualCosts || [], state.tariffChfPerKwh);
+  setText("energyTotalKwh", formatKwh(state.totalSinceStartKwh));
+  setText("energyTotalKwhMeta", state.energyPeriodStartAt ? `Since ${formatDateTime(state.energyPeriodStartAt)}` : "Since reset");
+  renderEnergyYearList();
 }
 
 async function loadPowerIotState() {
@@ -390,6 +420,7 @@ function formatDateShort(value) {
 }
 
 function renderAuditCosts(data = {}) {
+  latestAuditCosts = data;
   const currency = data.currency || "USD";
   const lastDay = data.lastDay || {};
   const topService = data.topService || {};
@@ -403,9 +434,11 @@ function renderAuditCosts(data = {}) {
   setText("auditDailyCostMeta", "Current month average");
   setText("auditLastDayMeta", lastDay.date ? `${formatDateShort(lastDay.date)}${lastDay.estimated ? " · estimated" : ""}` : "No daily cost data");
   setText("auditTopServiceMeta", topService.name || "No service data");
+  renderEnergyYearList();
 }
 
 function renderAuditCostsError(message) {
+  latestAuditCosts = {};
   setText("auditMonthCost", "—");
   setText("auditDailyCost", "—");
   setText("auditLastDayCost", "—");
@@ -414,6 +447,7 @@ function renderAuditCostsError(message) {
   setText("auditDailyCostMeta", "Cost unavailable");
   setText("auditLastDayMeta", "Cost unavailable");
   setText("auditTopServiceMeta", "Cost unavailable");
+  renderEnergyYearList();
 }
 
 async function loadAuditCosts() {

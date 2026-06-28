@@ -847,7 +847,7 @@ button:disabled {
 .energy-year-row {
   min-height: 48px;
   display: grid;
-  grid-template-columns: minmax(100px, 1fr) auto minmax(150px, auto);
+  grid-template-columns: minmax(140px, 1fr) repeat(3, minmax(120px, auto));
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
@@ -862,6 +862,18 @@ button:disabled {
   min-width: 0;
 }
 
+.energy-year-header {
+  min-height: 36px;
+  background: transparent;
+}
+
+.energy-year-header span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .energy-year-row span {
   color: var(--text);
   font-weight: 900;
@@ -873,6 +885,7 @@ button:disabled {
 }
 
 .energy-year-row small {
+  grid-column: 2 / -1;
   color: var(--muted);
   font-weight: 800;
   text-align: right;
@@ -1677,7 +1690,10 @@ tr:last-child td {
   .metric-row,
   .audit-cost-row { grid-template-columns: 1fr; }
   .energy-year-row {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .energy-year-row > span:first-child {
+    grid-column: 1 / -1;
   }
   .energy-year-row small {
     grid-column: 1 / -1;
