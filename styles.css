@@ -841,11 +841,14 @@ button:disabled {
 
 .energy-year-list {
   width: 100%;
+  grid-column: 1 / -1;
   display: grid;
   gap: 8px;
 }
 
 .energy-year-row {
+  width: 100%;
+  box-sizing: border-box;
   min-height: 48px;
   display: grid;
   grid-template-columns: minmax(160px, 1.4fr) repeat(3, minmax(140px, 1fr));
