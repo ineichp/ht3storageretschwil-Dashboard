@@ -272,29 +272,6 @@ function formatWatts(value) {
   }).format(n);
 }
 
-function formatPowerReading(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) {
-    return { value: "—", unit: "W" };
-  }
-
-  if (Math.abs(n) > 0 && Math.abs(n) < 10) {
-    return {
-      value: new Intl.NumberFormat("de-CH", {
-        maximumFractionDigits: 0
-      }).format(n * 1000),
-      unit: "mW"
-    };
-  }
-
-  return {
-    value: new Intl.NumberFormat("de-CH", {
-      maximumFractionDigits: 0
-    }).format(n),
-    unit: "W"
-  };
-}
-
 function formatAmps(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
@@ -308,12 +285,10 @@ function renderPowerIotState(state = {}) {
   latestPowerIotState = state;
   const isOn = state.output === true || state.status === "on";
   const isOff = state.output === false || state.status === "off";
-  const currentPower = formatPowerReading(state.apower);
 
   setPowerIotStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
 
-  setText("energyCurrentPower", currentPower.value);
-  setText("energyCurrentPowerUnit", currentPower.unit);
+  setText("energyCurrentPower", formatWatts(Math.max(0, Number(state.apower))));
   setText("energyCurrentMeta", Number.isFinite(Number(state.voltage)) ? `${formatWatts(state.voltage)} V · ${formatAmps(state.current)} A` : "Live reading");
   setText("energyTodayCost", formatChf(state.todayCostChf));
   setText("energyTodayMeta", `${formatKwh(state.todayKwh)} kWh today`);
