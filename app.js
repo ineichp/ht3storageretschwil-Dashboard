@@ -321,7 +321,6 @@ function renderEnergyYearList() {
       <strong>${formatMoney(awsCost, aws.currency || latestAuditCosts.currency || "USD")}</strong>
       <strong>${formatChf(energyCost)}</strong>
       <strong>${formatMoney(total, aws.currency || latestAuditCosts.currency || "USD")}</strong>
-      <small>${formatKwh(energy.kwh)} kWh${Number.isFinite(Number(latestPowerIotState.tariffChfPerKwh)) ? ` · ${formatChf(latestPowerIotState.tariffChfPerKwh)}/kWh` : ""}</small>
     </div>
       `;
     }).join("")}

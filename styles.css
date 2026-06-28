@@ -840,6 +840,7 @@ button:disabled {
 }
 
 .energy-year-list {
+  width: 100%;
   display: grid;
   gap: 8px;
 }
@@ -847,7 +848,7 @@ button:disabled {
 .energy-year-row {
   min-height: 48px;
   display: grid;
-  grid-template-columns: minmax(140px, 1fr) repeat(3, minmax(120px, auto));
+  grid-template-columns: minmax(160px, 1.4fr) repeat(3, minmax(140px, 1fr));
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
@@ -885,7 +886,6 @@ button:disabled {
 }
 
 .energy-year-row small {
-  grid-column: 2 / -1;
   color: var(--muted);
   font-weight: 800;
   text-align: right;
@@ -1694,10 +1694,6 @@ tr:last-child td {
   }
   .energy-year-row > span:first-child {
     grid-column: 1 / -1;
-  }
-  .energy-year-row small {
-    grid-column: 1 / -1;
-    text-align: left;
   }
   .last-reading-time { font-size: 18px; }
 }
