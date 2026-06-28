@@ -281,6 +281,25 @@ function formatAmps(value) {
   }).format(n);
 }
 
+function renderEnergyYearList(years = [], tariff) {
+  const list = document.getElementById("energyYearList");
+  if (!list) return;
+
+  const visibleYears = years.filter(item => Number(item.year) <= new Date().getFullYear());
+  if (!visibleYears.length) {
+    list.innerHTML = "";
+    return;
+  }
+
+  list.innerHTML = visibleYears.map(item => `
+    <div class="energy-year-row">
+      <span>Costs ${item.year}</span>
+      <strong>${formatChf(item.costChf)}</strong>
+      <small>${formatKwh(item.kwh)} kWh${Number.isFinite(Number(tariff)) ? ` · ${formatChf(tariff)}/kWh` : ""}</small>
+    </div>
+  `).join("");
+}
+
 function renderPowerIotState(state = {}) {
   latestPowerIotState = state;
   const isOn = state.output === true || state.status === "on";
@@ -290,12 +309,11 @@ function renderPowerIotState(state = {}) {
 
   setText("energyCurrentPower", formatWatts(Math.max(0, Number(state.apower))));
   setText("energyCurrentMeta", Number.isFinite(Number(state.voltage)) ? `${formatWatts(state.voltage)} V · ${formatAmps(state.current)} A` : "Live reading");
-  setText("energyTodayCost", formatChf(state.todayCostChf));
-  setText("energyTodayMeta", `${formatKwh(state.todayKwh)} kWh today`);
   setText("energyMonthEstimate", formatChf(state.monthEstimateChf));
   setText("energyMonthMeta", `${formatKwh(state.monthEstimateKwh)} kWh estimate · ${formatChf(state.tariffChfPerKwh)}/kWh`);
-  setText("energyTotalKwh", formatKwh(state.totalKwh));
-  setText("energyTotalMeta", state.updatedAt ? `Updated: ${formatDateTime(state.updatedAt)}` : "Shelly total counter");
+  setText("energyTotalCost", formatChf(state.totalSinceStartCostChf));
+  setText("energyTotalMeta", state.energyPeriodStartAt ? `Since ${formatDateTime(state.energyPeriodStartAt)}` : "Since reset");
+  renderEnergyYearList(state.annualCosts || [], state.tariffChfPerKwh);
 }
 
 async function loadPowerIotState() {

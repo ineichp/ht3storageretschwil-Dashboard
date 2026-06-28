@@ -839,6 +839,45 @@ button:disabled {
   font-size: 32px;
 }
 
+.energy-year-list {
+  display: grid;
+  gap: 8px;
+}
+
+.energy-year-row {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) auto minmax(150px, auto);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-raised);
+}
+
+.energy-year-row span,
+.energy-year-row strong,
+.energy-year-row small {
+  min-width: 0;
+}
+
+.energy-year-row span {
+  color: var(--text);
+  font-weight: 900;
+}
+
+.energy-year-row strong {
+  color: var(--success);
+  font-size: 18px;
+}
+
+.energy-year-row small {
+  color: var(--muted);
+  font-weight: 800;
+  text-align: right;
+}
+
 .audit-service-value {
   font-size: 28px;
   line-height: 1.12;
@@ -1637,6 +1676,13 @@ tr:last-child td {
   .metric { grid-column: span 12; }
   .metric-row,
   .audit-cost-row { grid-template-columns: 1fr; }
+  .energy-year-row {
+    grid-template-columns: 1fr auto;
+  }
+  .energy-year-row small {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
   .last-reading-time { font-size: 18px; }
 }
 
