@@ -2,6 +2,7 @@ const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com"
 const DEVICE_ID = "shellyhtg3-e4b3232fa628";
 const POWER_IOT_DEVICE_ID = "plugsstorageretschwil";
 const DEHUMIDIFIER_DEVICE_ID = "dehumidifier";
+const DEHUMIDIFIER_ACTIVE_WATTS = 10;
 
 let LIMITS = {
   maxTemperature: 20,
@@ -293,6 +294,11 @@ function formatPowerWatts(value) {
   return formatWatts(Math.abs(n));
 }
 
+function positivePowerWatts(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.abs(n) : null;
+}
+
 function formatAmps(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
@@ -363,6 +369,7 @@ function renderPowerIotState(state = {}) {
   setText("energyTotalKwh", formatKwh(state.totalSinceStartKwh));
   setText("energyTotalKwhMeta", state.energyPeriodStartAt ? `Since ${formatDateTime(state.energyPeriodStartAt)}` : "Since reset");
   renderEnergyYearList();
+  renderDehumidifierState(latestDehumidifierState);
 }
 
 async function loadPowerIotState() {
@@ -408,8 +415,12 @@ function bindPowerIotControl() {
 
 function renderDehumidifierState(state = {}) {
   latestDehumidifierState = state;
-  const isOn = state.output === true || state.status === "on";
-  const isOff = state.output === false || state.status === "off";
+  const relayOn = state.output === true || state.status === "on";
+  const relayOff = state.output === false || state.status === "off";
+  const plugWatts = positivePowerWatts(latestPowerIotState.apower);
+  const hasPlugPower = plugWatts !== null;
+  const isOn = relayOn && hasPlugPower && plugWatts > DEHUMIDIFIER_ACTIVE_WATTS;
+  const isOff = relayOff || (relayOn && hasPlugPower && plugWatts < DEHUMIDIFIER_ACTIVE_WATTS);
 
   setDehumidifierStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
 }
@@ -440,6 +451,7 @@ async function setDehumidifierOutput(on) {
 
     if (!response.ok) throw new Error(`Dehumidifier API returned HTTP ${response.status}`);
     renderDehumidifierState(await response.json());
+    await loadPowerIotState();
   } catch (error) {
     console.error(error);
     renderDehumidifierState(latestDehumidifierState);
