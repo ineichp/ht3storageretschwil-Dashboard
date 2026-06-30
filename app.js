@@ -1,6 +1,7 @@
 const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com";
 const DEVICE_ID = "shellyhtg3-e4b3232fa628";
 const POWER_IOT_DEVICE_ID = "plugsstorageretschwil";
+const DEHUMIDIFIER_DEVICE_ID = "dehumidifier";
 
 let LIMITS = {
   maxTemperature: 20,
@@ -19,6 +20,7 @@ let eventDayOpenState = {};
 let latestFloodState = {};
 let latestHt3Update = null;
 let latestPowerIotState = {};
+let latestDehumidifierState = {};
 let latestAuditCosts = {};
 const EVENTS_PER_PAGE = 10;
 
@@ -386,12 +388,52 @@ function bindPowerIotControl() {
   });
 }
 
-function bindDehumidifierMockup() {
+function renderDehumidifierState(state = {}) {
+  latestDehumidifierState = state;
+  const isOn = state.output === true || state.status === "on";
+  const isOff = state.output === false || state.status === "off";
+
+  setDehumidifierStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
+}
+
+async function loadDehumidifierState() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`);
+    if (!response.ok) throw new Error(`Dehumidifier API returned HTTP ${response.status}`);
+
+    renderDehumidifierState(await response.json());
+  } catch (error) {
+    console.error(error);
+    renderDehumidifierState({ cloudConnected: false });
+  }
+}
+
+async function setDehumidifierOutput(on) {
+  setDehumidifierStatus(on, { pending: true });
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ device: DEHUMIDIFIER_DEVICE_ID, on })
+    });
+
+    if (!response.ok) throw new Error(`Dehumidifier API returned HTTP ${response.status}`);
+    renderDehumidifierState(await response.json());
+  } catch (error) {
+    console.error(error);
+    renderDehumidifierState(latestDehumidifierState);
+  }
+}
+
+function bindDehumidifierControl() {
   const button = document.getElementById("dehumidifierSwitch");
   if (!button) return;
 
   button.addEventListener("click", () => {
-    setDehumidifierStatus(button.getAttribute("aria-pressed") !== "true");
+    setDehumidifierOutput(button.getAttribute("aria-pressed") !== "true");
   });
 }
 
@@ -1415,7 +1457,7 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("surveillanceHeader"), () => toggleSection(document.getElementById("surveillanceHeader")));
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
   bindPowerIotControl();
-  bindDehumidifierMockup();
+  bindDehumidifierControl();
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
@@ -1442,6 +1484,7 @@ async function init() {
   await loadThresholds();
   await loadFloodState();
   await loadPowerIotState();
+  await loadDehumidifierState();
   await loadVideos();
   await loadEvents();
   await loadAuditCosts();
@@ -1450,6 +1493,7 @@ async function init() {
   setInterval(loadData, 60_000);
   setInterval(loadFloodState, 60_000);
   setInterval(loadPowerIotState, 60_000);
+  setInterval(loadDehumidifierState, 60_000);
   setInterval(loadVideos, 300_000);
   setInterval(loadEvents, 300_000);
   setInterval(loadAuditCosts, 1_800_000);
