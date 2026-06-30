@@ -46,10 +46,16 @@ function renderFloodState(state = {}) {
 
   const isFlood = state.flood === true;
   const status = document.getElementById("floorFloodStatus");
+  const icon = document.getElementById("floorFloodIcon");
   const meta = document.getElementById("floorFloodMeta");
 
   status.textContent = isFlood ? "Flood" : "Dry";
   status.className = thresholdClass(isFlood);
+  if (icon) {
+    icon.className = `floor-flood-icon ${isFlood ? "flood" : "dry"}`;
+    icon.title = isFlood ? "Floor Flood detected" : "Floor Flood dry";
+    icon.setAttribute("aria-label", icon.title);
+  }
 
   if (state.updatedAt) {
     meta.textContent = `Last update: ${formatDateTime(state.updatedAt)}`;
@@ -69,6 +75,12 @@ async function loadFloodState() {
     console.error(error);
     document.getElementById("floorFloodStatus").textContent = "Dry";
     document.getElementById("floorFloodStatus").className = thresholdClass(false);
+    const icon = document.getElementById("floorFloodIcon");
+    if (icon) {
+      icon.className = "floor-flood-icon dry";
+      icon.title = "Floor Flood dry";
+      icon.setAttribute("aria-label", icon.title);
+    }
     document.getElementById("floorFloodMeta").textContent = "Flood API error";
     latestFloodState = {};
     renderBatteryStatus("flood", null);

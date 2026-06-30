@@ -519,6 +519,61 @@ h1 {
   opacity: 1;
 }
 
+.floor-flood-value {
+  gap: 10px;
+}
+
+.floor-flood-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(210, 222, 240, 0.14);
+  background: rgba(15, 20, 32, 0.78);
+  flex: 0 0 auto;
+}
+
+.floor-flood-icon svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+  overflow: visible;
+}
+
+.floor-flood-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.floor-flood-icon.dry {
+  border-color: rgba(52, 211, 153, 0.36);
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+
+.floor-flood-icon.flood {
+  border-color: rgba(251, 113, 133, 0.45);
+  background: rgba(251, 113, 133, 0.14);
+  color: #fb7185;
+  box-shadow: 0 0 18px rgba(251, 113, 133, 0.22);
+}
+
+.floor-flood-icon .flood-alert {
+  opacity: 0;
+}
+
+.floor-flood-icon.flood .flood-check {
+  opacity: 0;
+}
+
+.floor-flood-icon.flood .flood-alert {
+  opacity: 1;
+}
+
 button.iot-switch {
   width: 42px;
   height: 20px;

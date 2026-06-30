@@ -194,7 +194,17 @@
 
               <article class="card metric">
                 <div class="label">Floor Flood</div>
-                <div class="value"><span id="floorFloodStatus">Dry</span></div>
+                <div class="value floor-flood-value">
+                  <span id="floorFloodIcon" class="floor-flood-icon dry" title="Floor Flood dry" aria-label="Floor Flood dry">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path class="flood-drop" d="M12 3.5C9.3 7.1 6.5 10.9 6.5 14.1A5.5 5.5 0 0 0 12 19.6a5.5 5.5 0 0 0 5.5-5.5C17.5 10.9 14.7 7.1 12 3.5Z" />
+                      <path class="flood-check" d="M9.4 14.1l1.7 1.7 3.5-4" />
+                      <path class="flood-alert" d="M12 9v4" />
+                      <path class="flood-alert" d="M12 15.8h.01" />
+                    </svg>
+                  </span>
+                  <span id="floorFloodStatus">Dry</span>
+                </div>
                 <div id="floorFloodMeta" class="trend">Last update: —</div>
               </article>
             </div>
