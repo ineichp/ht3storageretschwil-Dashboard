@@ -275,6 +275,12 @@ function formatWatts(value) {
   }).format(n);
 }
 
+function formatPowerWatts(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return formatWatts(Math.abs(n));
+}
+
 function formatAmps(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
@@ -336,7 +342,7 @@ function renderPowerIotState(state = {}) {
 
   setPowerIotStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
 
-  setText("energyCurrentPower", formatWatts(Math.max(0, Number(state.apower))));
+  setText("energyCurrentPower", formatPowerWatts(state.apower));
   setText("energyCurrentMeta", Number.isFinite(Number(state.voltage)) ? `${formatWatts(state.voltage)} V · ${formatAmps(state.current)} A` : "Live reading");
   setText("energyMonthEstimate", formatChf(state.monthEstimateChf));
   setText("energyMonthMeta", `${formatKwh(state.monthEstimateKwh)} kWh estimate · ${formatChf(state.tariffChfPerKwh)}/kWh`);
