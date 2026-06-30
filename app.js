@@ -3,6 +3,9 @@ const DEVICE_ID = "shellyhtg3-e4b3232fa628";
 const POWER_IOT_DEVICE_ID = "plugsstorageretschwil";
 const DEHUMIDIFIER_DEVICE_ID = "dehumidifier";
 const DEHUMIDIFIER_ACTIVE_WATTS = 10;
+const LIVE_REFRESH_MS = 15_000;
+const SURVEILLANCE_REFRESH_MS = 60_000;
+const AUDIT_REFRESH_MS = 15 * 60_000;
 
 let LIMITS = {
   maxTemperature: 20,
@@ -23,6 +26,7 @@ let latestHt3Update = null;
 let latestPowerIotState = {};
 let latestDehumidifierState = {};
 let latestAuditCosts = {};
+let lastFocusRefreshAt = 0;
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -68,7 +72,7 @@ function renderFloodState(state = {}) {
 
 async function loadFloodState() {
   try {
-    const response = await fetch(`${API_BASE_URL}/flood`);
+    const response = await apiFetch(`${API_BASE_URL}/flood`);
     if (!response.ok) throw new Error(`Flood API returned HTTP ${response.status}`);
 
     renderFloodState(await response.json());
@@ -93,6 +97,16 @@ async function loadFloodState() {
 function setText(id, value) {
   const element = document.getElementById(id);
   if (element) element.textContent = value;
+}
+
+function apiFetch(url, options = {}) {
+  return fetch(url, {
+    cache: "no-store",
+    ...options,
+    headers: {
+      ...(options.headers || {})
+    }
+  });
 }
 
 function toBatteryPercent(value) {
@@ -374,7 +388,7 @@ function renderPowerIotState(state = {}) {
 
 async function loadPowerIotState() {
   try {
-    const response = await fetch(`${API_BASE_URL}/power-iot`);
+    const response = await apiFetch(`${API_BASE_URL}/power-iot`);
     if (!response.ok) throw new Error(`Power IoT API returned HTTP ${response.status}`);
 
     renderPowerIotState(await response.json());
@@ -388,7 +402,7 @@ async function setPowerIotOutput(on) {
   setPowerIotStatus(on, { pending: true });
 
   try {
-    const response = await fetch(`${API_BASE_URL}/power-iot`, {
+    const response = await apiFetch(`${API_BASE_URL}/power-iot`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -427,7 +441,7 @@ function renderDehumidifierState(state = {}) {
 
 async function loadDehumidifierState() {
   try {
-    const response = await fetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`);
+    const response = await apiFetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`);
     if (!response.ok) throw new Error(`Dehumidifier API returned HTTP ${response.status}`);
 
     renderDehumidifierState(await response.json());
@@ -441,7 +455,7 @@ async function setDehumidifierOutput(on) {
   setDehumidifierStatus(on, { pending: true });
 
   try {
-    const response = await fetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`, {
+    const response = await apiFetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -523,7 +537,7 @@ function renderAuditCostsError(message) {
 
 async function loadAuditCosts() {
   try {
-    const response = await fetch(`${API_BASE_URL}/audit-costs`);
+    const response = await apiFetch(`${API_BASE_URL}/audit-costs`);
     if (!response.ok) throw new Error(`Cost API returned HTTP ${response.status}`);
 
     renderAuditCosts(await response.json());
@@ -543,7 +557,7 @@ function chartPointRadius(values, checkFn) {
 
 async function loadThresholds() {
   try {
-    const response = await fetch(`${API_BASE_URL}/thresholds`);
+    const response = await apiFetch(`${API_BASE_URL}/thresholds`);
     if (!response.ok) throw new Error(`Threshold API returned HTTP ${response.status}`);
 
     const data = await response.json();
@@ -616,7 +630,7 @@ async function saveThresholds(resetCooldown = false) {
       input.disabled = true;
     });
 
-    const response = await fetch(`${API_BASE_URL}/thresholds`, {
+    const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...newLimits, resetCooldown })
@@ -655,7 +669,7 @@ async function applyCooldown() {
     const cooldownInput = document.getElementById("cooldownInput");
     cooldownInput.disabled = true;
 
-    const response = await fetch(`${API_BASE_URL}/thresholds`, {
+    const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...newLimits, resetCooldown: false })
@@ -698,7 +712,7 @@ async function resetCooldown() {
     resetBtn.disabled = true;
     resetBtn.textContent = "Resetting…";
 
-    const response = await fetch(`${API_BASE_URL}/thresholds`, {
+    const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...newLimits, resetCooldown: true })
@@ -931,19 +945,20 @@ function getSelectedRangeLabel() {
 }
 
 function handleRangeModeChange() {
-  loadData();
+  loadData({ silent: false });
 }
 
-async function loadData() {
+async function loadData(options = {}) {
   const hours = getSelectedHoursForApi();
   const url = `${API_BASE_URL}/measurements?deviceId=${encodeURIComponent(DEVICE_ID)}&hours=${hours}`;
 
-  document.getElementById("statusText").textContent = "Loading data…";
-  document.getElementById("statusDot").classList.remove("online", "alert");
-  setError("");
+  if (!options.silent) {
+    document.getElementById("statusText").textContent = "Loading data…";
+    document.getElementById("statusDot").classList.remove("online", "alert");
+  }
 
   try {
-    const response = await fetch(url);
+    const response = await apiFetch(url);
     if (!response.ok) throw new Error(`API returned HTTP ${response.status}`);
 
     const data = await response.json();
@@ -984,6 +999,7 @@ async function loadData() {
     document.getElementById("tempThresholdInfo").textContent = `Limits: ${LIMITS.minTemperature}–${LIMITS.maxTemperature} °C`;
     document.getElementById("humidityThresholdInfo").textContent = `Limits: ${LIMITS.minHumidity}–${LIMITS.maxHumidity} %`;
 
+    document.getElementById("statusDot").classList.remove("online", "alert");
     if (latestAlert) {
       document.getElementById("statusText").textContent = "Online · Current value threshold alert";
       document.getElementById("statusDot").classList.add("alert");
@@ -996,6 +1012,7 @@ async function loadData() {
 
     renderCharts(labels, temperatures, humidities);
     renderTable(items);
+    setError("");
   } catch (error) {
     console.error(error);
     document.getElementById("statusText").textContent = "Offline or API error";
@@ -1007,12 +1024,14 @@ async function loadData() {
   }
 }
 
-async function loadVideos() {
+async function loadVideos(options = {}) {
   const url = `${API_BASE_URL}/videos`;
-  document.getElementById("videoStatus").textContent = "Videos: loading…";
+  if (!options.silent) {
+    document.getElementById("videoStatus").textContent = "Videos: loading…";
+  }
 
   try {
-    const response = await fetch(url);
+    const response = await apiFetch(url);
     if (!response.ok) throw new Error(`Video API returned HTTP ${response.status}`);
 
     const data = await response.json();
@@ -1029,13 +1048,13 @@ async function loadEvents() {
   const url = `${API_BASE_URL}/events`;
 
   try {
-    const response = await fetch(url);
+    const response = await apiFetch(url);
     if (!response.ok) throw new Error(`Events API returned HTTP ${response.status}`);
 
     const data = await response.json();
     events = (data.items || []).filter(item => item.bucketMs === 10000);
-    eventPage = 1;
-    eventDayOpenState = {};
+    const maxPage = Math.max(1, Math.ceil(getEventGroups(events).length / EVENTS_PER_PAGE));
+    eventPage = Math.min(eventPage, maxPage);
 
     renderEventsTable(events);
   } catch (error) {
@@ -1507,26 +1526,62 @@ function registerEventListeners() {
   });
 }
 
+async function refreshLiveDashboardData(options = {}) {
+  await Promise.allSettled([
+    loadFloodState(),
+    loadPowerIotState(),
+    loadDehumidifierState(),
+    loadData({ silent: options.silent !== false })
+  ]);
+}
+
+async function refreshSurveillanceData(options = {}) {
+  await Promise.allSettled([
+    loadVideos({ silent: options.silent !== false }),
+    loadEvents()
+  ]);
+}
+
+async function refreshDashboardData(options = {}) {
+  await refreshLiveDashboardData(options);
+  await Promise.allSettled([
+    refreshSurveillanceData(options),
+    loadAuditCosts()
+  ]);
+}
+
+function startDashboardAutoRefresh() {
+  setInterval(() => {
+    if (!document.hidden) refreshLiveDashboardData({ silent: true });
+  }, LIVE_REFRESH_MS);
+
+  setInterval(() => {
+    if (!document.hidden) refreshSurveillanceData({ silent: true });
+  }, SURVEILLANCE_REFRESH_MS);
+
+  setInterval(() => {
+    if (!document.hidden) loadAuditCosts();
+  }, AUDIT_REFRESH_MS);
+
+  const refreshOnFocus = () => {
+    if (document.hidden) return;
+    const now = Date.now();
+    if (now - lastFocusRefreshAt < 3_000) return;
+    lastFocusRefreshAt = now;
+    refreshDashboardData({ silent: true });
+  };
+
+  document.addEventListener("visibilitychange", refreshOnFocus);
+  window.addEventListener("focus", refreshOnFocus);
+}
+
 async function init() {
   setupDefaultDateRange();
   registerEventListeners();
 
   await loadThresholds();
-  await loadFloodState();
-  await loadPowerIotState();
-  await loadDehumidifierState();
-  await loadVideos();
-  await loadEvents();
-  await loadAuditCosts();
-  loadData();
-
-  setInterval(loadData, 60_000);
-  setInterval(loadFloodState, 60_000);
-  setInterval(loadPowerIotState, 60_000);
-  setInterval(loadDehumidifierState, 60_000);
-  setInterval(loadVideos, 300_000);
-  setInterval(loadEvents, 300_000);
-  setInterval(loadAuditCosts, 1_800_000);
+  await refreshDashboardData({ silent: false });
+  startDashboardAutoRefresh();
 }
 
 if (window.StorageRetschwilAuth) {
