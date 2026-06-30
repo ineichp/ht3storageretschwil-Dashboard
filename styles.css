@@ -844,9 +844,11 @@ button:disabled {
   grid-column: 1 / -1;
   display: grid;
   gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .energy-year-row {
+  grid-column: 1 / -1;
   width: 100%;
   box-sizing: border-box;
   min-height: 48px;
