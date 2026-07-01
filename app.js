@@ -2,7 +2,10 @@ const API_BASE_URL = "https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com"
 const DEVICE_ID = "shellyhtg3-e4b3232fa628";
 const POWER_IOT_DEVICE_ID = "plugsstorageretschwil";
 const DEHUMIDIFIER_DEVICE_ID = "dehumidifier";
-const DEHUMIDIFIER_ACTIVE_WATTS = 10;
+const DEHUMIDIFIER_ON_WATTS = 200;
+const DEHUMIDIFIER_OFF_WATTS = 10;
+const DEHUMIDIFIER_TRANSITION_TIMEOUT_MS = 120_000;
+const DEHUMIDIFIER_TRANSITION_POLL_MS = 5_000;
 const LIVE_REFRESH_MS = 15_000;
 const SURVEILLANCE_REFRESH_MS = 60_000;
 const AUDIT_REFRESH_MS = 15 * 60_000;
@@ -27,6 +30,7 @@ let latestPowerIotState = {};
 let latestDehumidifierState = {};
 let latestAuditCosts = {};
 let lastFocusRefreshAt = 0;
+let dehumidifierTransition = null;
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -257,7 +261,7 @@ function setSwitchStatus(buttonId, valueId, cloudId, label, isOn, options = {}) 
   button.disabled = Boolean(options.pending) || !isOnline;
   button.setAttribute("aria-pressed", String(known && isOn));
   button.setAttribute("aria-label", `${label} is ${isOnline ? (known ? (isOn ? "on" : "off") : "unknown") : "offline"}`);
-  value.textContent = isOnline ? (known ? (isOn ? "ON" : "OFF") : "—") : "OFFLINE";
+  value.textContent = isOnline ? (options.pendingLabel || (known ? (isOn ? "ON" : "OFF") : "—")) : "OFFLINE";
 
   if (cloud) {
     cloud.className = `cloud-status ${isOnline ? "online" : "offline"}`;
@@ -311,6 +315,18 @@ function formatPowerWatts(value) {
 function positivePowerWatts(value) {
   const n = Number(value);
   return Number.isFinite(n) ? Math.abs(n) : null;
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getDehumidifierPowerState() {
+  const plugWatts = positivePowerWatts(latestPowerIotState.apower);
+  if (plugWatts === null) return null;
+  if (plugWatts > DEHUMIDIFIER_ON_WATTS) return true;
+  if (plugWatts < DEHUMIDIFIER_OFF_WATTS) return false;
+  return null;
 }
 
 function formatAmps(value) {
@@ -429,14 +445,21 @@ function bindPowerIotControl() {
 
 function renderDehumidifierState(state = {}) {
   latestDehumidifierState = state;
-  const relayOn = state.output === true || state.status === "on";
-  const relayOff = state.output === false || state.status === "off";
-  const plugWatts = positivePowerWatts(latestPowerIotState.apower);
-  const hasPlugPower = plugWatts !== null;
-  const isOn = relayOn && hasPlugPower && plugWatts > DEHUMIDIFIER_ACTIVE_WATTS;
-  const isOff = relayOff || (relayOn && hasPlugPower && plugWatts < DEHUMIDIFIER_ACTIVE_WATTS);
+  const powerState = getDehumidifierPowerState();
+  const now = Date.now();
+  const transition = dehumidifierTransition;
+  const transitionResolved = transition && powerState === transition.target;
+  const transitionActive = transition && !transitionResolved && now - transition.startedAt < DEHUMIDIFIER_TRANSITION_TIMEOUT_MS;
 
-  setDehumidifierStatus(isOn ? true : isOff ? false : null, { online: state.cloudConnected !== false });
+  if (transitionResolved || (transition && !transitionActive)) {
+    dehumidifierTransition = null;
+  }
+
+  setDehumidifierStatus(powerState, {
+    online: state.cloudConnected !== false,
+    pending: Boolean(transitionActive),
+    pendingLabel: transitionActive ? (transition.target ? "WAIT ON" : "WAIT OFF") : null
+  });
 }
 
 async function loadDehumidifierState() {
@@ -452,7 +475,11 @@ async function loadDehumidifierState() {
 }
 
 async function setDehumidifierOutput(on) {
-  setDehumidifierStatus(on, { pending: true });
+  dehumidifierTransition = {
+    target: on,
+    startedAt: Date.now()
+  };
+  renderDehumidifierState(latestDehumidifierState);
 
   try {
     const response = await apiFetch(`${API_BASE_URL}/power-iot?device=${encodeURIComponent(DEHUMIDIFIER_DEVICE_ID)}`, {
@@ -464,12 +491,31 @@ async function setDehumidifierOutput(on) {
     });
 
     if (!response.ok) throw new Error(`Dehumidifier API returned HTTP ${response.status}`);
-    renderDehumidifierState(await response.json());
-    await loadPowerIotState();
+    latestDehumidifierState = await response.json();
+    await waitForDehumidifierPowerState(on);
   } catch (error) {
     console.error(error);
+    dehumidifierTransition = null;
     renderDehumidifierState(latestDehumidifierState);
   }
+}
+
+async function waitForDehumidifierPowerState(target) {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < DEHUMIDIFIER_TRANSITION_TIMEOUT_MS) {
+    await delay(DEHUMIDIFIER_TRANSITION_POLL_MS);
+    await loadPowerIotState();
+
+    if (getDehumidifierPowerState() === target) {
+      dehumidifierTransition = null;
+      renderDehumidifierState(latestDehumidifierState);
+      return;
+    }
+  }
+
+  dehumidifierTransition = null;
+  renderDehumidifierState(latestDehumidifierState);
 }
 
 function bindDehumidifierControl() {
