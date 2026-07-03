@@ -58,6 +58,7 @@ function renderFloodState(state = {}) {
   const icon = document.getElementById("floorFloodIcon");
   const meta = document.getElementById("floorFloodMeta");
 
+  status.classList.remove("loading-inline");
   status.textContent = isFlood ? "Flood" : "Dry";
   status.className = thresholdClass(isFlood);
   if (icon) {
@@ -82,8 +83,10 @@ async function loadFloodState() {
     renderFloodState(await response.json());
   } catch (error) {
     console.error(error);
-    document.getElementById("floorFloodStatus").textContent = "Dry";
-    document.getElementById("floorFloodStatus").className = thresholdClass(false);
+    const status = document.getElementById("floorFloodStatus");
+    status.classList.remove("loading-inline");
+    status.textContent = "Dry";
+    status.className = thresholdClass(false);
     const icon = document.getElementById("floorFloodIcon");
     if (icon) {
       icon.className = "floor-flood-icon dry";
@@ -100,7 +103,10 @@ async function loadFloodState() {
 
 function setText(id, value) {
   const element = document.getElementById(id);
-  if (element) element.textContent = value;
+  if (element) {
+    element.classList.remove("loading-inline");
+    element.textContent = value;
+  }
 }
 
 function apiFetch(url, options = {}) {
@@ -250,6 +256,7 @@ function renderBatteryStatus(prefix, percentValue) {
 
   if (percent === null) {
     icon.className = "battery-icon unknown";
+    value.classList.remove("loading-inline");
     value.textContent = "—";
     return;
   }
@@ -258,6 +265,7 @@ function renderBatteryStatus(prefix, percentValue) {
   const state = percent <= 10 ? "critical" : percent <= 25 ? "warning" : "";
 
   icon.className = `battery-icon level-${level}${state ? ` ${state}` : ""}`;
+  value.classList.remove("loading-inline");
   value.textContent = `${percent}%`;
 }
 
@@ -1049,9 +1057,11 @@ async function loadData(options = {}) {
     const currentTemp = document.getElementById("currentTemp");
     const currentHumidity = document.getElementById("currentHumidity");
 
+    currentTemp.classList.remove("loading-inline");
     currentTemp.textContent = Number(latest.temperature).toFixed(1);
     currentTemp.className = thresholdClass(latestTempAlert);
 
+    currentHumidity.classList.remove("loading-inline");
     currentHumidity.textContent = Number(latest.humidity).toFixed(1);
     currentHumidity.className = thresholdClass(latestHumidityAlert);
 

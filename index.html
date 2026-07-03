@@ -98,16 +98,16 @@
         <div class="control-switch-card" aria-label="Power IoT switch status">
           <span>Power IoT</span>
           <div class="control-switch-row">
-            <span id="powerIotCloud" class="cloud-status online" title="Power IoT online" aria-label="Power IoT online">
+            <span id="powerIotCloud" class="cloud-status offline" title="Power IoT loading" aria-label="Power IoT loading">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M7.5 18h10.2a4.3 4.3 0 0 0 .2-8.6A6.2 6.2 0 0 0 6 8.2 4.9 4.9 0 0 0 7.5 18Z" />
                 <path class="cloud-slash" d="M4 4l16 16" />
               </svg>
             </span>
-            <button id="powerIotSwitch" class="iot-switch on" type="button" aria-label="Power IoT is on" aria-pressed="true">
+            <button id="powerIotSwitch" class="iot-switch off pending" type="button" aria-label="Power IoT loading" aria-pressed="false" disabled>
               <span></span>
             </button>
-            <strong id="powerIotStatus" class="visually-hidden">ON</strong>
+            <strong id="powerIotStatus" class="visually-hidden">Loading</strong>
           </div>
         </div>
 
@@ -120,10 +120,10 @@
                 <path class="cloud-slash" d="M4 4l16 16" />
               </svg>
             </span>
-            <button id="dehumidifierSwitch" class="iot-switch off" type="button" aria-label="Dehumidifier is offline" aria-pressed="false" disabled>
+            <button id="dehumidifierSwitch" class="iot-switch off pending" type="button" aria-label="Dehumidifier loading" aria-pressed="false" disabled>
               <span></span>
             </button>
-            <strong id="dehumidifierStatus" class="visually-hidden">OFFLINE</strong>
+            <strong id="dehumidifierStatus" class="visually-hidden">Loading</strong>
           </div>
         </div>
       </div>
@@ -147,13 +147,13 @@
             <div class="metric-row">
               <article class="card metric">
                 <div class="label">Current Temperature</div>
-                <div class="value"><span id="currentTemp">—</span><span class="unit">°C</span></div>
+                <div class="value"><span id="currentTemp" class="loading-inline">Loading</span><span class="unit">°C</span></div>
                 <div id="tempTrend" class="trend">Last update: —</div>
               </article>
 
               <article class="card metric">
                 <div class="label">Current Humidity</div>
-                <div class="value"><span id="currentHumidity">—</span><span class="unit">%</span></div>
+                <div class="value"><span id="currentHumidity" class="loading-inline">Loading</span><span class="unit">%</span></div>
                 <div id="humidityTrend" class="trend">Last update: —</div>
               </article>
 
@@ -166,7 +166,7 @@
                       <small id="ht3DeviceUpdate">Last update: —</small>
                     </div>
                     <div class="battery-readout">
-                      <span id="ht3PowerStatus" class="power-status unknown" title="External power status unknown" aria-label="External power status unknown">
+                      <span id="ht3PowerStatus" class="power-status loading" title="External power loading" aria-label="External power loading">
                         <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M9 7v5m6-5v5m-8 0h10v3a5 5 0 0 1-10 0v-3Zm5 8v3" />
                           <path class="plug-slash" d="M4 4l16 16" />
@@ -175,7 +175,7 @@
                       <div id="ht3BatteryIcon" class="battery-icon unknown" aria-hidden="true">
                         <i></i><i></i><i></i><i></i>
                       </div>
-                      <strong id="ht3BatteryValue">—</strong>
+                      <strong id="ht3BatteryValue" class="loading-inline">Loading</strong>
                     </div>
                   </div>
 
@@ -185,7 +185,7 @@
                       <small id="floodDeviceUpdate">Last update: —</small>
                     </div>
                     <div class="battery-readout">
-                      <span id="floodCableStatus" class="power-status unknown" title="Flood cable status unknown" aria-label="Flood cable status unknown">
+                      <span id="floodCableStatus" class="power-status loading" title="Flood cable loading" aria-label="Flood cable loading">
                         <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M9 7v5m6-5v5m-8 0h10v3a5 5 0 0 1-10 0v-3Zm5 8v3" />
                           <path class="plug-slash" d="M4 4l16 16" />
@@ -194,7 +194,7 @@
                       <div id="floodBatteryIcon" class="battery-icon unknown" aria-hidden="true">
                         <i></i><i></i><i></i><i></i>
                       </div>
-                      <strong id="floodBatteryValue">—</strong>
+                      <strong id="floodBatteryValue" class="loading-inline">Loading</strong>
                     </div>
                   </div>
 
@@ -205,7 +205,7 @@
               <article class="card metric">
                 <div class="label">Floor Flood</div>
                 <div class="value floor-flood-value">
-                  <span id="floorFloodIcon" class="floor-flood-icon dry" title="Floor Flood dry" aria-label="Floor Flood dry">
+                  <span id="floorFloodIcon" class="floor-flood-icon loading" title="Floor Flood loading" aria-label="Floor Flood loading">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path class="flood-drop" d="M12 3.5C9.3 7.1 6.5 10.9 6.5 14.1A5.5 5.5 0 0 0 12 19.6a5.5 5.5 0 0 0 5.5-5.5C17.5 10.9 14.7 7.1 12 3.5Z" />
                       <path class="flood-check" d="M9.4 14.1l1.7 1.7 3.5-4" />
@@ -213,7 +213,7 @@
                       <path class="flood-alert" d="M12 15.8h.01" />
                     </svg>
                   </span>
-                  <span id="floorFloodStatus">Dry</span>
+                  <span id="floorFloodStatus" class="loading-inline">Loading</span>
                 </div>
                 <div id="floorFloodMeta" class="trend">Last update: —</div>
               </article>
@@ -314,25 +314,25 @@
               <div class="audit-cost-row">
                 <article class="card metric audit-cost-card">
                   <div class="label">Month to date</div>
-                  <div class="value"><span id="auditMonthCost">—</span></div>
+                  <div class="value"><span id="auditMonthCost" class="loading-inline">Loading</span></div>
                   <div id="auditMonthCostMeta" class="trend">Loading costs</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Daily average</div>
-                  <div class="value"><span id="auditDailyCost">—</span></div>
+                  <div class="value"><span id="auditDailyCost" class="loading-inline">Loading</span></div>
                   <div id="auditDailyCostMeta" class="trend">Current month average</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Last day</div>
-                  <div class="value"><span id="auditLastDayCost">—</span></div>
+                  <div class="value"><span id="auditLastDayCost" class="loading-inline">Loading</span></div>
                   <div id="auditLastDayMeta" class="trend">Most recent cost day</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Top service</div>
-                  <div class="value audit-service-value"><span id="auditTopServiceCost">—</span></div>
+                  <div class="value audit-service-value"><span id="auditTopServiceCost" class="loading-inline">Loading</span></div>
                   <div id="auditTopServiceMeta" class="trend">Highest month-to-date service</div>
                 </article>
               </div>
@@ -345,25 +345,25 @@
               <div class="audit-cost-row energy-cost-row">
                 <article class="card metric audit-cost-card">
                   <div class="label">Current power</div>
-                  <div class="value"><span id="energyCurrentPower">—</span><span class="unit">W</span></div>
+                  <div class="value"><span id="energyCurrentPower" class="loading-inline">Loading</span><span class="unit">W</span></div>
                   <div id="energyCurrentMeta" class="trend">Live reading</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Month estimate</div>
-                  <div class="value"><span id="energyMonthEstimate">—</span></div>
+                  <div class="value"><span id="energyMonthEstimate" class="loading-inline">Loading</span></div>
                   <div id="energyMonthMeta" class="trend">Based on current usage</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Total Costs</div>
-                  <div class="value"><span id="energyTotalCost">—</span></div>
+                  <div class="value"><span id="energyTotalCost" class="loading-inline">Loading</span></div>
                   <div id="energyTotalMeta" class="trend">Since reset</div>
                 </article>
 
                 <article class="card metric audit-cost-card">
                   <div class="label">Total energy</div>
-                  <div class="value"><span id="energyTotalKwh">—</span><span class="unit">kWh</span></div>
+                  <div class="value"><span id="energyTotalKwh" class="loading-inline">Loading</span><span class="unit">kWh</span></div>
                   <div id="energyTotalKwhMeta" class="trend">Since reset</div>
                 </article>
 

@@ -109,6 +109,19 @@ h1 {
   white-space: nowrap !important;
 }
 
+.loading-inline {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  overflow: hidden;
+  color: transparent !important;
+  border: 2px solid rgba(45, 212, 191, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: control-spin 0.85s linear infinite;
+  vertical-align: middle;
+}
+
 .subtitle {
   margin: 0;
   color: var(--muted);
@@ -558,6 +571,22 @@ h1 {
   opacity: 1;
 }
 
+.power-status.loading .power-plug-icon,
+.floor-flood-icon.loading svg {
+  display: none;
+}
+
+.power-status.loading::before,
+.floor-flood-icon.loading::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(45, 212, 191, 0.22);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: control-spin 0.85s linear infinite;
+}
+
 .floor-flood-value {
   gap: 10px;
 }
@@ -611,6 +640,12 @@ h1 {
 
 .floor-flood-icon.flood .flood-alert {
   opacity: 1;
+}
+
+.floor-flood-icon.loading {
+  border-color: rgba(45, 212, 191, 0.3);
+  background: rgba(45, 212, 191, 0.09);
+  color: var(--accent);
 }
 
 button.iot-switch,
