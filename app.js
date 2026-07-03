@@ -257,8 +257,9 @@ function setSwitchStatus(buttonId, valueId, cloudId, label, isOn, options = {}) 
 
   const known = typeof isOn === "boolean";
   const isOnline = options.online !== false;
-  button.className = `iot-switch ${known && isOn ? "on" : "off"}`;
-  button.disabled = Boolean(options.pending) || !isOnline;
+  const pending = Boolean(options.pending) || (isOnline && !known);
+  button.className = `iot-switch ${known && isOn ? "on" : "off"}${pending ? " pending" : ""}`;
+  button.disabled = pending || !isOnline;
   button.setAttribute("aria-pressed", String(known && isOn));
   button.setAttribute("aria-label", `${label} is ${isOnline ? (known ? (isOn ? "on" : "off") : "unknown") : "offline"}`);
   value.textContent = isOnline ? (options.pendingLabel || (known ? (isOn ? "ON" : "OFF") : "—")) : "OFFLINE";
@@ -756,7 +757,7 @@ async function resetCooldown() {
   try {
     const resetBtn = document.getElementById("resetCooldownButton");
     resetBtn.disabled = true;
-    resetBtn.textContent = "Resetting…";
+    resetBtn.setAttribute("aria-busy", "true");
 
     const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
@@ -785,7 +786,7 @@ async function resetCooldown() {
   } finally {
     const resetBtn = document.getElementById("resetCooldownButton");
     resetBtn.disabled = false;
-    resetBtn.textContent = "Reset";
+    resetBtn.removeAttribute("aria-busy");
   }
 }
 

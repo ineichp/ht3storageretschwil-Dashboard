@@ -23,19 +23,7 @@
         <h1>Storage Retschwil</h1>
       </div>
 
-      <label class="date-field cooldown-field">
-        <span>Cooldown WA Alert</span>
-        <div class="cooldown-actions">
-          <select id="cooldownInput">
-            <option value="1">1h</option>
-            <option value="6">6h</option>
-            <option value="12">12h</option>
-            <option value="24">24h</option>
-          </select>
-          <button id="resetCooldownButton" type="button">Reset</button>
-          <button id="signOutButton" class="auth-signout" type="button">Logout</button>
-        </div>
-      </label>
+      <button id="signOutButton" class="auth-signout topbar-signout" type="button">Logout</button>
     </section>
 
     <div id="errorBox" class="error"></div>
@@ -87,6 +75,24 @@
               <option value="720">Last 30 days</option>
             </select>
           </div>
+
+          <label class="date-field cooldown-field">
+            <span>Cooldown WA Alert</span>
+            <div class="cooldown-actions">
+              <select id="cooldownInput">
+                <option value="1">1h</option>
+                <option value="6">6h</option>
+                <option value="12">12h</option>
+                <option value="24">24h</option>
+              </select>
+              <button id="resetCooldownButton" class="round-icon-button reset-icon-button" type="button" aria-label="Reset cooldown">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" />
+                  <path d="M4.5 5.3v4.4h4.4" />
+                </svg>
+              </button>
+            </div>
+          </label>
         </div>
 
         <div class="control-switch-card" aria-label="Power IoT switch status">
@@ -101,9 +107,8 @@
             <button id="powerIotSwitch" class="iot-switch on" type="button" aria-label="Power IoT is on" aria-pressed="true">
               <span></span>
             </button>
-            <strong id="powerIotStatus">ON</strong>
+            <strong id="powerIotStatus" class="visually-hidden">ON</strong>
           </div>
-          <div class="control-switch-meta">Shelly PlugS</div>
         </div>
 
         <div class="control-switch-card" aria-label="Dehumidifier switch status">
@@ -118,9 +123,8 @@
             <button id="dehumidifierSwitch" class="iot-switch off" type="button" aria-label="Dehumidifier is offline" aria-pressed="false" disabled>
               <span></span>
             </button>
-            <strong id="dehumidifierStatus">OFFLINE</strong>
+            <strong id="dehumidifierStatus" class="visually-hidden">OFFLINE</strong>
           </div>
-          <div class="control-switch-meta">UniPlus Power</div>
         </div>
       </div>
     </div>
