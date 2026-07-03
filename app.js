@@ -228,12 +228,12 @@ function renderDeviceStatusMeta() {
   ].filter((item) => Number.isFinite(item.time));
 
   if (ht3Update) {
-    ht3Update.textContent = latestHt3Update ? `Last update: ${formatDeviceUpdateTime(latestHt3Update)}` : "Last update: —";
+    ht3Update.textContent = latestHt3Update ? formatDeviceUpdateTime(latestHt3Update) : "—";
   }
 
   const floodTime = latestFloodState?.updatedAt ? new Date(latestFloodState.updatedAt).getTime() : null;
   if (floodUpdate) {
-    floodUpdate.textContent = Number.isFinite(floodTime) ? `Last update: ${formatDeviceUpdateTime(floodTime)}` : "Last update: —";
+    floodUpdate.textContent = Number.isFinite(floodTime) ? formatDeviceUpdateTime(floodTime) : "—";
   }
 
   if (!meta) return;

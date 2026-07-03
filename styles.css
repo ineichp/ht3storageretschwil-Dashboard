@@ -510,10 +510,10 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0;
-  text-transform: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
