@@ -694,6 +694,7 @@ button.iot-switch,
   min-width: 28px;
   min-height: 28px;
   padding: 0;
+  box-sizing: border-box;
   border-radius: 50%;
   border: 1px solid rgba(210, 222, 240, 0.14);
   background: rgba(15, 20, 32, 0.78);
@@ -1043,6 +1044,18 @@ button:disabled {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.audit-cost-row.energy-cost-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.audit-cost-row.energy-cost-row > .audit-cost-card {
+  grid-column: auto;
+}
+
+.audit-cost-row.energy-cost-row > .energy-year-list {
+  grid-column: 1 / -1;
+}
+
 .audit-cost-group {
   grid-column: span 12;
   display: grid;
@@ -1084,19 +1097,22 @@ button:disabled {
 
 .energy-year-list {
   width: 100%;
+  min-width: 0;
   grid-column: 1 / -1;
+  justify-self: stretch;
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .energy-year-row {
   grid-column: 1 / -1;
   width: 100%;
   box-sizing: border-box;
+  justify-self: stretch;
   min-height: 48px;
   display: grid;
-  grid-template-columns: minmax(160px, 1.4fr) repeat(3, minmax(140px, 1fr));
+  grid-template-columns: minmax(150px, 1.2fr) repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
@@ -1131,6 +1147,7 @@ button:disabled {
 .energy-year-row strong {
   color: var(--success);
   font-size: 18px;
+  white-space: nowrap;
 }
 
 .energy-year-row small {
@@ -1693,6 +1710,7 @@ tr:last-child td {
   }
   .metric-row,
   .audit-cost-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .audit-cost-row.energy-cost-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .chart-card { min-height: 340px; }
   canvas { max-height: 260px; }
 
@@ -1768,6 +1786,10 @@ tr:last-child td {
     width: 28px;
     min-width: 28px;
     height: 28px;
+    min-height: 28px;
+    padding: 0;
+    border-radius: 50%;
+    flex: 0 0 28px;
   }
 
   .readings-table {
@@ -1937,20 +1959,47 @@ tr:last-child td {
   .cooldown-actions select,
   .cooldown-field select { width: 66px; }
   .cooldown-actions button {
-    padding-left: 9px;
-    padding-right: 9px;
+    padding-left: 0;
+    padding-right: 0;
   }
   .controls { grid-template-columns: 1fr; }
   .threshold-controls { grid-template-columns: 1fr; }
   .metric { grid-column: span 12; }
   .metric-row,
   .audit-cost-row { grid-template-columns: 1fr; }
+  .audit-cost-row.energy-cost-row { grid-template-columns: 1fr; }
+  .energy-year-list {
+    width: 100%;
+    justify-self: stretch;
+  }
+  .energy-year-header {
+    display: none;
+  }
   .energy-year-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+    gap: 8px 10px;
+    width: 100%;
+    padding: 12px;
   }
   .energy-year-row > span:first-child {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
+  .energy-year-row strong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 17px;
+  }
+  .energy-year-row strong::before {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .energy-year-row strong:nth-child(2)::before { content: "AWS"; }
+  .energy-year-row strong:nth-child(3)::before { content: "Energy"; }
+  .energy-year-row strong:nth-child(4)::before { content: "Total"; }
   .last-reading-time { font-size: 18px; }
 }
 
