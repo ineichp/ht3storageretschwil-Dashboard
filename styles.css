@@ -267,6 +267,17 @@ h1 {
   min-height: 30px;
 }
 
+.switch-threshold-input {
+  width: 48px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 6px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 30px;
+  flex: 0 0 48px;
+}
+
 .control-switch-row strong {
   min-width: 42px;
   color: var(--text);

@@ -15,6 +15,7 @@ let LIMITS = {
   minTemperature: 5,
   maxHumidity: 50,
   minHumidity: 0,
+  dehumidifierHumidityThreshold: 60,
   cooldownHours: 24
 };
 
@@ -646,6 +647,7 @@ async function loadThresholds() {
       maxTemperature: Number(data.maxTemperature),
       minHumidity: Number(data.minHumidity),
       maxHumidity: Number(data.maxHumidity),
+      dehumidifierHumidityThreshold: Number(data.dehumidifierHumidityThreshold || 60),
       cooldownHours: Number(data.cooldownHours || 24)
     };
 
@@ -662,6 +664,7 @@ function renderThresholdInputs() {
   document.getElementById("maxTempInput").value = LIMITS.maxTemperature;
   document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
   document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
+  document.getElementById("dehumidifierHumidityThresholdInput").value = LIMITS.dehumidifierHumidityThreshold || 60;
   document.getElementById("cooldownInput").value = LIMITS.cooldownHours || 24;
 }
 
@@ -671,6 +674,7 @@ function getLimitsFromInputs() {
     maxTemperature: Number(document.getElementById("maxTempInput").value),
     minHumidity: Number(document.getElementById("minHumidityInput").value),
     maxHumidity: Number(document.getElementById("maxHumidityInput").value),
+    dehumidifierHumidityThreshold: Number(document.getElementById("dehumidifierHumidityThresholdInput").value),
     cooldownHours: Number(document.getElementById("cooldownInput").value)
   };
 }
@@ -681,6 +685,7 @@ function validateLimits(newLimits) {
     !Number.isFinite(newLimits.maxTemperature) ||
     !Number.isFinite(newLimits.minHumidity) ||
     !Number.isFinite(newLimits.maxHumidity) ||
+    !Number.isFinite(newLimits.dehumidifierHumidityThreshold) ||
     !Number.isFinite(newLimits.cooldownHours)
   ) {
     setError("Please enter valid threshold numbers.");
@@ -697,6 +702,11 @@ function validateLimits(newLimits) {
     return false;
   }
 
+  if (newLimits.dehumidifierHumidityThreshold < 0 || newLimits.dehumidifierHumidityThreshold > 99) {
+    setError("Dehumidifier humidity threshold must be between 0 and 99%.");
+    return false;
+  }
+
   return true;
 }
 
@@ -705,7 +715,7 @@ async function saveThresholds(resetCooldown = false) {
   if (!validateLimits(newLimits)) return;
 
   try {
-    document.querySelectorAll(".threshold-grid input").forEach(input => {
+    document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
       input.disabled = true;
     });
 
@@ -724,6 +734,7 @@ async function saveThresholds(resetCooldown = false) {
       maxTemperature: Number(saved.maxTemperature),
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
+      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
       cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours)
     };
 
@@ -734,7 +745,7 @@ async function saveThresholds(resetCooldown = false) {
     console.error(error);
     setError(`Could not save thresholds: ${error.message}`);
   } finally {
-    document.querySelectorAll(".threshold-grid input").forEach(input => {
+    document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
       input.disabled = false;
     });
   }
@@ -763,6 +774,7 @@ async function applyCooldown() {
       maxTemperature: Number(saved.maxTemperature),
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
+      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
       cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours)
     };
 
@@ -806,6 +818,7 @@ async function resetCooldown() {
       maxTemperature: Number(saved.maxTemperature),
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
+      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
       cooldownHours: Number(saved.cooldownHours || 6)
     };
 
@@ -1604,7 +1617,7 @@ function registerEventListeners() {
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
   document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
-  document.querySelectorAll(".threshold-grid input").forEach(input => {
+  document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
     input.addEventListener("change", () => saveThresholds(false));
   });
   document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
