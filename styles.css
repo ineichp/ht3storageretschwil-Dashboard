@@ -69,10 +69,11 @@ h1 {
   flex: 0 0 auto;
   width: max-content;
   margin-left: auto;
+  gap: 3px;
   background: rgba(15, 20, 32, 0.72);
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
-  padding: 5px 8px;
+  padding: 4px 8px;
   box-shadow: none;
   justify-content: stretch;
 }
@@ -82,7 +83,7 @@ h1 {
   grid-template-columns: 72px 28px;
   gap: 6px;
   align-items: center;
-  min-height: 30px;
+  min-height: 28px;
 }
 
 .cooldown-actions select,
@@ -186,9 +187,9 @@ h1 {
 
 .control-console {
   display: grid;
-  gap: 8px;
-  margin-bottom: 18px;
-  padding: 8px;
+  gap: 5px;
+  margin-bottom: 14px;
+  padding: 6px 8px 8px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: rgba(18, 23, 34, 0.82);
@@ -201,7 +202,12 @@ h1 {
   border-bottom: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: 0;
   background: transparent;
-  padding: 2px 2px 9px;
+  padding: 1px 2px 5px;
+}
+
+.status-row.control-status {
+  margin-bottom: 0;
+  padding: 1px 2px 5px;
 }
 
 .console-grid {
@@ -226,21 +232,21 @@ h1 {
 .control-console .date-range-picker,
 .control-console .cooldown-field,
 .control-switch-card {
-  height: 58px;
-  min-height: 58px;
+  height: 54px;
+  min-height: 54px;
 }
 
 .control-switch-card {
   min-width: 112px;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 14px 30px;
-  gap: 4px;
+  grid-template-rows: 13px 28px;
+  gap: 3px;
   align-content: stretch;
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
-  padding: 5px 8px;
+  padding: 4px 8px;
 }
 
 .control-switch-card > span {
@@ -249,7 +255,7 @@ h1 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  line-height: 14px;
+  line-height: 13px;
   white-space: nowrap;
 }
 
@@ -258,7 +264,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 30px;
+  min-height: 28px;
 }
 
 .control-switch-row strong {
@@ -412,11 +418,11 @@ h1 {
 
 .threshold-panel,
 .date-range-picker {
-  height: 60px;
+  height: 54px;
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
-  padding: 5px 6px;
+  padding: 4px 6px;
   min-width: 0;
 }
 
@@ -435,8 +441,8 @@ h1 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  line-height: 14px;
-  margin-bottom: 3px;
+  line-height: 13px;
+  margin-bottom: 2px;
   white-space: nowrap;
 }
 
@@ -448,7 +454,7 @@ h1 {
 }
 
 .compact-threshold-field {
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -456,11 +462,11 @@ h1 {
   width: 100%;
   min-width: 0;
   text-align: center;
-  height: 34px;
-  min-height: 34px;
+  height: 31px;
+  min-height: 31px;
   padding: 0 5px;
   font-size: 12px;
-  line-height: 34px;
+  line-height: 31px;
 }
 
 .date-range-picker {
@@ -475,11 +481,11 @@ h1 {
 .date-range-picker select {
   width: auto;
   min-width: 112px;
-  height: 34px;
-  min-height: 34px;
+  height: 31px;
+  min-height: 31px;
   padding: 0 28px 0 10px;
   font-size: 12px;
-  line-height: 34px;
+  line-height: 31px;
 }
 
 .battery-metric-stack {
@@ -787,8 +793,13 @@ button.iot-switch.pending span::before {
 .control-console .date-field span,
 .control-console .threshold-field span,
 .control-switch-card > span {
-  line-height: 14px;
-  margin-bottom: 3px;
+  line-height: 13px;
+}
+
+.control-console .cooldown-field > span,
+.control-console .threshold-field span,
+.control-switch-card > span {
+  margin-bottom: 0;
 }
 
 select, button, input {
@@ -1595,7 +1606,7 @@ tr:last-child td {
     width: 100%;
     align-self: auto;
     min-width: 0;
-    padding: 5px 8px;
+    padding: 4px 8px;
   }
   .cooldown-actions {
     grid-template-columns: minmax(72px, 1fr) 28px;
@@ -1637,7 +1648,7 @@ tr:last-child td {
   .control-console .cooldown-field,
   .control-switch-card {
     height: auto;
-    min-height: 58px;
+    min-height: 54px;
   }
   .control-switch-card {
     min-width: 0;
@@ -1730,7 +1741,7 @@ tr:last-child td {
 
   .threshold-field input,
   .threshold-field select,
-  .threshold-controls button { min-height: 30px; }
+  .threshold-controls button { min-height: 31px; }
 
   .threshold-controls .round-icon-button,
   .cooldown-actions .round-icon-button {
