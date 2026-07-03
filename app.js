@@ -210,7 +210,8 @@ function renderCableStatus(prefix, isUnplugged) {
 
 function renderDeviceStatusMeta() {
   const meta = document.getElementById("deviceStatusMeta");
-  if (!meta) return;
+  const ht3Update = document.getElementById("ht3DeviceUpdate");
+  const floodUpdate = document.getElementById("floodDeviceUpdate");
 
   const updates = [
     { time: latestHt3Update, source: "HT3" },
@@ -219,6 +220,17 @@ function renderDeviceStatusMeta() {
       source: "Flood"
     }
   ].filter((item) => Number.isFinite(item.time));
+
+  if (ht3Update) {
+    ht3Update.textContent = latestHt3Update ? `Last update: ${formatDeviceUpdateTime(latestHt3Update)}` : "Last update: —";
+  }
+
+  const floodTime = latestFloodState?.updatedAt ? new Date(latestFloodState.updatedAt).getTime() : null;
+  if (floodUpdate) {
+    floodUpdate.textContent = Number.isFinite(floodTime) ? `Last update: ${formatDeviceUpdateTime(floodTime)}` : "Last update: —";
+  }
+
+  if (!meta) return;
 
   if (!updates.length) {
     meta.textContent = "Last update: —";
@@ -849,6 +861,15 @@ function formatDateTime(value) {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function formatDeviceUpdateTime(value) {
+  return new Date(value).toLocaleString("de-CH", {
+    day: "2-digit",
+    month: "2-digit",
     hour: "2-digit",
     minute: "2-digit"
   });

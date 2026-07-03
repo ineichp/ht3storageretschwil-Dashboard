@@ -161,7 +161,10 @@
                 <div class="label">Device Status</div>
                 <div class="battery-metric-stack">
                   <div class="battery-status" aria-label="HT3 sensor battery">
-                    <span>HT3</span>
+                    <div class="device-status-name">
+                      <span>HT3</span>
+                      <small id="ht3DeviceUpdate">Last update: —</small>
+                    </div>
                     <div class="battery-readout">
                       <span id="ht3PowerStatus" class="power-status unknown" title="External power status unknown" aria-label="External power status unknown">
                         <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -177,7 +180,10 @@
                   </div>
 
                   <div class="battery-status" aria-label="Flood sensor battery">
-                    <span>Flood</span>
+                    <div class="device-status-name">
+                      <span>Flood</span>
+                      <small id="floodDeviceUpdate">Last update: —</small>
+                    </div>
                     <div class="battery-readout">
                       <span id="floodCableStatus" class="power-status unknown" title="Flood cable status unknown" aria-label="Flood cable status unknown">
                         <svg class="power-plug-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -193,7 +199,7 @@
                   </div>
 
                 </div>
-                <div id="deviceStatusMeta" class="trend">Last update: —</div>
+                <div id="deviceStatusMeta" class="trend visually-hidden">Last update: —</div>
               </article>
 
               <article class="card metric">
