@@ -72,27 +72,31 @@ h1 {
   background: rgba(15, 20, 32, 0.72);
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
-  padding: 6px 8px;
+  padding: 5px 8px;
   box-shadow: none;
+  justify-content: stretch;
 }
 
 .cooldown-actions {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 72px 28px;
   gap: 6px;
   align-items: center;
+  min-height: 30px;
 }
 
 .cooldown-actions select,
 .cooldown-actions button {
-  min-height: 34px;
+  height: 28px;
+  min-height: 28px;
   min-width: 0;
-  padding: 7px 9px;
 }
 
 .cooldown-actions select {
   width: 72px;
-  padding: 7px 9px;
+  padding: 0 24px 0 8px;
+  font-size: 12px;
+  line-height: 28px;
 }
 
 .topbar-signout {
@@ -223,18 +227,20 @@ h1 {
 .control-console .cooldown-field,
 .control-switch-card {
   height: 58px;
+  min-height: 58px;
 }
 
 .control-switch-card {
-  min-width: 106px;
+  min-width: 112px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 6px;
-  align-content: center;
+  grid-template-rows: 14px 30px;
+  gap: 4px;
+  align-content: stretch;
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
   background: rgba(15, 20, 32, 0.72);
-  padding: 6px 9px;
+  padding: 5px 8px;
 }
 
 .control-switch-card > span {
@@ -243,13 +249,16 @@ h1 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 14px;
+  white-space: nowrap;
 }
 
 .control-switch-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  min-height: 30px;
 }
 
 .control-switch-row strong {
@@ -261,8 +270,8 @@ h1 {
 }
 
 .cloud-status {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -273,8 +282,8 @@ h1 {
 }
 
 .cloud-status svg {
-  width: 15px;
-  height: 15px;
+  width: 19px;
+  height: 19px;
   display: block;
   overflow: visible;
 }
@@ -417,14 +426,18 @@ h1 {
 }
 
 .control-panel-title,
-.date-range-picker > span {
+.date-range-picker > span,
+.cooldown-field > span,
+.threshold-field span {
   display: block;
   color: var(--muted);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 14px;
   margin-bottom: 3px;
+  white-space: nowrap;
 }
 
 .threshold-grid {
@@ -650,9 +663,10 @@ h1 {
 
 button.iot-switch,
 .round-icon-button {
-  width: 34px;
-  height: 34px;
-  min-height: 34px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
   padding: 0;
   border-radius: 50%;
   border: 1px solid rgba(210, 222, 240, 0.14);
@@ -668,8 +682,8 @@ button.iot-switch,
 }
 
 button.iot-switch span {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   margin: 0;
   border-radius: 50%;
   border: 2px solid currentColor;
@@ -684,7 +698,7 @@ button.iot-switch span::before {
   left: 50%;
   top: -5px;
   width: 2px;
-  height: 8px;
+  height: 7px;
   border-radius: 999px;
   background: currentColor;
   transform: translateX(-50%);
@@ -710,8 +724,8 @@ button.iot-switch.off span {
 }
 
 button.iot-switch.pending span {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-color: rgba(45, 212, 191, 0.24);
   border-top-color: #2dd4bf;
   animation: control-spin 0.85s linear infinite;
@@ -722,8 +736,8 @@ button.iot-switch.pending span::before {
 }
 
 .round-icon-button svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
@@ -768,6 +782,13 @@ button.iot-switch.pending span::before {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.control-console .date-field span,
+.control-console .threshold-field span,
+.control-switch-card > span {
+  line-height: 14px;
+  margin-bottom: 3px;
 }
 
 select, button, input {
@@ -1574,22 +1595,22 @@ tr:last-child td {
     width: 100%;
     align-self: auto;
     min-width: 0;
-    padding: 6px 8px;
+    padding: 5px 8px;
   }
   .cooldown-actions {
-    grid-template-columns: minmax(72px, 1fr) 34px;
+    grid-template-columns: minmax(72px, 1fr) 28px;
     gap: 6px;
   }
   .cooldown-actions button {
     min-width: 0;
-    padding-left: 9px;
-    padding-right: 9px;
+    padding: 0;
   }
   .cooldown-field select {
     min-width: 0;
     width: 72px;
-    min-height: 38px;
-    padding: 8px 10px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0 24px 0 8px;
   }
   .subtitle { font-size: 14px; }
   .status-row {
@@ -1713,9 +1734,9 @@ tr:last-child td {
 
   .threshold-controls .round-icon-button,
   .cooldown-actions .round-icon-button {
-    width: 34px;
-    min-width: 34px;
-    height: 34px;
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
   }
 
   .readings-table {
@@ -1880,7 +1901,7 @@ tr:last-child td {
   h1 { font-size: 25px; }
   .cooldown-field { min-width: 0; }
   .cooldown-actions {
-    grid-template-columns: 66px auto auto;
+    grid-template-columns: 66px 28px;
   }
   .cooldown-actions select,
   .cooldown-field select { width: 66px; }
