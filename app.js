@@ -619,7 +619,19 @@ function chartPointColor(values, checkFn, normalColor) {
 }
 
 function chartPointRadius(values, checkFn) {
-  return values.map(value => checkFn(value) ? 5 : 2);
+  const count = values.length;
+  const normalRadius = count > 260 ? 0 : count > 140 ? 0.75 : count > 80 ? 1.25 : 2;
+  const alertRadius = count > 260 ? 2.5 : count > 140 ? 3 : count > 80 ? 3.5 : 4.5;
+
+  return values.map(value => checkFn(value) ? alertRadius : normalRadius);
+}
+
+function chartPointHoverRadius(values) {
+  return values.length > 140 ? 4 : 5;
+}
+
+function chartPointBorderWidth(values) {
+  return values.length > 140 ? 0 : 1;
 }
 
 async function loadThresholds() {
@@ -942,7 +954,9 @@ function renderCharts(labels, temperatures, humidities) {
         pointBackgroundColor: chartPointColor(temperatures, isTemperatureAlert, "#f59e0b"),
         pointBorderColor: chartPointColor(temperatures, isTemperatureAlert, "#f59e0b"),
         pointRadius: chartPointRadius(temperatures, isTemperatureAlert),
-        pointHoverRadius: 6,
+        pointHoverRadius: chartPointHoverRadius(temperatures),
+        pointBorderWidth: chartPointBorderWidth(temperatures),
+        pointHitRadius: 8,
         tension: 0.38,
         fill: true
       }]
@@ -962,7 +976,9 @@ function renderCharts(labels, temperatures, humidities) {
         pointBackgroundColor: chartPointColor(humidities, isHumidityAlert, "#2dd4bf"),
         pointBorderColor: chartPointColor(humidities, isHumidityAlert, "#2dd4bf"),
         pointRadius: chartPointRadius(humidities, isHumidityAlert),
-        pointHoverRadius: 6,
+        pointHoverRadius: chartPointHoverRadius(humidities),
+        pointBorderWidth: chartPointBorderWidth(humidities),
+        pointHitRadius: 8,
         tension: 0.38,
         fill: true
       }]
