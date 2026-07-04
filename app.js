@@ -15,8 +15,9 @@ let LIMITS = {
   minTemperature: 5,
   maxHumidity: 50,
   minHumidity: 0,
-  dehumidifierHumidityThreshold: 60,
-  cooldownHours: 24
+  cooldownHours: 24,
+  measurementNotificationsEnabled: true,
+  surveillanceNotificationsEnabled: true
 };
 
 let tempChart;
@@ -647,8 +648,9 @@ async function loadThresholds() {
       maxTemperature: Number(data.maxTemperature),
       minHumidity: Number(data.minHumidity),
       maxHumidity: Number(data.maxHumidity),
-      dehumidifierHumidityThreshold: Number(data.dehumidifierHumidityThreshold || 60),
-      cooldownHours: Number(data.cooldownHours || 24)
+      cooldownHours: Number(data.cooldownHours || 24),
+      measurementNotificationsEnabled: data.measurementNotificationsEnabled !== false,
+      surveillanceNotificationsEnabled: data.surveillanceNotificationsEnabled !== false
     };
 
     renderThresholdInputs();
@@ -664,8 +666,7 @@ function renderThresholdInputs() {
   document.getElementById("maxTempInput").value = LIMITS.maxTemperature;
   document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
   document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
-  document.getElementById("dehumidifierHumidityThresholdInput").value = LIMITS.dehumidifierHumidityThreshold || 60;
-  document.getElementById("cooldownInput").value = LIMITS.cooldownHours || 24;
+  renderNotificationToggles();
 }
 
 function getLimitsFromInputs() {
@@ -674,8 +675,9 @@ function getLimitsFromInputs() {
     maxTemperature: Number(document.getElementById("maxTempInput").value),
     minHumidity: Number(document.getElementById("minHumidityInput").value),
     maxHumidity: Number(document.getElementById("maxHumidityInput").value),
-    dehumidifierHumidityThreshold: Number(document.getElementById("dehumidifierHumidityThresholdInput").value),
-    cooldownHours: Number(document.getElementById("cooldownInput").value)
+    cooldownHours: Number(LIMITS.cooldownHours || 24),
+    measurementNotificationsEnabled: LIMITS.measurementNotificationsEnabled !== false,
+    surveillanceNotificationsEnabled: LIMITS.surveillanceNotificationsEnabled !== false
   };
 }
 
@@ -684,9 +686,7 @@ function validateLimits(newLimits) {
     !Number.isFinite(newLimits.minTemperature) ||
     !Number.isFinite(newLimits.maxTemperature) ||
     !Number.isFinite(newLimits.minHumidity) ||
-    !Number.isFinite(newLimits.maxHumidity) ||
-    !Number.isFinite(newLimits.dehumidifierHumidityThreshold) ||
-    !Number.isFinite(newLimits.cooldownHours)
+    !Number.isFinite(newLimits.maxHumidity)
   ) {
     setError("Please enter valid threshold numbers.");
     return false;
@@ -702,12 +702,19 @@ function validateLimits(newLimits) {
     return false;
   }
 
-  if (newLimits.dehumidifierHumidityThreshold < 0 || newLimits.dehumidifierHumidityThreshold > 99) {
-    setError("Dehumidifier humidity threshold must be between 0 and 99%.");
-    return false;
-  }
-
   return true;
+}
+
+function setNotificationToggle(button, enabled) {
+  if (!button) return;
+  button.classList.toggle("on", enabled);
+  button.setAttribute("aria-pressed", String(enabled));
+  button.setAttribute("aria-label", `${button.id === "surveillanceNotificationsToggle" ? "Surveillance" : "Measurements"} notifications ${enabled ? "on" : "off"}`);
+}
+
+function renderNotificationToggles() {
+  setNotificationToggle(document.getElementById("surveillanceNotificationsToggle"), LIMITS.surveillanceNotificationsEnabled !== false);
+  setNotificationToggle(document.getElementById("measurementNotificationsToggle"), LIMITS.measurementNotificationsEnabled !== false);
 }
 
 async function saveThresholds(resetCooldown = false) {
@@ -715,7 +722,7 @@ async function saveThresholds(resetCooldown = false) {
   if (!validateLimits(newLimits)) return;
 
   try {
-    document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
+    document.querySelectorAll(".threshold-grid input, .notification-toggle").forEach(input => {
       input.disabled = true;
     });
 
@@ -734,8 +741,9 @@ async function saveThresholds(resetCooldown = false) {
       maxTemperature: Number(saved.maxTemperature),
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
-      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
-      cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours)
+      cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours || 24),
+      measurementNotificationsEnabled: saved.measurementNotificationsEnabled !== false,
+      surveillanceNotificationsEnabled: saved.surveillanceNotificationsEnabled !== false
     };
 
     setError("");
@@ -745,94 +753,19 @@ async function saveThresholds(resetCooldown = false) {
     console.error(error);
     setError(`Could not save thresholds: ${error.message}`);
   } finally {
-    document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
+    document.querySelectorAll(".threshold-grid input, .notification-toggle").forEach(input => {
       input.disabled = false;
     });
   }
 }
 
-async function applyCooldown() {
-  const newLimits = getLimitsFromInputs();
-  if (!validateLimits(newLimits)) return;
-
-  try {
-    const cooldownInput = document.getElementById("cooldownInput");
-    cooldownInput.disabled = true;
-
-    const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...newLimits, resetCooldown: false })
-    });
-
-    if (!response.ok) throw new Error(`Cooldown update failed: HTTP ${response.status}`);
-
-    const saved = await response.json();
-
-    LIMITS = {
-      minTemperature: Number(saved.minTemperature),
-      maxTemperature: Number(saved.maxTemperature),
-      minHumidity: Number(saved.minHumidity),
-      maxHumidity: Number(saved.maxHumidity),
-      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
-      cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours)
-    };
-
-    setError("");
-    renderThresholdInputs();
-  } catch (error) {
-    console.error(error);
-    setError(`Cooldown update failed: ${error.message}`);
-  } finally {
-    document.getElementById("cooldownInput").disabled = false;
-  }
-}
-
-async function resetCooldown() {
-  const newLimits = {
-    ...getLimitsFromInputs(),
-    cooldownHours: 6
+function setNotificationPreference(key, enabled) {
+  LIMITS = {
+    ...LIMITS,
+    [key]: enabled
   };
-
-  document.getElementById("cooldownInput").value = 6;
-
-  if (!validateLimits(newLimits)) return;
-
-  try {
-    const resetBtn = document.getElementById("resetCooldownButton");
-    resetBtn.disabled = true;
-    resetBtn.setAttribute("aria-busy", "true");
-
-    const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...newLimits, resetCooldown: true })
-    });
-
-    if (!response.ok) throw new Error(`Reset failed: HTTP ${response.status}`);
-
-    const saved = await response.json();
-
-    LIMITS = {
-      minTemperature: Number(saved.minTemperature),
-      maxTemperature: Number(saved.maxTemperature),
-      minHumidity: Number(saved.minHumidity),
-      maxHumidity: Number(saved.maxHumidity),
-      dehumidifierHumidityThreshold: Number(saved.dehumidifierHumidityThreshold || newLimits.dehumidifierHumidityThreshold),
-      cooldownHours: Number(saved.cooldownHours || 6)
-    };
-
-    setError("");
-    renderThresholdInputs();
-    await loadData();
-  } catch (error) {
-    console.error(error);
-    setError(`Could not reset cooldown: ${error.message}`);
-  } finally {
-    const resetBtn = document.getElementById("resetCooldownButton");
-    resetBtn.disabled = false;
-    resetBtn.removeAttribute("aria-busy");
-  }
+  renderNotificationToggles();
+  saveThresholds(false);
 }
 
 const chartOptions = {
@@ -947,7 +880,7 @@ function setError(message) {
   if (message) {
     statusDot?.classList.remove("online");
     statusDot?.classList.add("alert");
-    statusText.textContent = `Offline or API error · ${message}`;
+    if (statusText) statusText.textContent = `Offline or API error · ${message}`;
   }
 }
 
@@ -1037,7 +970,7 @@ function setupDefaultDateRange() {
 }
 
 function getSelectedHoursForApi() {
-  return document.getElementById("rangeModeSelect").value;
+  return document.getElementById("rangeModeSelect")?.value || "24";
 }
 
 function filterItemsBySelectedRange(items) {
@@ -1046,6 +979,7 @@ function filterItemsBySelectedRange(items) {
 
 function getSelectedRangeLabel() {
   const selected = document.getElementById("rangeModeSelect");
+  if (!selected) return "Last 24h";
   return selected.options[selected.selectedIndex].text;
 }
 
@@ -1058,8 +992,8 @@ async function loadData(options = {}) {
   const url = `${API_BASE_URL}/measurements?deviceId=${encodeURIComponent(DEVICE_ID)}&hours=${hours}`;
 
   if (!options.silent) {
-    document.getElementById("statusText").textContent = "Loading data…";
-    document.getElementById("statusDot").classList.remove("online", "alert");
+    document.getElementById("statusText")?.replaceChildren(document.createTextNode("Loading data…"));
+    document.getElementById("statusDot")?.classList.remove("online", "alert");
   }
 
   try {
@@ -1106,23 +1040,27 @@ async function loadData(options = {}) {
     document.getElementById("tempThresholdInfo").textContent = `Limits: ${LIMITS.minTemperature}–${LIMITS.maxTemperature} °C`;
     document.getElementById("humidityThresholdInfo").textContent = `Limits: ${LIMITS.minHumidity}–${LIMITS.maxHumidity} %`;
 
-    document.getElementById("statusDot").classList.remove("online", "alert");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    statusDot?.classList.remove("online", "alert");
     if (latestAlert) {
-      document.getElementById("statusText").textContent = "Online · Current value threshold alert";
-      document.getElementById("statusDot").classList.add("alert");
+      if (statusText) statusText.textContent = "Online · Current value threshold alert";
+      statusDot?.classList.add("alert");
     } else {
-      document.getElementById("statusText").textContent = "Online · API reachable";
-      document.getElementById("statusDot").classList.add("online");
+      if (statusText) statusText.textContent = "Online · API reachable";
+      statusDot?.classList.add("online");
     }
 
-    document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleTimeString()} · Range: ${getSelectedRangeLabel()}`;
+    const lastUpdated = document.getElementById("lastUpdated");
+    if (lastUpdated) lastUpdated.textContent = `Last updated: ${new Date().toLocaleTimeString()} · Range: ${getSelectedRangeLabel()}`;
 
     renderCharts(labels, temperatures, humidities);
     renderTable(items);
     setError("");
   } catch (error) {
     console.error(error);
-    document.getElementById("statusText").textContent = "Offline or API error";
+    const statusText = document.getElementById("statusText");
+    if (statusText) statusText.textContent = "Offline or API error";
     setError(error.message);
     renderBatteryStatus("ht3", null);
     renderPowerStatus("ht3", null);
@@ -1134,7 +1072,8 @@ async function loadData(options = {}) {
 async function loadVideos(options = {}) {
   const url = `${API_BASE_URL}/videos`;
   if (!options.silent) {
-    document.getElementById("videoStatus").textContent = "Videos: loading…";
+    const videoStatus = document.getElementById("videoStatus");
+    if (videoStatus) videoStatus.textContent = "Videos: loading…";
   }
 
   try {
@@ -1144,10 +1083,12 @@ async function loadVideos(options = {}) {
     const data = await response.json();
     videos = data.items || [];
 
-    document.getElementById("videoStatus").textContent = `Videos: ${videos.length} available`;
+    const videoStatus = document.getElementById("videoStatus");
+    if (videoStatus) videoStatus.textContent = `Videos: ${videos.length} available`;
   } catch (error) {
     console.error(error);
-    document.getElementById("videoStatus").textContent = "Videos: API error";
+    const videoStatus = document.getElementById("videoStatus");
+    if (videoStatus) videoStatus.textContent = "Videos: API error";
   }
 }
 
@@ -1615,13 +1556,17 @@ function registerEventListeners() {
   bindPowerIotControl();
   bindDehumidifierControl();
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
-  document.querySelector(".threshold-controls").addEventListener("click", event => event.stopPropagation());
-  document.querySelector(".threshold-controls").addEventListener("keydown", event => event.stopPropagation());
-  document.querySelectorAll(".threshold-grid input, #dehumidifierHumidityThresholdInput").forEach(input => {
+  document.querySelector(".control-console")?.addEventListener("click", event => event.stopPropagation());
+  document.querySelector(".control-console")?.addEventListener("keydown", event => event.stopPropagation());
+  document.querySelectorAll(".threshold-grid input").forEach(input => {
     input.addEventListener("change", () => saveThresholds(false));
   });
-  document.getElementById("cooldownInput").addEventListener("change", applyCooldown);
-  document.getElementById("resetCooldownButton").addEventListener("click", resetCooldown);
+  document.getElementById("surveillanceNotificationsToggle")?.addEventListener("click", () => {
+    setNotificationPreference("surveillanceNotificationsEnabled", LIMITS.surveillanceNotificationsEnabled === false);
+  });
+  document.getElementById("measurementNotificationsToggle")?.addEventListener("click", () => {
+    setNotificationPreference("measurementNotificationsEnabled", LIMITS.measurementNotificationsEnabled === false);
+  });
   document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
 
   document.getElementById("videoModal").addEventListener("click", event => {

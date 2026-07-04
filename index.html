@@ -29,18 +29,13 @@
     <div id="errorBox" class="error"></div>
 
     <div class="control-console">
-      <div class="status-row control-status">
-        <span id="statusDot" class="dot"></span>
-        <span id="statusText">Loading data…</span>
-        <span>·</span>
-        <span id="lastUpdated">Last updated: —</span>
-        <span>·</span>
-        <span id="videoStatus">Videos: loading…</span>
-      </div>
-
       <div class="console-grid">
-        <div class="threshold-controls measurement-controls">
-          <div class="threshold-panel">
+        <section class="control-panel-card measurement-controls" aria-label="Measurement controls">
+          <div class="control-card-header">
+            <h2>Measurement</h2>
+          </div>
+
+          <div class="measurement-card-body">
             <div class="threshold-grid">
               <label class="threshold-field compact-threshold-field">
                 <span>Temp Min</span>
@@ -62,71 +57,82 @@
                 <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
               </label>
             </div>
-          </div>
 
-          <div class="date-range-picker">
-            <span>Date Range</span>
-            <select id="rangeModeSelect" aria-label="Time range">
-              <option value="6">Last 6h</option>
-              <option value="24" selected>Last 24h</option>
-              <option value="72">Last 3 days</option>
-              <option value="168">Last 7 days</option>
-              <option value="336">Last 14 days</option>
-              <option value="720">Last 30 days</option>
-            </select>
-          </div>
-
-          <label class="date-field cooldown-field">
-            <span>Cooldown WA Alert</span>
-            <div class="cooldown-actions">
-              <select id="cooldownInput">
-                <option value="1">1h</option>
-                <option value="6">6h</option>
-                <option value="12">12h</option>
-                <option value="24">24h</option>
+            <label class="date-range-picker">
+              <span>Date Range</span>
+              <select id="rangeModeSelect" aria-label="Time range">
+                <option value="6">Last 6h</option>
+                <option value="24" selected>Last 24h</option>
+                <option value="72">Last 3 days</option>
+                <option value="168">Last 7 days</option>
+                <option value="336">Last 14 days</option>
+                <option value="720">Last 30 days</option>
               </select>
-              <button id="resetCooldownButton" class="round-icon-button reset-icon-button" type="button" aria-label="Reset cooldown">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" />
-                  <path d="M4.5 5.3v4.4h4.4" />
-                </svg>
+            </label>
+          </div>
+        </section>
+
+        <section class="control-panel-card notification-controls" aria-label="Notification controls">
+          <div class="control-card-header">
+            <h2>Notifications</h2>
+          </div>
+
+          <div class="notification-list">
+            <div class="notification-row">
+              <span>Surveillance Notifications</span>
+              <button id="surveillanceNotificationsToggle" class="notification-toggle" type="button" aria-label="Surveillance notifications" aria-pressed="true">
+                <span></span>
               </button>
             </div>
-          </label>
-        </div>
 
-        <div class="control-switch-card" aria-label="Power IoT switch status">
-          <span>Power IoT</span>
-          <div class="control-switch-row">
-            <span id="powerIotCloud" class="cloud-status offline" title="Power IoT loading" aria-label="Power IoT loading">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7.5 18h10.2a4.3 4.3 0 0 0 .2-8.6A6.2 6.2 0 0 0 6 8.2 4.9 4.9 0 0 0 7.5 18Z" />
-                <path class="cloud-slash" d="M4 4l16 16" />
-              </svg>
-            </span>
-            <button id="powerIotSwitch" class="iot-switch off pending" type="button" aria-label="Power IoT loading" aria-pressed="false" disabled>
-              <span></span>
-            </button>
-            <strong id="powerIotStatus" class="visually-hidden">Loading</strong>
+            <div class="notification-row">
+              <span>Measurements Notifications</span>
+              <button id="measurementNotificationsToggle" class="notification-toggle" type="button" aria-label="Measurements notifications" aria-pressed="true">
+                <span></span>
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="control-switch-card" aria-label="Dehumidifier switch status">
-          <span>Dehumidifier</span>
-          <div class="control-switch-row">
-            <input id="dehumidifierHumidityThresholdInput" class="switch-threshold-input" type="number" min="0" max="99" step="1" aria-label="Dehumidifier humidity threshold">
-            <span id="dehumidifierCloud" class="cloud-status offline" title="Dehumidifier offline" aria-label="Dehumidifier offline">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7.5 18h10.2a4.3 4.3 0 0 0 .2-8.6A6.2 6.2 0 0 0 6 8.2 4.9 4.9 0 0 0 7.5 18Z" />
-                <path class="cloud-slash" d="M4 4l16 16" />
-              </svg>
-            </span>
-            <button id="dehumidifierSwitch" class="iot-switch off pending" type="button" aria-label="Dehumidifier loading" aria-pressed="false" disabled>
-              <span></span>
-            </button>
-            <strong id="dehumidifierStatus" class="visually-hidden">Loading</strong>
+        <section class="control-panel-card device-controls" aria-label="Device controls">
+          <div class="control-card-header">
+            <h2>Control</h2>
           </div>
-        </div>
+
+          <div class="device-control-grid">
+            <div class="control-switch-card" aria-label="Power IoT switch status">
+              <span>Power IoT</span>
+              <div class="control-switch-row">
+                <span id="powerIotCloud" class="cloud-status offline" title="Power IoT loading" aria-label="Power IoT loading">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7.5 18h10.2a4.3 4.3 0 0 0 .2-8.6A6.2 6.2 0 0 0 6 8.2 4.9 4.9 0 0 0 7.5 18Z" />
+                    <path class="cloud-slash" d="M4 4l16 16" />
+                  </svg>
+                </span>
+                <button id="powerIotSwitch" class="iot-switch off pending" type="button" aria-label="Power IoT loading" aria-pressed="false" disabled>
+                  <span></span>
+                </button>
+                <strong id="powerIotStatus" class="visually-hidden">Loading</strong>
+              </div>
+            </div>
+
+            <div class="control-switch-card" aria-label="Dehumidifier switch status">
+              <span>Dehumidifier</span>
+              <div class="control-switch-row">
+                <span id="dehumidifierCloud" class="cloud-status offline" title="Dehumidifier offline" aria-label="Dehumidifier offline">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7.5 18h10.2a4.3 4.3 0 0 0 .2-8.6A6.2 6.2 0 0 0 6 8.2 4.9 4.9 0 0 0 7.5 18Z" />
+                    <path class="cloud-slash" d="M4 4l16 16" />
+                  </svg>
+                </span>
+                <button id="dehumidifierSwitch" class="iot-switch off pending" type="button" aria-label="Dehumidifier loading" aria-pressed="false" disabled>
+                  <span></span>
+                </button>
+                <strong id="dehumidifierStatus" class="visually-hidden">Loading</strong>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 

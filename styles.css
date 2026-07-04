@@ -187,9 +187,8 @@ h1 {
 
 .control-console {
   display: grid;
-  gap: 8px;
   margin-bottom: 16px;
-  padding: 8px 10px 10px;
+  padding: 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: rgba(18, 23, 34, 0.82);
@@ -212,8 +211,8 @@ h1 {
 
 .console-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content max-content;
-  gap: 10px;
+  grid-template-columns: minmax(360px, 1.2fr) minmax(280px, 0.82fr) minmax(320px, 1fr);
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -228,16 +227,117 @@ h1 {
   box-shadow: none;
 }
 
-.control-console .threshold-panel,
-.control-console .date-range-picker,
-.control-console .cooldown-field,
-.control-switch-card {
-  height: 60px;
-  min-height: 60px;
+.control-panel-card {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  border: 1px solid rgba(210, 222, 240, 0.12);
+  border-radius: var(--radius);
+  background: rgba(15, 20, 32, 0.72);
+  padding: 12px;
+}
+
+.control-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
+}
+
+.control-card-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.measurement-card-body {
+  display: grid;
+  grid-template-columns: minmax(270px, max-content) minmax(124px, 140px);
+  gap: 10px;
+  align-items: end;
+}
+
+.notification-list,
+.device-control-grid {
+  display: grid;
+  gap: 8px;
+  align-content: end;
+}
+
+.notification-row {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(210, 222, 240, 0.1);
+  border-radius: var(--radius);
+  background: rgba(9, 13, 21, 0.42);
+  padding: 8px 10px;
+}
+
+.notification-row > span {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.notification-toggle {
+  width: 42px;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid rgba(154, 167, 184, 0.24);
+  background: rgba(154, 167, 184, 0.12);
+}
+
+.notification-toggle span {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border-radius: 999px;
+  background: #94a3b8;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.notification-toggle.on {
+  border-color: rgba(52, 211, 153, 0.44);
+  background: rgba(52, 211, 153, 0.14);
+}
+
+.notification-toggle.on span {
+  transform: translateX(18px);
+  background: var(--good);
+}
+
+.device-control-grid {
+  grid-template-columns: repeat(2, minmax(118px, 1fr));
+}
+
+.control-console .control-panel-card.measurement-controls,
+.control-console .control-panel-card.notification-controls,
+.control-console .control-panel-card.device-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  width: auto;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(210, 222, 240, 0.12);
+  background: rgba(15, 20, 32, 0.72);
+  box-shadow: none;
 }
 
 .control-switch-card {
-  min-width: 112px;
+  min-width: 0;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 14px 30px;
@@ -245,7 +345,7 @@ h1 {
   align-content: stretch;
   border: 1px solid rgba(210, 222, 240, 0.1);
   border-radius: var(--radius);
-  background: rgba(15, 20, 32, 0.72);
+  background: rgba(9, 13, 21, 0.42);
   padding: 6px 10px;
 }
 
@@ -1628,6 +1728,21 @@ tr:last-child td {
   .chart-card { grid-column: span 12; }
   .metric-row,
   .audit-cost-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .console-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .control-console .control-panel-card.measurement-controls,
+  .control-console .control-panel-card.notification-controls,
+  .control-console .control-panel-card.device-controls {
+    grid-column: auto;
+    padding: 12px;
+  }
+
+  .measurement-card-body {
+    grid-template-columns: minmax(0, 1fr) minmax(132px, max-content);
+  }
 }
 
 @media (max-width: 720px) {
@@ -1676,9 +1791,19 @@ tr:last-child td {
   .console-grid {
     grid-template-columns: 1fr;
   }
-  .control-console .measurement-controls {
+  .control-console .measurement-controls { padding-right: 12px; }
+  .measurement-card-body,
+  .device-control-grid {
     grid-template-columns: 1fr;
-    padding-right: 0;
+  }
+  .threshold-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .date-range-picker {
+    width: 100%;
+  }
+  .date-range-picker select {
+    width: 100%;
   }
   .control-console .threshold-panel,
   .control-console .date-range-picker,
