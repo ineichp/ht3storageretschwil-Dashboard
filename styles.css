@@ -211,7 +211,7 @@ h1 {
 
 .console-grid {
   display: grid;
-  grid-template-columns: minmax(460px, 1.35fr) minmax(250px, 0.65fr) minmax(300px, 0.8fr);
+  grid-template-columns: minmax(520px, 1.35fr) minmax(340px, 0.85fr);
   gap: 12px;
   align-items: stretch;
 }
@@ -495,41 +495,17 @@ h1 {
   gap: 4px;
 }
 
-.notification-list,
-.device-control-grid,
 .device-control-list {
   display: grid;
   gap: 8px;
   align-content: center;
 }
 
-.notification-row {
-  min-height: 42px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  border: 1px solid rgba(210, 222, 240, 0.1);
-  border-radius: var(--radius);
-  background: rgba(9, 13, 21, 0.42);
-  padding: 8px 10px;
-}
-
-.notification-row > span {
-  min-width: 0;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
+.notification-row,
 .device-control-list .control-switch-card {
   min-height: 42px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto;
   gap: 14px;
   align-items: center;
   border: 1px solid rgba(210, 222, 240, 0.1);
@@ -538,6 +514,7 @@ h1 {
   padding: 8px 10px;
 }
 
+.notification-row > span,
 .device-control-list .control-switch-card > span {
   min-width: 0;
   color: var(--muted);
@@ -582,12 +559,7 @@ h1 {
   background: var(--good);
 }
 
-.device-control-grid {
-  grid-template-columns: repeat(2, minmax(118px, 1fr));
-}
-
 .control-console .control-panel-card.measurement-controls,
-.control-console .control-panel-card.notification-controls,
 .control-console .control-panel-card.device-controls {
   display: grid;
   grid-template-columns: 1fr;
@@ -629,6 +601,28 @@ h1 {
   justify-content: center;
   gap: 9px;
   min-height: 30px;
+}
+
+.device-control-list .control-switch-card {
+  min-height: 42px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto;
+  gap: 14px;
+  align-items: center;
+  align-content: center;
+  padding: 8px 10px;
+}
+
+.device-control-list .control-switch-card > span {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.device-control-list .control-switch-row {
+  justify-content: flex-end;
+  min-height: 24px;
 }
 
 .switch-threshold-input {
@@ -1998,7 +1992,6 @@ tr:last-child td {
   }
 
   .control-console .control-panel-card.measurement-controls,
-  .control-console .control-panel-card.notification-controls,
   .control-console .control-panel-card.device-controls {
     grid-column: auto;
     padding: 12px;
@@ -2057,7 +2050,7 @@ tr:last-child td {
   }
   .control-console .measurement-controls { padding-right: 12px; }
   .measurement-card-body,
-  .device-control-grid {
+  .device-control-list {
     grid-template-columns: 1fr;
   }
   .range-row {
