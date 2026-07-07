@@ -312,6 +312,11 @@ h1 {
   align-items: center;
 }
 
+.dual-slider {
+  cursor: pointer;
+  touch-action: none;
+}
+
 .slider-track {
   position: relative;
   height: 6px;
@@ -354,6 +359,13 @@ h1 {
   background: transparent;
   opacity: 0;
   cursor: pointer;
+}
+
+.threshold-slider {
+  pointer-events: none;
+}
+
+.range-preset-slider {
   pointer-events: auto;
 }
 

@@ -778,6 +778,94 @@ function applyRangePresetFromSlider() {
   renderDateRangeSlider();
 }
 
+function thresholdSliderParts(type) {
+  const isHumidity = type === "humidity";
+  return {
+    container: document.getElementById(isHumidity ? "humiditySlider" : "tempSlider"),
+    minSlider: document.getElementById(isHumidity ? "minHumiditySlider" : "minTempSlider"),
+    maxSlider: document.getElementById(isHumidity ? "maxHumiditySlider" : "maxTempSlider"),
+    maxScale: isHumidity ? 60 : 40
+  };
+}
+
+function sliderValueFromPointer(container, maxScale, clientX) {
+  const track = container.querySelector(".slider-track")?.getBoundingClientRect();
+  if (!track || track.width <= 0) return 0;
+
+  const ratio = (clientX - track.left) / track.width;
+  return clampNumber(Math.round(ratio * maxScale), 0, maxScale);
+}
+
+function pickThresholdHandle(type, value) {
+  const { minSlider, maxSlider } = thresholdSliderParts(type);
+  if (!minSlider || !maxSlider) return "max";
+
+  const min = Number(minSlider.value);
+  const max = Number(maxSlider.value);
+  if (value <= min) return "min";
+  if (value >= max) return "max";
+  return Math.abs(value - min) <= Math.abs(value - max) ? "min" : "max";
+}
+
+function setThresholdHandleFromPointer(type, handle, clientX) {
+  const { container, minSlider, maxSlider, maxScale } = thresholdSliderParts(type);
+  if (!container || !minSlider || !maxSlider) return;
+
+  const min = Number(minSlider.value);
+  const max = Number(maxSlider.value);
+  const value = sliderValueFromPointer(container, maxScale, clientX);
+
+  if (handle === "min") {
+    minSlider.value = Math.min(value, max);
+  } else {
+    maxSlider.value = Math.max(value, min);
+  }
+
+  updateRangePair(type);
+}
+
+function bindThresholdSliderPointer(type) {
+  const { container } = thresholdSliderParts(type);
+  if (!container) return;
+
+  let drag = null;
+
+  container.addEventListener("pointerdown", event => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+
+    const { maxScale } = thresholdSliderParts(type);
+    const value = sliderValueFromPointer(container, maxScale, event.clientX);
+    drag = {
+      pointerId: event.pointerId,
+      handle: pickThresholdHandle(type, value)
+    };
+
+    container.setPointerCapture?.(event.pointerId);
+    setThresholdHandleFromPointer(type, drag.handle, event.clientX);
+  });
+
+  container.addEventListener("pointermove", event => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setThresholdHandleFromPointer(type, drag.handle, event.clientX);
+  });
+
+  const endDrag = event => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    container.releasePointerCapture?.(event.pointerId);
+    drag = null;
+    saveThresholds(false);
+  };
+
+  container.addEventListener("pointerup", endDrag);
+  container.addEventListener("pointercancel", event => {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    container.releasePointerCapture?.(event.pointerId);
+    drag = null;
+  });
+}
+
 function getLimitsFromInputs() {
   return {
     minTemperature: Number(document.getElementById("minTempInput").value),
@@ -1665,6 +1753,8 @@ function registerEventListeners() {
   bindToggleHeader(document.getElementById("auditCostsHeader"), () => toggleSection(document.getElementById("auditCostsHeader")));
   bindPowerIotControl();
   bindDehumidifierControl();
+  bindThresholdSliderPointer("humidity");
+  bindThresholdSliderPointer("temp");
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".control-console")?.addEventListener("click", event => event.stopPropagation());
   document.querySelector(".control-console")?.addEventListener("keydown", event => event.stopPropagation());
