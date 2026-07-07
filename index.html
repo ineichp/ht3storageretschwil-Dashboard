@@ -11,7 +11,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="qrcode-generator.js?v=20260622-4"></script>
-  <link rel="stylesheet" href="styles.css?v=20260622-4" />
+  <link rel="stylesheet" href="styles.css?v=20260707-1" />
   <link rel="stylesheet" href="auth.css?v=20260622-4" />
 </head>
 
@@ -281,27 +281,6 @@
               <canvas id="humidityChart"></canvas>
             </article>
 
-            <article class="card wide">
-              <div id="readingsHeader" class="chart-title clickable reading-toggle-header" role="button" tabindex="0" aria-expanded="false">
-                <h2>Latest readings</h2>
-                <span id="readingsToggle" class="event-day-chevron" aria-hidden="true">+</span>
-              </div>
-
-              <div id="readingsContent" class="collapsed">
-                <div class="table-wrap">
-                  <table class="readings-table">
-                    <thead>
-                      <tr>
-                        <th>Time</th>
-                        <th>Temperature</th>
-                        <th>Humidity</th>
-                      </tr>
-                    </thead>
-                    <tbody id="readingsTable"></tbody>
-                  </table>
-                </div>
-              </div>
-            </article>
           </div>
         </div>
       </article>
@@ -317,7 +296,7 @@
         </div>
 
         <div id="surveillanceContent" class="section-content">
-          <div class="table-wrap">
+          <div class="table-wrap surveillance-scroll">
             <table class="events-table">
               <colgroup>
                 <col class="event-time-col">
@@ -337,7 +316,6 @@
             </table>
           </div>
 
-          <div id="eventsPagination" class="pagination"></div>
         </div>
       </article>
 
@@ -437,7 +415,7 @@
   </div>
 
   <script src="auth.js?v=20260622-4"></script>
-  <script src="app.js?v=20260622-4"></script>
+  <script src="app.js?v=20260707-1"></script>
 </body>
 </html>
 

@@ -1161,6 +1161,7 @@ function renderCharts(labels, temperatures, humidities) {
 
 function renderTable(items) {
   const tbody = document.getElementById("readingsTable");
+  if (!tbody) return;
 
   tbody.innerHTML = items.slice(-10).reverse().map(item => {
     const temperature = Number(item.temperature);
@@ -1328,9 +1329,6 @@ async function loadEvents() {
 
     const data = await response.json();
     events = (data.items || []).filter(item => item.bucketMs === 10000);
-    const maxPage = Math.max(1, Math.ceil(getEventGroups(events).length / EVENTS_PER_PAGE));
-    eventPage = Math.min(eventPage, maxPage);
-
     renderEventsTable(events);
   } catch (error) {
     console.error(error);
@@ -1537,7 +1535,9 @@ function getPaginatedEventGroups(items) {
 function setDefaultOpenEventDay(groups) {
   if (!groups.length || Object.keys(eventDayOpenState).length) return;
 
-  eventDayOpenState[groups[0].dayKey] = true;
+  groups.forEach(group => {
+    eventDayOpenState[group.dayKey] = true;
+  });
 }
 
 function renderEventsPagination(totalPages) {
@@ -1609,15 +1609,15 @@ function renderEventsPagination(totalPages) {
 
 function renderEventsTable(items) {
   const tbody = document.getElementById("eventsTable");
+  if (!tbody) return;
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
-    renderEventsPagination(0);
     return;
   }
 
-  const { groups, totalPages } = getPaginatedEventGroups(items);
-  setDefaultOpenEventDay(getEventGroups(items));
+  const groups = getEventGroups(items);
+  setDefaultOpenEventDay(groups);
   let currentDayKey = "";
 
   const rows = groups.map(group => {
@@ -1673,7 +1673,6 @@ function renderEventsTable(items) {
   }).join("");
 
   tbody.innerHTML = rows;
-  renderEventsPagination(totalPages);
 
   tbody.querySelectorAll(".event-day-toggle").forEach(button => {
     button.addEventListener("click", () => {
@@ -1716,6 +1715,7 @@ function toggleSection(header) {
 }
 
 function bindToggleHeader(header, handler) {
+  if (!header) return;
   header.addEventListener("click", handler);
   header.addEventListener("keydown", event => {
     if (event.key !== "Enter" && event.key !== " ") return;

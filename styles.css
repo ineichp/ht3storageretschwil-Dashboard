@@ -212,7 +212,7 @@ h1 {
 .console-grid {
   display: grid;
   grid-template-columns: minmax(520px, 1.35fr) minmax(340px, 0.85fr);
-  gap: 12px;
+  gap: 6px;
   align-items: stretch;
 }
 
@@ -1706,6 +1706,19 @@ canvas {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface-raised);
+}
+
+.surveillance-scroll {
+  max-height: min(760px, 72vh);
+  overflow: auto;
+  scrollbar-color: rgba(45, 212, 191, 0.58) rgba(15, 20, 32, 0.68);
+  scrollbar-width: thin;
+}
+
+.surveillance-scroll .events-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 table {
