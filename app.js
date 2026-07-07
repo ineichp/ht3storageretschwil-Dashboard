@@ -23,7 +23,6 @@ let LIMITS = {
   minTemperature: 5,
   maxHumidity: 50,
   minHumidity: 0,
-  cooldownHours: 24,
   measurementNotificationsEnabled: true,
   surveillanceNotificationsEnabled: true
 };
@@ -656,7 +655,6 @@ async function loadThresholds() {
       maxTemperature: Number(data.maxTemperature),
       minHumidity: Number(data.minHumidity),
       maxHumidity: Number(data.maxHumidity),
-      cooldownHours: Number(data.cooldownHours || 24),
       measurementNotificationsEnabled: data.measurementNotificationsEnabled !== false,
       surveillanceNotificationsEnabled: data.surveillanceNotificationsEnabled !== false
     };
@@ -872,7 +870,6 @@ function getLimitsFromInputs() {
     maxTemperature: Number(document.getElementById("maxTempInput").value),
     minHumidity: Number(document.getElementById("minHumidityInput").value),
     maxHumidity: Number(document.getElementById("maxHumidityInput").value),
-    cooldownHours: Number(LIMITS.cooldownHours || 24),
     measurementNotificationsEnabled: LIMITS.measurementNotificationsEnabled !== false,
     surveillanceNotificationsEnabled: LIMITS.surveillanceNotificationsEnabled !== false
   };
@@ -914,7 +911,7 @@ function renderNotificationToggles() {
   setNotificationToggle(document.getElementById("measurementNotificationsToggle"), LIMITS.measurementNotificationsEnabled !== false);
 }
 
-async function saveThresholds(resetCooldown = false) {
+async function saveThresholds() {
   const newLimits = getLimitsFromInputs();
   if (!validateLimits(newLimits)) return;
 
@@ -926,7 +923,7 @@ async function saveThresholds(resetCooldown = false) {
     const response = await apiFetch(`${API_BASE_URL}/thresholds`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...newLimits, resetCooldown })
+      body: JSON.stringify(newLimits)
     });
 
     if (!response.ok) throw new Error(`Threshold API returned HTTP ${response.status}`);
@@ -938,7 +935,6 @@ async function saveThresholds(resetCooldown = false) {
       maxTemperature: Number(saved.maxTemperature),
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
-      cooldownHours: Number(saved.cooldownHours || newLimits.cooldownHours || 24),
       measurementNotificationsEnabled: saved.measurementNotificationsEnabled !== false,
       surveillanceNotificationsEnabled: saved.surveillanceNotificationsEnabled !== false
     };
