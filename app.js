@@ -728,8 +728,9 @@ function updateRangePair(type) {
 
   const minPercent = (min / maxScale) * 100;
   const maxPercent = (max / maxScale) * 100;
-  fill.style.left = `${minPercent}%`;
-  fill.style.width = `${maxPercent - minPercent}%`;
+  const fillPercent = maxPercent - minPercent;
+  fill.style.left = fillPercent > 0 ? `calc(${minPercent}% + 9px)` : `${minPercent}%`;
+  fill.style.width = fillPercent > 0 ? `calc(${fillPercent}% - 18px)` : "0";
 
   if (isHumidity) {
     document.getElementById("minHumidityInput").value = min;
@@ -756,7 +757,7 @@ function renderDateRangeSlider() {
   const preset = RANGE_PRESETS[index] || RANGE_PRESETS[1];
   const percent = (index / (RANGE_PRESETS.length - 1)) * 100;
   slider.value = index;
-  fill.style.width = `${percent}%`;
+  fill.style.width = percent > 0 ? `calc(${percent}% - 9px)` : "0";
   setText("dateRangeLabel", preset.label);
 }
 
