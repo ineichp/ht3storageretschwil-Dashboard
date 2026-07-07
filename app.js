@@ -708,7 +708,10 @@ function clampNumber(value, min, max) {
 
 function setText(id, value) {
   const node = document.getElementById(id);
-  if (node) node.textContent = value;
+  if (node) {
+    node.classList.remove("loading-inline");
+    node.textContent = value;
+  }
 }
 
 function setRangePair(type, minValue, maxValue) {
