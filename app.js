@@ -735,12 +735,10 @@ function updateRangePair(type) {
     document.getElementById("minHumidityInput").value = min;
     document.getElementById("maxHumidityInput").value = max;
     setText("humidityRangeLabel", `${min} - ${max} %`);
-    setText("humidityRangeValue", `${min} / ${max}`);
   } else {
     document.getElementById("minTempInput").value = min;
     document.getElementById("maxTempInput").value = max;
     setText("tempRangeLabel", `${min} - ${max} °C`);
-    setText("tempRangeValue", `${min} / ${max}`);
   }
 }
 
@@ -760,7 +758,6 @@ function renderDateRangeSlider() {
   slider.value = index;
   fill.style.width = `${percent}%`;
   setText("dateRangeLabel", preset.label);
-  setText("rangePresetValue", preset.shortLabel);
 }
 
 function applyRangePresetFromSlider() {

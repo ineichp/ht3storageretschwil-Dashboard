@@ -266,7 +266,7 @@ h1 {
 .range-row {
   min-height: 56px;
   display: grid;
-  grid-template-columns: 86px minmax(220px, 1fr) 74px;
+  grid-template-columns: 90px minmax(240px, 1fr);
   gap: 12px;
   align-items: center;
   border: 1px solid rgba(210, 222, 240, 0.1);
@@ -281,8 +281,7 @@ h1 {
   min-width: 0;
 }
 
-.range-label span,
-.range-value {
+.range-label span {
   color: var(--muted);
   font-size: 10px;
   font-weight: 800;
@@ -292,8 +291,7 @@ h1 {
   white-space: nowrap;
 }
 
-.range-label strong,
-.range-value strong {
+.range-label strong {
   color: var(--text);
   font-size: 13px;
   font-weight: 900;
@@ -312,6 +310,7 @@ h1 {
 .slider-track {
   position: relative;
   height: 6px;
+  margin: 0 9px;
   border-radius: 999px;
   background: rgba(154, 167, 184, 0.16);
   overflow: hidden;
@@ -342,8 +341,8 @@ h1 {
 .threshold-slider,
 .range-preset-slider {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  inset: 0 9px;
+  width: calc(100% - 18px);
   height: 28px;
   margin: 0;
   appearance: none;
@@ -429,7 +428,25 @@ h1 {
   font-size: 9px;
   font-weight: 800;
   line-height: 1;
-  margin-top: 2px;
+  margin: 4px 9px 0;
+}
+
+.slider-scale span,
+.preset-labels span {
+  position: relative;
+  display: inline-grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 18px;
+}
+
+.slider-scale span::before,
+.preset-labels span::before {
+  content: "";
+  width: 1px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(154, 167, 184, 0.46);
 }
 
 .preset-slider {
@@ -1983,10 +2000,6 @@ tr:last-child td {
   .range-row {
     grid-template-columns: 1fr;
     gap: 8px;
-  }
-  .range-value {
-    display: flex;
-    justify-content: space-between;
   }
   .preset-labels {
     font-size: 8px;
