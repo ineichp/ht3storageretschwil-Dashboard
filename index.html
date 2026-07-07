@@ -58,6 +58,8 @@
                 <div>
                   <div id="humiditySlider" class="dual-slider humidity" aria-label="Humidity min max slider">
                     <div class="slider-track"><div id="humiditySliderFill" class="slider-fill humidity"></div></div>
+                    <span id="minHumidityHandle" class="slider-handle humidity"></span>
+                    <span id="maxHumidityHandle" class="slider-handle humidity"></span>
                     <input id="minHumiditySlider" class="threshold-slider min-slider" data-threshold-type="humidity" type="range" min="0" max="60" step="1" value="0" aria-label="Minimum humidity">
                     <input id="maxHumiditySlider" class="threshold-slider max-slider" data-threshold-type="humidity" type="range" min="0" max="60" step="1" value="60" aria-label="Maximum humidity">
                   </div>
@@ -73,6 +75,8 @@
                 <div>
                   <div id="tempSlider" class="dual-slider temp" aria-label="Temperature min max slider">
                     <div class="slider-track"><div id="tempSliderFill" class="slider-fill temp"></div></div>
+                    <span id="minTempHandle" class="slider-handle temp"></span>
+                    <span id="maxTempHandle" class="slider-handle temp"></span>
                     <input id="minTempSlider" class="threshold-slider min-slider" data-threshold-type="temp" type="range" min="0" max="40" step="1" value="0" aria-label="Minimum temperature">
                     <input id="maxTempSlider" class="threshold-slider max-slider" data-threshold-type="temp" type="range" min="0" max="40" step="1" value="40" aria-label="Maximum temperature">
                   </div>
@@ -88,6 +92,7 @@
                 <div class="preset-slider">
                   <div class="single-slider" aria-label="Date range preset slider">
                     <div class="slider-track"><div id="rangePresetFill" class="slider-fill range"></div></div>
+                    <span id="rangePresetHandle" class="slider-handle range"></span>
                     <input id="rangePresetSlider" class="range-preset-slider" type="range" min="0" max="5" step="1" value="1" aria-label="Date range preset">
                   </div>
                   <div class="preset-labels">

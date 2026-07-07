@@ -712,7 +712,9 @@ function updateRangePair(type) {
   const minSlider = document.getElementById(isHumidity ? "minHumiditySlider" : "minTempSlider");
   const maxSlider = document.getElementById(isHumidity ? "maxHumiditySlider" : "maxTempSlider");
   const fill = document.getElementById(isHumidity ? "humiditySliderFill" : "tempSliderFill");
-  if (!minSlider || !maxSlider || !fill) return;
+  const minHandle = document.getElementById(isHumidity ? "minHumidityHandle" : "minTempHandle");
+  const maxHandle = document.getElementById(isHumidity ? "maxHumidityHandle" : "maxTempHandle");
+  if (!minSlider || !maxSlider || !fill || !minHandle || !maxHandle) return;
 
   let min = clampNumber(minSlider.value, 0, maxScale);
   let max = clampNumber(maxSlider.value, 0, maxScale);
@@ -729,8 +731,10 @@ function updateRangePair(type) {
   const minPercent = (min / maxScale) * 100;
   const maxPercent = (max / maxScale) * 100;
   const fillPercent = maxPercent - minPercent;
-  fill.style.left = fillPercent > 0 ? `calc(${minPercent}% + 9px)` : `${minPercent}%`;
-  fill.style.width = fillPercent > 0 ? `calc(${fillPercent}% - 18px)` : "0";
+  fill.style.left = `${minPercent}%`;
+  fill.style.width = `${fillPercent}%`;
+  minHandle.style.left = `${minPercent}%`;
+  maxHandle.style.left = `${maxPercent}%`;
 
   if (isHumidity) {
     document.getElementById("minHumidityInput").value = min;
@@ -751,13 +755,15 @@ function getSelectedRangeIndex() {
 function renderDateRangeSlider() {
   const slider = document.getElementById("rangePresetSlider");
   const fill = document.getElementById("rangePresetFill");
-  if (!slider || !fill) return;
+  const handle = document.getElementById("rangePresetHandle");
+  if (!slider || !fill || !handle) return;
 
   const index = getSelectedRangeIndex();
   const preset = RANGE_PRESETS[index] || RANGE_PRESETS[1];
   const percent = (index / (RANGE_PRESETS.length - 1)) * 100;
   slider.value = index;
-  fill.style.width = percent > 0 ? `calc(${percent}% - 9px)` : "0";
+  fill.style.width = `${percent}%`;
+  handle.style.left = `${percent}%`;
   setText("dateRangeLabel", preset.label);
 }
 
