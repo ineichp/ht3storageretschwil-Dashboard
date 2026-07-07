@@ -491,6 +491,24 @@ function renderDehumidifierState(state = {}) {
     pending: Boolean(transitionActive),
     pendingLabel: transitionActive ? (transition.target ? "WAIT ON" : "WAIT OFF") : null
   });
+
+  const automationTag = document.getElementById("dehumidifierAutomationTag");
+  if (automationTag) {
+    const activeSince = state.automationActiveSince ? new Date(state.automationActiveSince) : null;
+    const showAutomationTag = state.automationActive === true &&
+      powerState === true &&
+      activeSince &&
+      !Number.isNaN(activeSince.getTime());
+
+    automationTag.hidden = !showAutomationTag;
+    automationTag.textContent = showAutomationTag
+      ? `Active by Automation since: ${activeSince.toLocaleTimeString("de-CH", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Europe/Zurich"
+      })}`
+      : "";
+  }
 }
 
 async function loadDehumidifierState() {

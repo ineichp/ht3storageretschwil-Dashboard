@@ -620,6 +620,35 @@ h1 {
   white-space: normal;
 }
 
+.control-device-label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.automation-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 2px 8px;
+  border: 1px solid rgba(248, 113, 113, 0.52);
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.automation-tag[hidden] {
+  display: none;
+}
+
 .device-control-list .control-switch-row {
   justify-content: flex-end;
   min-height: 24px;
