@@ -24,7 +24,8 @@ let LIMITS = {
   maxHumidity: 50,
   minHumidity: 0,
   measurementNotificationsEnabled: true,
-  surveillanceNotificationsEnabled: true
+  surveillanceNotificationsEnabled: true,
+  deviceNotificationsEnabled: true
 };
 
 let tempChart;
@@ -656,7 +657,8 @@ async function loadThresholds() {
       minHumidity: Number(data.minHumidity),
       maxHumidity: Number(data.maxHumidity),
       measurementNotificationsEnabled: data.measurementNotificationsEnabled !== false,
-      surveillanceNotificationsEnabled: data.surveillanceNotificationsEnabled !== false
+      surveillanceNotificationsEnabled: data.surveillanceNotificationsEnabled !== false,
+      deviceNotificationsEnabled: data.deviceNotificationsEnabled !== false
     };
 
     renderThresholdInputs();
@@ -871,7 +873,8 @@ function getLimitsFromInputs() {
     minHumidity: Number(document.getElementById("minHumidityInput").value),
     maxHumidity: Number(document.getElementById("maxHumidityInput").value),
     measurementNotificationsEnabled: LIMITS.measurementNotificationsEnabled !== false,
-    surveillanceNotificationsEnabled: LIMITS.surveillanceNotificationsEnabled !== false
+    surveillanceNotificationsEnabled: LIMITS.surveillanceNotificationsEnabled !== false,
+    deviceNotificationsEnabled: LIMITS.deviceNotificationsEnabled !== false
   };
 }
 
@@ -903,12 +906,18 @@ function setNotificationToggle(button, enabled) {
   if (!button) return;
   button.classList.toggle("on", enabled);
   button.setAttribute("aria-pressed", String(enabled));
-  button.setAttribute("aria-label", `${button.id === "surveillanceNotificationsToggle" ? "Surveillance" : "Measurements"} notifications ${enabled ? "on" : "off"}`);
+  const label = button.id === "surveillanceNotificationsToggle"
+    ? "Surveillance"
+    : button.id === "deviceNotificationsToggle"
+      ? "Device"
+      : "Measurements";
+  button.setAttribute("aria-label", `${label} notifications ${enabled ? "on" : "off"}`);
 }
 
 function renderNotificationToggles() {
   setNotificationToggle(document.getElementById("surveillanceNotificationsToggle"), LIMITS.surveillanceNotificationsEnabled !== false);
   setNotificationToggle(document.getElementById("measurementNotificationsToggle"), LIMITS.measurementNotificationsEnabled !== false);
+  setNotificationToggle(document.getElementById("deviceNotificationsToggle"), LIMITS.deviceNotificationsEnabled !== false);
 }
 
 async function saveThresholds() {
@@ -936,7 +945,8 @@ async function saveThresholds() {
       minHumidity: Number(saved.minHumidity),
       maxHumidity: Number(saved.maxHumidity),
       measurementNotificationsEnabled: saved.measurementNotificationsEnabled !== false,
-      surveillanceNotificationsEnabled: saved.surveillanceNotificationsEnabled !== false
+      surveillanceNotificationsEnabled: saved.surveillanceNotificationsEnabled !== false,
+      deviceNotificationsEnabled: saved.deviceNotificationsEnabled !== false
     };
 
     setError("");
@@ -1765,6 +1775,9 @@ function registerEventListeners() {
   });
   document.getElementById("measurementNotificationsToggle")?.addEventListener("click", () => {
     setNotificationPreference("measurementNotificationsEnabled", LIMITS.measurementNotificationsEnabled === false);
+  });
+  document.getElementById("deviceNotificationsToggle")?.addEventListener("click", () => {
+    setNotificationPreference("deviceNotificationsEnabled", LIMITS.deviceNotificationsEnabled === false);
   });
   document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
 
