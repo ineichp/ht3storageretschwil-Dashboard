@@ -439,8 +439,9 @@ h1 {
 
 .slider-scale,
 .preset-labels {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  display: block;
+  height: 17px;
   color: rgba(154, 167, 184, 0.72);
   font-size: 9px;
   font-weight: 800;
@@ -450,13 +451,35 @@ h1 {
 
 .slider-scale span,
 .preset-labels span {
-  position: relative;
+  position: absolute;
+  top: 0;
   display: inline-grid;
   justify-items: center;
   gap: 4px;
-  width: 0;
-  min-width: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
+
+.slider-scale span:nth-child(1),
+.preset-labels span:nth-child(1) { left: 0%; }
+
+.slider-scale span:nth-child(2) { left: 25%; }
+
+.slider-scale span:nth-child(3) { left: 50%; }
+
+.slider-scale span:nth-child(4) { left: 75%; }
+
+.slider-scale span:nth-child(5) { left: 100%; }
+
+.preset-labels span:nth-child(2) { left: 20%; }
+
+.preset-labels span:nth-child(3) { left: 40%; }
+
+.preset-labels span:nth-child(4) { left: 60%; }
+
+.preset-labels span:nth-child(5) { left: 80%; }
+
+.preset-labels span:nth-child(6) { left: 100%; }
 
 .slider-scale span::before,
 .preset-labels span::before {
