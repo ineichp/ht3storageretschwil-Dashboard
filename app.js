@@ -40,6 +40,7 @@ let latestPowerIotState = {};
 let latestDehumidifierState = {};
 let latestAuditCosts = {};
 let lastFocusRefreshAt = 0;
+let lastAuditRefreshAt = 0;
 let dehumidifierTransition = null;
 const EVENTS_PER_PAGE = 10;
 
@@ -632,6 +633,7 @@ function renderAuditCostsError(message) {
 
 async function loadAuditCosts() {
   try {
+    lastAuditRefreshAt = Date.now();
     const response = await apiFetch(`${API_BASE_URL}/audit-costs`);
     if (!response.ok) throw new Error(`Cost API returned HTTP ${response.status}`);
 
@@ -1832,6 +1834,11 @@ async function refreshDashboardData(options = {}) {
   ]);
 }
 
+function refreshAuditCostsIfStale() {
+  if (Date.now() - lastAuditRefreshAt < AUDIT_REFRESH_MS) return;
+  loadAuditCosts();
+}
+
 function startDashboardAutoRefresh() {
   setInterval(() => {
     if (!document.hidden) refreshLiveDashboardData({ silent: true });
@@ -1850,7 +1857,9 @@ function startDashboardAutoRefresh() {
     const now = Date.now();
     if (now - lastFocusRefreshAt < 3_000) return;
     lastFocusRefreshAt = now;
-    refreshDashboardData({ silent: true });
+    refreshLiveDashboardData({ silent: true });
+    refreshSurveillanceData({ silent: true });
+    refreshAuditCostsIfStale();
   };
 
   document.addEventListener("visibilitychange", refreshOnFocus);
