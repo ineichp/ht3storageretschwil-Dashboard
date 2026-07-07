@@ -32,43 +32,87 @@
       <div class="console-grid">
         <section class="control-panel-card measurement-controls" aria-label="Measurement controls">
           <div class="control-card-header">
-            <h2>Measurement</h2>
+            <h2>Measurements</h2>
           </div>
 
           <div class="measurement-card-body">
-            <div class="threshold-grid">
-              <label class="threshold-field compact-threshold-field">
-                <span>Temp Min</span>
-                <input id="minTempInput" type="number" min="0" max="99" step="1" aria-label="Minimum temperature">
-              </label>
+            <input id="minTempInput" type="hidden" value="0">
+            <input id="maxTempInput" type="hidden" value="40">
+            <input id="minHumidityInput" type="hidden" value="0">
+            <input id="maxHumidityInput" type="hidden" value="60">
+            <select id="rangeModeSelect" class="visually-hidden" aria-label="Time range">
+              <option value="6">Last 6h</option>
+              <option value="24" selected>Last 24h</option>
+              <option value="72">Last 3 days</option>
+              <option value="168">Last 7 days</option>
+              <option value="336">Last 14 days</option>
+              <option value="720">Last 30 days</option>
+            </select>
 
-              <label class="threshold-field compact-threshold-field">
-                <span>Temp Max</span>
-                <input id="maxTempInput" type="number" min="0" max="99" step="1" aria-label="Maximum temperature">
-              </label>
+            <div class="range-stack">
+              <div class="range-row">
+                <div class="range-label">
+                  <span>Humidity</span>
+                  <strong id="humidityRangeLabel">0 - 60 %</strong>
+                </div>
+                <div>
+                  <div id="humiditySlider" class="dual-slider humidity" aria-label="Humidity min max slider">
+                    <div class="slider-track"><div id="humiditySliderFill" class="slider-fill humidity"></div></div>
+                    <input id="minHumiditySlider" class="threshold-slider min-slider" data-threshold-type="humidity" type="range" min="0" max="60" step="1" value="0" aria-label="Minimum humidity">
+                    <input id="maxHumiditySlider" class="threshold-slider max-slider" data-threshold-type="humidity" type="range" min="0" max="60" step="1" value="60" aria-label="Maximum humidity">
+                  </div>
+                  <div class="slider-scale"><span>0</span><span>15</span><span>30</span><span>45</span><span>60</span></div>
+                </div>
+                <div class="range-value">
+                  <span>Min / Max</span>
+                  <strong id="humidityRangeValue">0 / 60</strong>
+                </div>
+              </div>
 
-              <label class="threshold-field compact-threshold-field">
-                <span>Hum Min</span>
-                <input id="minHumidityInput" type="number" min="0" max="99" step="1" aria-label="Minimum humidity">
-              </label>
+              <div class="range-row">
+                <div class="range-label">
+                  <span>Temperature</span>
+                  <strong id="tempRangeLabel">0 - 40 °C</strong>
+                </div>
+                <div>
+                  <div id="tempSlider" class="dual-slider temp" aria-label="Temperature min max slider">
+                    <div class="slider-track"><div id="tempSliderFill" class="slider-fill temp"></div></div>
+                    <input id="minTempSlider" class="threshold-slider min-slider" data-threshold-type="temp" type="range" min="0" max="40" step="1" value="0" aria-label="Minimum temperature">
+                    <input id="maxTempSlider" class="threshold-slider max-slider" data-threshold-type="temp" type="range" min="0" max="40" step="1" value="40" aria-label="Maximum temperature">
+                  </div>
+                  <div class="slider-scale"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div>
+                </div>
+                <div class="range-value">
+                  <span>Min / Max</span>
+                  <strong id="tempRangeValue">0 / 40</strong>
+                </div>
+              </div>
 
-              <label class="threshold-field compact-threshold-field">
-                <span>Hum Max</span>
-                <input id="maxHumidityInput" type="number" min="0" max="99" step="1" aria-label="Maximum humidity">
-              </label>
+              <div class="range-row">
+                <div class="range-label">
+                  <span>Date Range</span>
+                  <strong id="dateRangeLabel">Last 24h</strong>
+                </div>
+                <div class="preset-slider">
+                  <div class="single-slider" aria-label="Date range preset slider">
+                    <div class="slider-track"><div id="rangePresetFill" class="slider-fill range"></div></div>
+                    <input id="rangePresetSlider" class="range-preset-slider" type="range" min="0" max="5" step="1" value="1" aria-label="Date range preset">
+                  </div>
+                  <div class="preset-labels">
+                    <span>6h</span>
+                    <span>24h</span>
+                    <span>3d</span>
+                    <span>7d</span>
+                    <span>14d</span>
+                    <span>30d</span>
+                  </div>
+                </div>
+                <div class="range-value">
+                  <span>Preset</span>
+                  <strong id="rangePresetValue">24h</strong>
+                </div>
+              </div>
             </div>
-
-            <label class="date-range-picker">
-              <span>Date Range</span>
-              <select id="rangeModeSelect" aria-label="Time range">
-                <option value="6">Last 6h</option>
-                <option value="24" selected>Last 24h</option>
-                <option value="72">Last 3 days</option>
-                <option value="168">Last 7 days</option>
-                <option value="336">Last 14 days</option>
-                <option value="720">Last 30 days</option>
-              </select>
-            </label>
           </div>
         </section>
 
@@ -79,14 +123,14 @@
 
           <div class="notification-list">
             <div class="notification-row">
-              <span>Surveillance Notifications</span>
+              <span>Surveillance</span>
               <button id="surveillanceNotificationsToggle" class="notification-toggle" type="button" aria-label="Surveillance notifications" aria-pressed="true">
                 <span></span>
               </button>
             </div>
 
             <div class="notification-row">
-              <span>Measurements Notifications</span>
+              <span>Measurements</span>
               <button id="measurementNotificationsToggle" class="notification-toggle" type="button" aria-label="Measurements notifications" aria-pressed="true">
                 <span></span>
               </button>

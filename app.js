@@ -9,6 +9,14 @@ const DEHUMIDIFIER_TRANSITION_POLL_MS = 5_000;
 const LIVE_REFRESH_MS = 15_000;
 const SURVEILLANCE_REFRESH_MS = 60_000;
 const AUDIT_REFRESH_MS = 15 * 60_000;
+const RANGE_PRESETS = [
+  { value: "6", label: "Last 6h", shortLabel: "6h" },
+  { value: "24", label: "Last 24h", shortLabel: "24h" },
+  { value: "72", label: "Last 3 days", shortLabel: "3d" },
+  { value: "168", label: "Last 7 days", shortLabel: "7d" },
+  { value: "336", label: "Last 14 days", shortLabel: "14d" },
+  { value: "720", label: "Last 30 days", shortLabel: "30d" }
+];
 
 let LIMITS = {
   maxTemperature: 20,
@@ -666,7 +674,104 @@ function renderThresholdInputs() {
   document.getElementById("maxTempInput").value = LIMITS.maxTemperature;
   document.getElementById("minHumidityInput").value = LIMITS.minHumidity;
   document.getElementById("maxHumidityInput").value = LIMITS.maxHumidity;
+  setRangePair("temp", LIMITS.minTemperature, LIMITS.maxTemperature);
+  setRangePair("humidity", LIMITS.minHumidity, LIMITS.maxHumidity);
+  renderDateRangeSlider();
   renderNotificationToggles();
+}
+
+function clampNumber(value, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return min;
+  return Math.min(max, Math.max(min, number));
+}
+
+function setText(id, value) {
+  const node = document.getElementById(id);
+  if (node) node.textContent = value;
+}
+
+function setRangePair(type, minValue, maxValue) {
+  const isHumidity = type === "humidity";
+  const maxScale = isHumidity ? 60 : 40;
+  const minSlider = document.getElementById(isHumidity ? "minHumiditySlider" : "minTempSlider");
+  const maxSlider = document.getElementById(isHumidity ? "maxHumiditySlider" : "maxTempSlider");
+  if (!minSlider || !maxSlider) return;
+
+  const min = clampNumber(minValue, 0, maxScale);
+  const max = clampNumber(maxValue, min, maxScale);
+
+  minSlider.value = min;
+  maxSlider.value = max;
+  updateRangePair(type);
+}
+
+function updateRangePair(type) {
+  const isHumidity = type === "humidity";
+  const maxScale = isHumidity ? 60 : 40;
+  const minSlider = document.getElementById(isHumidity ? "minHumiditySlider" : "minTempSlider");
+  const maxSlider = document.getElementById(isHumidity ? "maxHumiditySlider" : "maxTempSlider");
+  const fill = document.getElementById(isHumidity ? "humiditySliderFill" : "tempSliderFill");
+  if (!minSlider || !maxSlider || !fill) return;
+
+  let min = clampNumber(minSlider.value, 0, maxScale);
+  let max = clampNumber(maxSlider.value, 0, maxScale);
+  if (min > max) {
+    if (document.activeElement === minSlider) {
+      max = min;
+      maxSlider.value = max;
+    } else {
+      min = max;
+      minSlider.value = min;
+    }
+  }
+
+  const minPercent = (min / maxScale) * 100;
+  const maxPercent = (max / maxScale) * 100;
+  fill.style.left = `${minPercent}%`;
+  fill.style.width = `${maxPercent - minPercent}%`;
+
+  if (isHumidity) {
+    document.getElementById("minHumidityInput").value = min;
+    document.getElementById("maxHumidityInput").value = max;
+    setText("humidityRangeLabel", `${min} - ${max} %`);
+    setText("humidityRangeValue", `${min} / ${max}`);
+  } else {
+    document.getElementById("minTempInput").value = min;
+    document.getElementById("maxTempInput").value = max;
+    setText("tempRangeLabel", `${min} - ${max} °C`);
+    setText("tempRangeValue", `${min} / ${max}`);
+  }
+}
+
+function getSelectedRangeIndex() {
+  const selectedHours = getSelectedHoursForApi();
+  return Math.max(0, RANGE_PRESETS.findIndex(preset => preset.value === selectedHours));
+}
+
+function renderDateRangeSlider() {
+  const slider = document.getElementById("rangePresetSlider");
+  const fill = document.getElementById("rangePresetFill");
+  if (!slider || !fill) return;
+
+  const index = getSelectedRangeIndex();
+  const preset = RANGE_PRESETS[index] || RANGE_PRESETS[1];
+  const percent = (index / (RANGE_PRESETS.length - 1)) * 100;
+  slider.value = index;
+  fill.style.width = `${percent}%`;
+  setText("dateRangeLabel", preset.label);
+  setText("rangePresetValue", preset.shortLabel);
+}
+
+function applyRangePresetFromSlider() {
+  const slider = document.getElementById("rangePresetSlider");
+  const select = document.getElementById("rangeModeSelect");
+  if (!slider || !select) return;
+
+  const index = clampNumber(slider.value, 0, RANGE_PRESETS.length - 1);
+  const preset = RANGE_PRESETS[index] || RANGE_PRESETS[1];
+  select.value = preset.value;
+  renderDateRangeSlider();
 }
 
 function getLimitsFromInputs() {
@@ -722,7 +827,7 @@ async function saveThresholds(resetCooldown = false) {
   if (!validateLimits(newLimits)) return;
 
   try {
-    document.querySelectorAll(".threshold-grid input, .notification-toggle").forEach(input => {
+    document.querySelectorAll(".threshold-slider, .notification-toggle").forEach(input => {
       input.disabled = true;
     });
 
@@ -753,7 +858,7 @@ async function saveThresholds(resetCooldown = false) {
     console.error(error);
     setError(`Could not save thresholds: ${error.message}`);
   } finally {
-    document.querySelectorAll(".threshold-grid input, .notification-toggle").forEach(input => {
+    document.querySelectorAll(".threshold-slider, .notification-toggle").forEach(input => {
       input.disabled = false;
     });
   }
@@ -984,6 +1089,7 @@ function getSelectedRangeLabel() {
 }
 
 function handleRangeModeChange() {
+  renderDateRangeSlider();
   loadData({ silent: false });
 }
 
@@ -1558,9 +1664,12 @@ function registerEventListeners() {
   document.getElementById("rangeModeSelect").addEventListener("change", handleRangeModeChange);
   document.querySelector(".control-console")?.addEventListener("click", event => event.stopPropagation());
   document.querySelector(".control-console")?.addEventListener("keydown", event => event.stopPropagation());
-  document.querySelectorAll(".threshold-grid input").forEach(input => {
+  document.querySelectorAll("[data-threshold-type]").forEach(input => {
+    input.addEventListener("input", () => updateRangePair(input.dataset.thresholdType));
     input.addEventListener("change", () => saveThresholds(false));
   });
+  document.getElementById("rangePresetSlider")?.addEventListener("input", applyRangePresetFromSlider);
+  document.getElementById("rangePresetSlider")?.addEventListener("change", handleRangeModeChange);
   document.getElementById("surveillanceNotificationsToggle")?.addEventListener("click", () => {
     setNotificationPreference("surveillanceNotificationsEnabled", LIMITS.surveillanceNotificationsEnabled === false);
   });
