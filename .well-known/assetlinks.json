@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "one.ortus.storageretschwil",
+      "sha256_cert_fingerprints": [
+        "C5:DF:A8:13:84:71:6D:57:49:83:BB:48:5A:CF:C6:14:2E:44:FE:E3:76:AA:4C:52:CC:B1:29:BC:1C:48:8E:FF"
+      ]
+    }
+  }
+]

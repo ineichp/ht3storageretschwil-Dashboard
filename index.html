@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Storage Retschwil Dashboard</title>
+  <meta name="theme-color" content="#0f1420" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Storage Retschwil" />
+  <link rel="manifest" href="manifest.webmanifest?v=20260710-1" />
+  <link rel="icon" href="icons/storage-retschwil-icon.svg" type="image/svg+xml" />
   <script>
     if (window.location.pathname.startsWith("/mfa-mockup")) {
       window.location.replace("/");
@@ -416,6 +422,13 @@
 
   <script src="auth.js?v=20260622-4"></script>
   <script src="app.js?v=20260707-1"></script>
+  <script>
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
 

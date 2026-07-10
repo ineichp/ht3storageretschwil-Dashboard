@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Storage Retschwil">
+  <rect width="512" height="512" rx="112" fill="#0f1420"/>
+  <path d="M112 340h288" stroke="#2dd4bf" stroke-width="30" stroke-linecap="round"/>
+  <path d="M143 340V191c0-17 14-31 31-31h164c17 0 31 14 31 31v149" fill="none" stroke="#dbeafe" stroke-width="26" stroke-linejoin="round"/>
+  <path d="M188 214h136M188 266h136" stroke="#9ab8d8" stroke-width="20" stroke-linecap="round"/>
+  <path d="M256 392c31 0 56-25 56-56 0-37-38-83-56-104-18 21-56 67-56 104 0 31 25 56 56 56Z" fill="#2dd4bf"/>
+  <path d="M236 337l14 14 30-35" fill="none" stroke="#0f1420" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
