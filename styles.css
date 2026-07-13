@@ -57,6 +57,14 @@ body {
   flex: 0 0 auto;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
 .eyebrow {
   color: var(--accent);
   text-transform: uppercase;
@@ -110,8 +118,33 @@ h1 {
 }
 
 .topbar-signout {
-  flex: 0 0 auto;
   align-self: center;
+}
+
+.topbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--accent) 18%, var(--field));
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.topbar-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  background: color-mix(in srgb, var(--accent) 26%, var(--field));
 }
 
 .visually-hidden {
@@ -2064,7 +2097,15 @@ tr:last-child td {
     align-items: center;
   }
   .topbar-logo { width: 52px; height: 52px; }
-  .topbar-signout { margin-left: auto; }
+  .topbar-actions {
+    margin-left: auto;
+    gap: 8px;
+  }
+  .topbar-button {
+    min-height: 38px;
+    padding: 9px 10px;
+    font-size: 12px;
+  }
   .cooldown-field {
     width: 100%;
     align-self: auto;

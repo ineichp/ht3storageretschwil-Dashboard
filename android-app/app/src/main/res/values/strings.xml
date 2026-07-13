@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Storage Retschwil</string>
+    <string name="launch_url">https://storageretschwil.ortus.one/</string>
+    <string name="biometric_title">Storage Retschwil</string>
+    <string name="biometric_subtitle">Authenticate to open the dashboard</string>
+    <string name="biometric_cancel">Cancel</string>
+    <string name="notification_channel_name">Storage Retschwil Alerts</string>
+    <string name="notification_channel_description">Native app alerts for Storage Retschwil</string>
+    <string name="notification_registration_url"></string>
+</resources>
