@@ -38,14 +38,23 @@ body {
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 18px;
   margin-bottom: 20px;
 }
 
 .title-cluster {
+  display: flex;
+  align-items: center;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.topbar-logo {
+  display: block;
+  width: clamp(54px, 7vw, 72px);
+  height: clamp(54px, 7vw, 72px);
+  flex: 0 0 auto;
 }
 
 .eyebrow {
@@ -102,7 +111,7 @@ h1 {
 
 .topbar-signout {
   flex: 0 0 auto;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .visually-hidden {
@@ -2051,8 +2060,11 @@ tr:last-child td {
   .eyebrow { font-size: 10px; margin-bottom: 8px; }
   h1 { font-size: 28px; line-height: 0.98; }
   .topbar {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
   }
+  .topbar-logo { width: 52px; height: 52px; }
+  .topbar-signout { margin-left: auto; }
   .cooldown-field {
     width: 100%;
     align-self: auto;
