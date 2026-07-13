@@ -6,6 +6,7 @@ const AUTH_CONFIG = {
 
 const AUTH_STORAGE_KEY = "storageRetschwilAuth";
 let pendingAuth = null;
+let activeSession = null;
 
 const AUTH_MODE_COPY = {
   login: {
@@ -25,32 +26,37 @@ const AUTH_MODE_COPY = {
   }
 };
 
-function readSession() {
+function readStoredSession() {
   try {
-    const value = JSON.parse(sessionStorage.getItem(AUTH_STORAGE_KEY) || "null");
+    const value = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || "null");
     if (!value || !value.accessToken || !value.expiresAt) return null;
-    if (Date.now() > value.expiresAt - 60_000) return null;
     return value;
   } catch {
     return null;
   }
 }
 
-function writeSession(authenticationResult) {
+function isSessionFresh(session) {
+  return Boolean(session?.accessToken && session.expiresAt && Date.now() <= session.expiresAt - 60_000);
+}
+
+function writeSession(authenticationResult, existingSession = null) {
   const expiresIn = Number(authenticationResult.ExpiresIn || 3600);
   const session = {
     accessToken: authenticationResult.AccessToken,
     idToken: authenticationResult.IdToken,
-    refreshToken: authenticationResult.RefreshToken,
+    refreshToken: authenticationResult.RefreshToken || existingSession?.refreshToken || null,
     expiresAt: Date.now() + expiresIn * 1000
   };
 
-  sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  activeSession = session;
   return session;
 }
 
 function clearSession() {
-  sessionStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  activeSession = null;
 }
 
 async function cognitoRequest(target, body) {
@@ -81,6 +87,37 @@ async function passwordLogin(username, password) {
       PASSWORD: password
     }
   });
+}
+
+async function refreshLogin(session) {
+  if (!session?.refreshToken) return null;
+
+  const result = await cognitoRequest("InitiateAuth", {
+    AuthFlow: "REFRESH_TOKEN_AUTH",
+    ClientId: AUTH_CONFIG.clientId,
+    AuthParameters: {
+      REFRESH_TOKEN: session.refreshToken
+    }
+  });
+
+  return result.AuthenticationResult ? writeSession(result.AuthenticationResult, session) : null;
+}
+
+async function getValidSession() {
+  const session = readStoredSession();
+  if (!session) return null;
+  if (isSessionFresh(session)) {
+    activeSession = session;
+    return session;
+  }
+
+  try {
+    return await refreshLogin(session);
+  } catch (error) {
+    console.warn("Could not refresh dashboard session:", error);
+    clearSession();
+    return null;
+  }
 }
 
 async function respondToAuthChallenge(challengeName, session, challengeResponses) {
@@ -356,16 +393,26 @@ function showLogin(errorMessage = "") {
 }
 
 function attachFetchToken(session) {
+  activeSession = session;
   const originalFetch = window.fetch.bind(window);
 
-  window.fetch = (input, init = {}) => {
+  window.fetch = async (input, init = {}) => {
     const url = typeof input === "string" ? input : input.url;
     if (!url || !url.startsWith(AUTH_CONFIG.apiBaseUrl)) {
       return originalFetch(input, init);
     }
 
+    if (!isSessionFresh(activeSession)) {
+      const refreshedSession = await refreshLogin(activeSession);
+      if (!refreshedSession) {
+        clearSession();
+        showLogin();
+        throw new Error("Dashboard session expired.");
+      }
+    }
+
     const headers = new Headers(init.headers || {});
-    headers.set("Authorization", `Bearer ${session.accessToken}`);
+    headers.set("Authorization", `Bearer ${activeSession.accessToken}`);
     return originalFetch(input, { ...init, headers });
   };
 }
@@ -393,7 +440,7 @@ window.StorageRetschwilAuth = {
     window.StorageRetschwilAuth.startDashboard = startDashboard;
 
     try {
-      const session = readSession();
+      const session = await getValidSession();
       if (!session) {
         showLogin();
         return;
