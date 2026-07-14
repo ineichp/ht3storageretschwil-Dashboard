@@ -12,9 +12,9 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "/icons/storage-retschwil-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/android-icon.png?v=20260714-1",
+      "sizes": "1024x1024",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
