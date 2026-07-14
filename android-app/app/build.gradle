@@ -2,6 +2,12 @@ plugins {
     id "com.android.application"
 }
 
+def uploadKeystorePropertiesFile = rootProject.file("../.local-secrets/upload-keystore.properties")
+def uploadKeystoreProperties = new Properties()
+if (uploadKeystorePropertiesFile.exists()) {
+    uploadKeystoreProperties.load(new FileInputStream(uploadKeystorePropertiesFile))
+}
+
 android {
     namespace "one.ortus.storageretschwil"
     compileSdk 35
@@ -12,6 +18,25 @@ android {
         targetSdk 35
         versionCode 1
         versionName "1.0.0"
+    }
+
+    signingConfigs {
+        release {
+            if (uploadKeystorePropertiesFile.exists()) {
+                storeFile file(uploadKeystoreProperties["STORE_FILE"])
+                storePassword uploadKeystoreProperties["STORE_PASSWORD"]
+                keyAlias uploadKeystoreProperties["KEY_ALIAS"]
+                keyPassword uploadKeystoreProperties["KEY_PASSWORD"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (uploadKeystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 }
 
