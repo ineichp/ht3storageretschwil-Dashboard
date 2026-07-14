@@ -7,10 +7,10 @@ const SHELL_ASSETS = [
   "/auth.js?v=20260713-1",
   "/app.js?v=20260714-5",
   "/qrcode-generator.js?v=20260622-4",
-  "/manifest.json?v=20260714-4",
-  "/icons/header-logo.png?v=20260714-4",
-  "/icons/favicon.png?v=20260714-4",
-  "/icons/android-icon.png?v=20260714-4"
+  "/manifest.json?v=20260714-5",
+  "/icons/header-logo.png?v=20260714-5",
+  "/icons/favicon.png?v=20260714-5",
+  "/icons/android-icon.png?v=20260714-5"
 ];
 
 self.addEventListener("install", event => {
