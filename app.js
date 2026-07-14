@@ -1707,11 +1707,35 @@ function toggleSection(header) {
 
   const isOpen = !content.classList.contains("collapsed");
   const controls = header.querySelector(".measurement-controls");
+  const sectionCard = header.closest(".section-card");
 
-  content.classList.toggle("collapsed", isOpen);
+  content.style.overflow = "hidden";
+
+  if (isOpen) {
+    content.style.height = `${content.scrollHeight}px`;
+    content.offsetHeight;
+    content.classList.add("collapsed");
+    content.style.height = "0px";
+    sectionCard?.classList.add("section-collapsed");
+  } else {
+    content.classList.remove("collapsed");
+    content.style.height = "0px";
+    content.offsetHeight;
+    content.style.height = `${content.scrollHeight}px`;
+    sectionCard?.classList.remove("section-collapsed");
+  }
+
   if (controls) controls.hidden = isOpen;
   header.setAttribute("aria-expanded", String(!isOpen));
   toggle.textContent = isOpen ? "+" : "−";
+
+  content.addEventListener("transitionend", event => {
+    if (event.propertyName !== "height") return;
+    if (!content.classList.contains("collapsed")) {
+      content.style.height = "auto";
+      content.style.overflow = "";
+    }
+  }, { once: true });
 }
 
 function bindToggleHeader(header, handler) {

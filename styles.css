@@ -1408,6 +1408,7 @@ button:disabled {
   margin-bottom: 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--border);
+  transition: margin-bottom 0.24s ease, padding-bottom 0.24s ease, border-color 0.24s ease;
 }
 
 .section-heading-copy {
@@ -1431,6 +1432,22 @@ button:disabled {
 .section-content {
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  opacity: 1;
+  transition: height 0.32s ease, opacity 0.24s ease;
+}
+
+.section-content.collapsed {
+  display: block;
+  height: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.section-card.section-collapsed .section-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom-color: transparent;
 }
 
 .section-header h2 {
@@ -1720,7 +1737,7 @@ button:disabled {
 }
 
 .clickable { cursor: pointer; }
-.collapsed { display: none; }
+.collapsed:not(.section-content) { display: none; }
 
 .reading-toggle-header {
   border-radius: var(--radius);
