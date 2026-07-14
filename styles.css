@@ -52,8 +52,8 @@ body {
 
 .topbar-logo {
   display: block;
-  width: min(360px, 48vw);
-  height: 76px;
+  width: min(620px, 58vw);
+  height: 140px;
   object-fit: contain;
   object-position: left center;
   flex: 0 0 auto;
@@ -2114,7 +2114,7 @@ tr:last-child td {
     flex-direction: row;
     align-items: center;
   }
-  .topbar-logo { width: min(220px, 52vw); height: 52px; }
+  .topbar-logo { width: min(300px, 58vw); height: 72px; }
   .topbar-actions {
     margin-left: auto;
     gap: 8px;
