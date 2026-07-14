@@ -8,7 +8,7 @@ const DEHUMIDIFIER_TRANSITION_TIMEOUT_MS = 120_000;
 const DEHUMIDIFIER_TRANSITION_POLL_MS = 5_000;
 const LIVE_REFRESH_MS = 15_000;
 const SURVEILLANCE_REFRESH_MS = 60_000;
-const AUDIT_REFRESH_MS = 15 * 60_000;
+const AUDIT_REFRESH_MS = 24 * 60 * 60_000;
 const RANGE_PRESETS = [
   { value: "6", label: "Last 6h", shortLabel: "6h" },
   { value: "24", label: "Last 24h", shortLabel: "24h" },
