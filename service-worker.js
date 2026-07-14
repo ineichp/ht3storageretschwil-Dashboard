@@ -1,16 +1,16 @@
-const CACHE_NAME = "storage-retschwil-shell-v20260714-2";
+const CACHE_NAME = "storage-retschwil-shell-v20260714-3";
 const SHELL_ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=20260714-2",
+  "/styles.css?v=20260714-3",
   "/auth.css?v=20260713-1",
   "/auth.js?v=20260713-1",
   "/app.js?v=20260707-1",
   "/qrcode-generator.js?v=20260622-4",
-  "/manifest.json?v=20260714-2",
-  "/icons/header-logo.png?v=20260714-2",
-  "/icons/favicon.png?v=20260714-2",
-  "/icons/android-icon.png?v=20260714-2"
+  "/manifest.json?v=20260714-3",
+  "/icons/header-logo.png?v=20260714-3",
+  "/icons/favicon.png?v=20260714-3",
+  "/icons/android-icon.png?v=20260714-3"
 ];
 
 self.addEventListener("install", event => {
