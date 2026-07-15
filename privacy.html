@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy - Storage Retschwil</title>
+  <meta name="theme-color" content="#0f1420" />
+  <link rel="icon" href="icons/favicon.png?v=20260714-5" type="image/png" />
+  <link rel="stylesheet" href="styles.css?v=20260714-5" />
+  <style>
+    .policy-shell {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .policy-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .policy-logo {
+      width: min(360px, 70vw);
+      height: 88px;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .policy-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .policy-card h1 {
+      white-space: normal;
+      margin-bottom: 8px;
+    }
+
+    .policy-card h2 {
+      margin: 28px 0 10px;
+      font-size: 18px;
+    }
+
+    .policy-card p,
+    .policy-card li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .policy-card a {
+      color: var(--accent);
+    }
+
+    .policy-back {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 18px;
+      }
+
+      .policy-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .policy-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="policy-shell">
+    <header class="policy-header">
+      <img class="policy-logo" src="icons/header-logo.png?v=20260714-5" alt="Storage Retschwil">
+      <a class="policy-back" href="/">Back to dashboard</a>
+    </header>
+
+    <article class="policy-card">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1>Storage Retschwil</h1>
+      <p>Last updated: 15 July 2026</p>
+
+      <p>
+        Storage Retschwil is a private monitoring and control application intended for personal use by the owner of the
+        Storage Retschwil installation. The app provides access to environmental measurements, surveillance events,
+        device status, energy information, cost information, and selected device controls.
+      </p>
+
+      <h2>Information processed by the app</h2>
+      <p>The app may process the following information in order to provide the dashboard functionality:</p>
+      <ul>
+        <li>Account login information, such as the authorized user email address.</li>
+        <li>Authentication session data required to keep the dashboard signed in.</li>
+        <li>Temperature, humidity, flood sensor, battery, cable, power, and device status readings.</li>
+        <li>Camera upload metadata, video object references, and Amazon Rekognition detection labels and confidence values.</li>
+        <li>Energy usage and cost information shown in the dashboard.</li>
+        <li>AWS service cost information shown in the dashboard.</li>
+        <li>Push notification tokens if app notifications are enabled on the Android device.</li>
+      </ul>
+
+      <h2>Biometric authentication</h2>
+      <p>
+        Biometric authentication, such as fingerprint unlock, is handled locally by Android. The app does not receive,
+        store, transmit, or otherwise access biometric templates or fingerprint data.
+      </p>
+
+      <h2>How the information is used</h2>
+      <p>The information is used only to operate the private Storage Retschwil dashboard, including:</p>
+      <ul>
+        <li>Displaying live and historical measurements.</li>
+        <li>Showing device state, online status, flood status, and energy usage.</li>
+        <li>Displaying video detection events and relevant labels.</li>
+        <li>Sending configured alerts through push notifications or WhatsApp.</li>
+        <li>Controlling authorized Shelly devices from the dashboard.</li>
+      </ul>
+
+      <h2>Third-party services</h2>
+      <p>The app and backend use third-party services to provide the private dashboard:</p>
+      <ul>
+        <li>Amazon Web Services for hosting, authentication, APIs, storage, logging, monitoring, and video recognition.</li>
+        <li>Google Play services for app distribution and, if enabled, Firebase Cloud Messaging push notifications.</li>
+        <li>Shelly Cloud for connected device state and control.</li>
+        <li>CallMeBot/WhatsApp for configured WhatsApp alert delivery.</li>
+      </ul>
+
+      <h2>Data sharing</h2>
+      <p>
+        The app is not designed to sell, rent, or share personal data with advertisers or data brokers. Data is shared
+        only with the infrastructure and service providers required to operate the private dashboard and notifications.
+      </p>
+
+      <h2>Data retention</h2>
+      <p>
+        Operational logs, measurements, videos, detection events, and cost data are retained according to the configured
+        Storage Retschwil AWS retention and lifecycle settings. Some video and detection data may be automatically
+        deleted after the configured retention period or when it is no longer relevant for the dashboard.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        Access to the dashboard is restricted to authorized users. The backend uses AWS authentication and access controls.
+        No security measure is perfect, but the app is designed for restricted private use rather than public social or
+        advertising use.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        The app is not intended for children and is not directed at children. It is intended only for the private operator
+        of the Storage Retschwil installation.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For privacy questions or deletion requests, contact:
+        <a href="mailto:ip@skyit.ch">ip@skyit.ch</a>
+      </p>
+    </article>
+  </main>
+</body>
+</html>
