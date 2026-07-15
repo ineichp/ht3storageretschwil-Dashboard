@@ -159,6 +159,15 @@ h1 {
   stroke-linejoin: round;
 }
 
+.native-android-app .topbar-actions {
+  display: none;
+}
+
+.play-store-button svg {
+  width: 22px;
+  height: 22px;
+}
+
 .topbar-button:hover {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--accent) 48%, var(--border));

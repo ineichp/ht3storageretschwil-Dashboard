@@ -12,13 +12,17 @@
   <link rel="icon" href="icons/favicon.png?v=20260714-5" type="image/png" />
   <link rel="apple-touch-icon" href="icons/android-icon.png?v=20260714-5" />
   <script>
+    if (navigator.userAgent.includes("StorageRetschwilAndroid")) {
+      document.documentElement.classList.add("native-android-app");
+    }
+
     if (window.location.pathname.startsWith("/mfa-mockup")) {
       window.location.replace("/");
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="qrcode-generator.js?v=20260622-4"></script>
-  <link rel="stylesheet" href="styles.css?v=20260714-5" />
+  <link rel="stylesheet" href="styles.css?v=20260715-1" />
   <link rel="stylesheet" href="auth.css?v=20260713-1" />
 </head>
 
@@ -30,11 +34,12 @@
       </div>
 
       <div class="topbar-actions">
-        <a class="topbar-button apk-download-button" href="https://play.google.com/apps/internaltest/4700010028942112063" target="_blank" rel="noopener" aria-label="Open app in Google Play" title="Open app in Google Play">
+        <a class="topbar-button play-store-button" href="https://play.google.com/store/apps/details?id=one.ortus.storageretschwil" target="_blank" rel="noopener" aria-label="Open app in Google Play" title="Open app in Google Play">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3v11" />
-            <path d="m7 10 5 5 5-5" />
-            <path d="M5 21h14" />
+            <polygon points="4.4,3.2 13.4,12 4.4,20.8" fill="#34a853" />
+            <polygon points="13.4,12 17.1,8.4 5.9,2.3" fill="#4285f4" />
+            <polygon points="13.4,12 17.1,15.6 5.9,21.7" fill="#fbbc04" />
+            <polygon points="17.1,8.4 20.1,10.1 20.1,13.9 17.1,15.6 13.4,12" fill="#ea4335" />
           </svg>
         </a>
         <button id="signOutButton" class="auth-signout topbar-signout topbar-button" type="button" aria-label="Logout" title="Logout">

@@ -1,9 +1,9 @@
-const CACHE_NAME = "storage-retschwil-shell-v20260715-2";
+const CACHE_NAME = "storage-retschwil-shell-v20260715-3";
 const SHELL_ASSETS = [
   "/",
-  "/index.html?v=20260715-1",
+  "/index.html?v=20260715-2",
   "/privacy.html?v=20260715-1",
-  "/styles.css?v=20260714-5",
+  "/styles.css?v=20260715-1",
   "/auth.css?v=20260713-1",
   "/auth.js?v=20260713-1",
   "/app.js?v=20260714-5",
