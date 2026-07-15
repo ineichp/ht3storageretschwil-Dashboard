@@ -7,5 +7,5 @@
     <string name="biometric_cancel">Cancel</string>
     <string name="notification_channel_name">Storage Retschwil Alerts</string>
     <string name="notification_channel_description">Native app alerts for Storage Retschwil</string>
-    <string name="notification_registration_url"></string>
+    <string name="notification_registration_url">https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com/push-tokens</string>
 </resources>

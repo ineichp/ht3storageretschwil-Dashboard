@@ -2,6 +2,10 @@ plugins {
     id "com.android.application"
 }
 
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
+}
+
 def uploadKeystorePropertiesFile = rootProject.file("../.local-secrets/upload-keystore.properties")
 def uploadKeystoreProperties = new Properties()
 if (uploadKeystorePropertiesFile.exists()) {
@@ -16,8 +20,8 @@ android {
         applicationId "one.ortus.storageretschwil"
         minSdk 23
         targetSdk 35
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
     }
 
     signingConfigs {

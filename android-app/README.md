@@ -30,13 +30,23 @@ The app opens through a native biometric gate before the dashboard starts. Andro
 
 The app contains the Android notification channel and Firebase Messaging receiver. Existing WhatsApp notifications are not changed.
 
+AWS backend support is wired as follows:
+
+- `POST https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com/push-tokens` registers Android FCM tokens.
+- Registered tokens are stored in DynamoDB item `storageretschwilconfig/androidPushTokens`.
+- Existing alert flows now send Android push notifications in addition to WhatsApp:
+  - measurement threshold alerts
+  - surveillance video detection alerts
+  - flood alerts
+  - device status alerts
+
 To enable real push delivery, add Firebase Cloud Messaging configuration:
 
 1. Create or use a Firebase project.
 2. Add this Android app package: `one.ortus.storageretschwil`.
 3. Place `google-services.json` in `app/`.
-4. Add the token registration endpoint to `notification_registration_url` in `app/src/main/res/values/strings.xml`.
-5. Send the same alert events from the backend to FCM in addition to WhatsApp.
+4. Ensure Firebase Cloud Messaging API is enabled in Google Cloud.
+5. Build and publish a new Play release.
 
 ## Release Notes
 
