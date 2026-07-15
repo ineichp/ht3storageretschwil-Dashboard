@@ -1540,6 +1540,35 @@ function setDefaultOpenEventDay(groups) {
   });
 }
 
+function getUniqueEventDayKeys(groups) {
+  return [...new Set(groups.map(group => group.dayKey))];
+}
+
+function updateVideoFloatingMenu(groups) {
+  const status = document.getElementById("videoFloatingStatus");
+  const expandButton = document.getElementById("expandVideoDaysButton");
+  const collapseButton = document.getElementById("collapseVideoDaysButton");
+  if (!status || !expandButton || !collapseButton) return;
+
+  const dayKeys = getUniqueEventDayKeys(groups);
+  const openDays = dayKeys.filter(dayKey => eventDayOpenState[dayKey] === true).length;
+  const dayLabel = dayKeys.length === 1 ? "day" : "days";
+  status.textContent = groups.length
+    ? `${groups.length} videos · ${openDays}/${dayKeys.length} ${dayLabel} open`
+    : "No videos";
+
+  expandButton.disabled = !groups.length || openDays === dayKeys.length;
+  collapseButton.disabled = !groups.length || openDays === 0;
+}
+
+function setAllVideoDaysOpen(open) {
+  const groups = getEventGroups(events);
+  getUniqueEventDayKeys(groups).forEach(dayKey => {
+    eventDayOpenState[dayKey] = open;
+  });
+  renderEventsTable(events);
+}
+
 function renderEventsPagination(totalPages) {
   const pagination = document.getElementById("eventsPagination");
   if (!pagination) return;
@@ -1613,11 +1642,13 @@ function renderEventsTable(items) {
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
+    updateVideoFloatingMenu([]);
     return;
   }
 
   const groups = getEventGroups(items);
   setDefaultOpenEventDay(groups);
+  updateVideoFloatingMenu(groups);
   let currentDayKey = "";
 
   const rows = groups.map(group => {
@@ -1826,6 +1857,8 @@ function registerEventListeners() {
   document.getElementById("deviceNotificationsToggle")?.addEventListener("click", () => {
     setNotificationPreference("deviceNotificationsEnabled", LIMITS.deviceNotificationsEnabled === false);
   });
+  document.getElementById("expandVideoDaysButton")?.addEventListener("click", () => setAllVideoDaysOpen(true));
+  document.getElementById("collapseVideoDaysButton")?.addEventListener("click", () => setAllVideoDaysOpen(false));
   document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
 
   document.getElementById("videoModal").addEventListener("click", event => {

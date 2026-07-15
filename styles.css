@@ -1801,6 +1801,68 @@ canvas {
   scrollbar-width: thin;
 }
 
+.video-floating-menu {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: -2px 0 10px;
+  pointer-events: none;
+}
+
+.video-floating-status,
+.video-floating-actions {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-raised) 92%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+}
+
+.video-floating-status {
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.video-floating-actions {
+  gap: 6px;
+  min-height: 38px;
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.video-floating-button {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  color: #99f6e4;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.video-floating-button:hover {
+  transform: none;
+}
+
+.video-floating-button:disabled {
+  opacity: 0.38;
+}
+
 .surveillance-scroll .events-table thead th {
   position: sticky;
   top: 0;

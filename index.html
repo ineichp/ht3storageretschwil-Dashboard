@@ -22,7 +22,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="qrcode-generator.js?v=20260622-4"></script>
-  <link rel="stylesheet" href="styles.css?v=20260715-1" />
+  <link rel="stylesheet" href="styles.css?v=20260715-2" />
   <link rel="stylesheet" href="auth.css?v=20260713-1" />
 </head>
 
@@ -322,6 +322,13 @@
         </div>
 
         <div id="surveillanceContent" class="section-content">
+          <div class="video-floating-menu" aria-label="Video controls">
+            <span id="videoFloatingStatus" class="video-floating-status">Videos</span>
+            <div class="video-floating-actions">
+              <button id="expandVideoDaysButton" class="video-floating-button" type="button" aria-label="Expand all video days" title="Expand all video days">+</button>
+              <button id="collapseVideoDaysButton" class="video-floating-button" type="button" aria-label="Collapse all video days" title="Collapse all video days">−</button>
+            </div>
+          </div>
           <div class="table-wrap surveillance-scroll">
             <table class="events-table">
               <colgroup>
@@ -441,7 +448,7 @@
   </div>
 
   <script src="auth.js?v=20260713-1"></script>
-  <script src="app.js?v=20260714-5"></script>
+  <script src="app.js?v=20260715-2"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol === "https:") {
       window.addEventListener("load", () => {
