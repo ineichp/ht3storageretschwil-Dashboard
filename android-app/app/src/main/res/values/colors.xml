@@ -2,4 +2,5 @@
 <resources>
     <color name="storage_background">#0F1420</color>
     <color name="storage_accent">#2DD4BF</color>
+    <color name="ic_launcher_background">#0f1420</color>
 </resources>
