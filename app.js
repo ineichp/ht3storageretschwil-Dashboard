@@ -1540,33 +1540,19 @@ function setDefaultOpenEventDay(groups) {
   });
 }
 
-function getUniqueEventDayKeys(groups) {
-  return [...new Set(groups.map(group => group.dayKey))];
-}
+function toggleEventDay(dayKey) {
+  const isOpen = eventDayOpenState[dayKey] === true;
+  eventDayOpenState[dayKey] = !isOpen;
 
-function updateVideoFloatingMenu(groups) {
-  const status = document.getElementById("videoFloatingStatus");
-  const expandButton = document.getElementById("expandVideoDaysButton");
-  const collapseButton = document.getElementById("collapseVideoDaysButton");
-  if (!status || !expandButton || !collapseButton) return;
-
-  const dayKeys = getUniqueEventDayKeys(groups);
-  const openDays = dayKeys.filter(dayKey => eventDayOpenState[dayKey] === true).length;
-  const dayLabel = dayKeys.length === 1 ? "day" : "days";
-  status.textContent = groups.length
-    ? `${groups.length} videos · ${openDays}/${dayKeys.length} ${dayLabel} open`
-    : "No videos";
-
-  expandButton.disabled = !groups.length || openDays === dayKeys.length;
-  collapseButton.disabled = !groups.length || openDays === 0;
-}
-
-function setAllVideoDaysOpen(open) {
-  const groups = getEventGroups(events);
-  getUniqueEventDayKeys(groups).forEach(dayKey => {
-    eventDayOpenState[dayKey] = open;
+  document.querySelectorAll(`.event-day-toggle[data-day-key="${dayKey}"]`).forEach(button => {
+    button.setAttribute("aria-expanded", String(!isOpen));
+    const chevron = button.querySelector(".event-day-chevron");
+    if (chevron) chevron.textContent = isOpen ? "+" : "−";
   });
-  renderEventsTable(events);
+
+  document.querySelectorAll(`.event-video-row[data-day-key="${dayKey}"]`).forEach(row => {
+    row.classList.toggle("event-day-collapsed", isOpen);
+  });
 }
 
 function renderEventsPagination(totalPages) {
@@ -1642,13 +1628,11 @@ function renderEventsTable(items) {
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="4">No detected events found.</td></tr>`;
-    updateVideoFloatingMenu([]);
     return;
   }
 
   const groups = getEventGroups(items);
   setDefaultOpenEventDay(groups);
-  updateVideoFloatingMenu(groups);
   let currentDayKey = "";
 
   const rows = groups.map(group => {
@@ -1685,19 +1669,21 @@ function renderEventsTable(items) {
       ${dayHeader}
       <tr class="event-video-row ${isDayOpen ? "" : "event-day-collapsed"}" data-day-key="${group.dayKey}">
         <td data-label="Time">
-          <span class="event-time">${formatEventClock(group.date)}</span>
+          <div class="event-cell-content"><span class="event-time">${formatEventClock(group.date)}</span></div>
         </td>
         <td data-label="Detected">
-          <div class="event-summary">
-            <div class="event-title-row">
-              <div class="event-title">${title}</div>
+          <div class="event-cell-content">
+            <div class="event-summary">
+              <div class="event-title-row">
+                <div class="event-title">${title}</div>
+              </div>
+              <div class="event-tags">${labelChips}</div>
             </div>
-            <div class="event-tags">${labelChips}</div>
           </div>
         </td>
-        <td data-label="Confidence"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></td>
+        <td data-label="Confidence"><div class="event-cell-content"><span class="event-confidence">${bestConfidence.toFixed(1)} %</span></div></td>
         <td data-label="Play">
-          <button data-event-index="${originalIndex}" class="play-event-button">Play</button>
+          <div class="event-cell-content"><button data-event-index="${originalIndex}" class="play-event-button">Play</button></div>
         </td>
       </tr>
     `;
@@ -1707,9 +1693,7 @@ function renderEventsTable(items) {
 
   tbody.querySelectorAll(".event-day-toggle").forEach(button => {
     button.addEventListener("click", () => {
-      const dayKey = button.dataset.dayKey;
-      eventDayOpenState[dayKey] = eventDayOpenState[dayKey] !== true;
-      renderEventsTable(events);
+      toggleEventDay(button.dataset.dayKey);
     });
   });
 
@@ -1857,8 +1841,6 @@ function registerEventListeners() {
   document.getElementById("deviceNotificationsToggle")?.addEventListener("click", () => {
     setNotificationPreference("deviceNotificationsEnabled", LIMITS.deviceNotificationsEnabled === false);
   });
-  document.getElementById("expandVideoDaysButton")?.addEventListener("click", () => setAllVideoDaysOpen(true));
-  document.getElementById("collapseVideoDaysButton")?.addEventListener("click", () => setAllVideoDaysOpen(false));
   document.getElementById("closeVideoModal").addEventListener("click", closeVideoModal);
 
   document.getElementById("videoModal").addEventListener("click", event => {
