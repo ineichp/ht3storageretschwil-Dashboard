@@ -154,6 +154,44 @@ Check logs:
 aws logs tail /aws/lambda/storageretschwilAuditCosts --profile codex-terraform --region eu-central-1 --since 1h
 ```
 
+## Android Push Notifications
+
+Core function:
+
+```text
+storageretschwilPushNotifications
+```
+
+Firebase project:
+
+```text
+storage-retschwil
+```
+
+Android package:
+
+```text
+one.ortus.storageretschwil
+```
+
+Token store:
+
+```text
+DynamoDB: storageretschwilconfig/androidPushTokens
+```
+
+Check push Lambda logs:
+
+```powershell
+aws logs tail /aws/lambda/storageretschwilPushNotifications --profile codex-terraform --region eu-central-1 --since 1h
+```
+
+Send a direct test push:
+
+```powershell
+aws lambda invoke --function-name storageretschwilPushNotifications --profile codex-terraform --region eu-central-1 --cli-binary-format raw-in-base64-out --payload '{\"title\":\"Storage Retschwil Alert\",\"body\":\"Android push test\",\"data\":{\"type\":\"test\"}}' response.json
+```
+
 ## Metadata Audit
 
 List all tagged project resources:
@@ -167,3 +205,25 @@ Runtime audit:
 ```powershell
 aws lambda list-functions --profile codex-terraform --region eu-central-1 --query "Functions[].{Name:FunctionName,Runtime:Runtime,LastModified:LastModified}"
 ```
+
+## Google Metadata Audit
+
+Google project labels should include:
+
+```text
+project = storage-retschwil
+storage_retschwil = true
+managed_by = codex
+owner = ip-skyit
+```
+
+Google Play listing should be maintained for:
+
+```text
+Title: Storage Retschwil
+Short description: Private dashboard for Storage Retschwil monitoring, controls and alerts.
+Contact email: ip@skyit.ch
+Privacy policy: https://storageretschwil.ortus.one/privacy.html
+```
+
+Service account descriptions can be maintained after the Google IAM API is enabled for project `198845542006`.

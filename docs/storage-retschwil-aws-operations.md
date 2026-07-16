@@ -38,6 +38,14 @@ Owner = Codex
 Description = Short operational description
 ```
 
+For every infrastructure or app change, update metadata and documentation in the same working session:
+
+```text
+AWS: Name, Project, Storage-Retschwil, ManagedBy, Owner, Description
+Google: project labels, Play listing metadata, service account descriptions where supported
+GitHub: architecture, runbook, operations notes, changelog
+```
+
 ## Resource Groups
 
 The main resource group is:

@@ -1,5 +1,19 @@
 # Storage Retschwil Changelog
 
+## 2026-07-16
+
+- Added Android push notification reliability fixes in app release `1.0.4` / `versionCode 5`.
+- Updated the `storageretschwilPushNotifications` Lambda payload so `title` and `body` are available as FCM data fields.
+- Confirmed direct Android push test delivery through Firebase with `sent: 3` and `failed: 0`.
+- Applied Google Cloud project labels for `storage-retschwil`:
+  - `project = storage-retschwil`
+  - `storage_retschwil = true`
+  - `managed_by = codex`
+  - `owner = ip-skyit`
+- Updated Google Play listing metadata for `one.ortus.storageretschwil`.
+- Documented Google/Firebase/Play operations and the required metadata rule for future changes.
+- Noted that Google service account descriptions still require the Google IAM API to be enabled for project `198845542006`.
+
 ## 2026-07-11
 
 - Harmonized AWS resource tagging for Storage Retschwil resources.

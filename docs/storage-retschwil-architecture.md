@@ -2,7 +2,7 @@
 
 ## Overview
 
-Storage Retschwil combines an Amplify-hosted dashboard with AWS APIs, DynamoDB state, S3 camera videos, Rekognition label detection, Shelly Cloud device controls, and WhatsApp notifications.
+Storage Retschwil combines an Amplify-hosted dashboard with AWS APIs, DynamoDB state, S3 camera videos, Rekognition label detection, Shelly Cloud device controls, WhatsApp notifications, Firebase Cloud Messaging, and a Google Play distributed Android app.
 
 ```mermaid
 flowchart TD
@@ -41,10 +41,16 @@ flowchart TD
     AlertChecker --> WhatsApp["WhatsApp Alerts"]
     FloodApi --> WhatsApp
     EventProcessor --> WhatsApp
+    AlertChecker --> AndroidPush["Android Push Notifications"]
+    FloodApi --> AndroidPush
+    EventProcessor --> PushLambda["Lambda: storageretschwilPushNotifications"]
+    PushLambda --> Firebase["Firebase Cloud Messaging"]
+    Firebase --> AndroidPush
 
     CostsApi --> CostExplorer["AWS Cost Explorer"]
     AnnualReport["EventBridge: Annual Cost Report"] --> AnnualCostLambda["Lambda: storageretschwilAnnualCostReport"]
     AnnualCostLambda --> Email["Email Report"]
+    AndroidApp["Google Play App: one.ortus.storageretschwil"] --> Amplify
 ```
 
 ## Main Data Flows
@@ -69,7 +75,7 @@ flowchart TD
 2. Videos are stored in S3.
 3. S3 upload starts Rekognition analysis.
 4. Rekognition completion is delivered through SNS.
-5. Event processor stores labels and sends WhatsApp alerts.
+5. Event processor stores labels and sends WhatsApp and Android push alerts.
 6. Dashboard shows all available detection records until the related video expires.
 
 ### Power And Dehumidifier
@@ -91,4 +97,6 @@ flowchart TD
 - AWS is the system of record for dashboard backend state.
 - Shelly Cloud is the source of live power and switch control data.
 - WhatsApp notifications remain independent from future Android push notifications.
+- Android push notifications use Firebase Cloud Messaging and keep WhatsApp notifications in place.
+- Google Play is the distribution channel for the Android app package `one.ortus.storageretschwil`.
 - Existing legacy resource names should not be renamed without a planned migration.

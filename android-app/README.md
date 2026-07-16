@@ -28,7 +28,7 @@ The app opens through a native biometric gate before the dashboard starts. Andro
 
 ## Native Notifications
 
-The app contains the Android notification channel and Firebase Messaging receiver. Existing WhatsApp notifications are not changed.
+The app contains the Android notification channel, Firebase Messaging receiver, and runtime notification permission request. Existing WhatsApp notifications are not changed.
 
 AWS backend support is wired as follows:
 
@@ -39,6 +39,7 @@ AWS backend support is wired as follows:
   - surveillance video detection alerts
   - flood alerts
   - device status alerts
+- The app asks for Android notification permission after successful biometric login so the permission dialog is visible in the dashboard flow.
 
 To enable real push delivery, add Firebase Cloud Messaging configuration:
 
@@ -51,3 +52,12 @@ To enable real push delivery, add Firebase Cloud Messaging configuration:
 ## Release Notes
 
 The app shell is intentionally thin. The dashboard remains the source of truth and is updated through Amplify.
+
+For each Android release, keep the following in sync:
+
+```text
+1. Google Play listing metadata
+2. Google Cloud project labels
+3. Firebase service account documentation
+4. GitHub docs and changelog
+```
