@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "198845542006",
+    "project_id": "storage-retschwil",
+    "storage_bucket": "storage-retschwil.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198845542006:android:6326553572afa947893957",
+        "android_client_info": {
+          "package_name": "one.ortus.storageretschwil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEoJWeSKOlPO6ilTUVOnxnZFQvM4oUgpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
