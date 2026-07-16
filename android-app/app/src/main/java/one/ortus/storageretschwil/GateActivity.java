@@ -11,7 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.graphics.Insets;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -27,6 +31,7 @@ public class GateActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         launchUri = getIntent() == null ? null : getIntent().getData();
         NotificationHelper.ensureChannel(this);
         registerPushToken();
@@ -49,7 +54,14 @@ public class GateActivity extends FragmentActivity {
         label.setText(getString(R.string.app_name));
         label.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         label.setTextSize(22);
+        label.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
+        ViewCompat.setOnApplyWindowInsetsListener(label, (view, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
         setContentView(label);
+        ViewCompat.requestApplyInsets(label);
     }
 
     private void authenticate() {

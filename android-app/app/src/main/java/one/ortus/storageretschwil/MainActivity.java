@@ -6,9 +6,7 @@ import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Build;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -18,6 +16,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.core.content.pm.PackageInfoCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.json.JSONObject;
 
@@ -36,18 +39,18 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.parseColor("#0F1420"));
-        getWindow().setNavigationBarColor(Color.parseColor("#0F1420"));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         NotificationHelper.ensureChannel(this);
 
         root = new FrameLayout(this);
         root.setBackgroundColor(Color.parseColor("#0F1420"));
-        root.setOnApplyWindowInsetsListener((view, insets) -> {
-            view.setPadding(0, insets.getSystemWindowInsetTop(), 0, insets.getSystemWindowInsetBottom());
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+            androidx.core.graphics.Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return WindowInsetsCompat.CONSUMED;
         });
         setContentView(root);
-        root.requestApplyInsets();
+        ViewCompat.requestApplyInsets(root);
 
         NotificationPermissionHelper.requestIfNeeded(this);
         registerPushToken();
@@ -177,10 +180,7 @@ public class MainActivity extends Activity {
     private int getInstalledVersionCode() {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                return (int) packageInfo.getLongVersionCode();
-            }
-            return packageInfo.versionCode;
+            return (int) PackageInfoCompat.getLongVersionCode(packageInfo);
         } catch (Exception exception) {
             return 0;
         }

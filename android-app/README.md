@@ -32,6 +32,10 @@ one.ortus.storageretschwil
 
 The app opens through a native biometric gate before the dashboard starts. Android will use fingerprint/thumb authentication where available and device credentials on newer Android versions as fallback.
 
+## Display Compatibility
+
+The app targets Android SDK 35 and handles edge-to-edge display with AndroidX insets. Activity orientation is not locked so Android can adapt the app on tablets, foldables, and future large-screen modes.
+
 ## Native Notifications
 
 The app contains the Android notification channel, Firebase Messaging receiver, and runtime notification permission request. Existing WhatsApp notifications are not changed.
@@ -70,3 +74,5 @@ For each Android release, keep the following in sync:
 4. android-version.json latestVersionCode/latestVersionName
 5. GitHub docs and changelog
 ```
+
+Release builds use R8 minification and resource shrinking.

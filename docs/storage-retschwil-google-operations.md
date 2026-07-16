@@ -46,7 +46,8 @@ Google Play production track
 Active release:
 
 ```text
-Production: Storage Retschwil 1.0.5 / versionCode 6
+Submitted production: Storage Retschwil 1.0.6 / versionCode 7
+Public Play Store version: keep checking the visible store listing before advancing android-version.json
 ```
 
 The app startup version check reads:
@@ -56,6 +57,17 @@ https://storageretschwil.ortus.one/android-version.json
 ```
 
 Keep `latestVersionCode` aligned with the version that is actually visible in the public Play Store. A submitted production release can show as `completed` in the Android Publisher API while still being `In review` in the Play Console. Do not advance `android-version.json` until the Play Store listing offers the new version.
+
+## Play Quality Recommendations
+
+Release `1.0.6` addresses the Google Play release dashboard recommendations from `1.0.5`:
+
+```text
+Edge-to-edge: handled with WindowCompat and WindowInsetsCompat
+Deprecated edge-to-edge APIs: removed setStatusBarColor and setNavigationBarColor
+Large screens: removed portrait orientation restrictions
+R8: enabled minification and resource shrinking for release builds
+```
 
 Test tracks:
 

@@ -2,6 +2,11 @@
 
 ## 2026-07-16
 
+- Submitted Android app release `1.0.6` / `versionCode 7` to address Google Play release dashboard recommendations:
+  - edge-to-edge inset handling for Android 15+
+  - removed deprecated status/navigation bar color APIs
+  - removed fixed portrait activity restrictions
+  - enabled R8 minification and resource shrinking
 - Added native Android startup version check in app release `1.0.5` / `versionCode 6`.
 - Added `android-version.json` as the dashboard-hosted source of truth for the latest Android app version.
 - Set `android-version.json` back to the actually public Play Store version while `1.0.5` is still in Google review.
