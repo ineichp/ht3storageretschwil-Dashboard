@@ -12,6 +12,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 public class MainActivity extends Activity {
     private WebView webView;
 
@@ -21,6 +23,7 @@ public class MainActivity extends Activity {
 
         getWindow().setStatusBarColor(Color.parseColor("#0F1420"));
         getWindow().setNavigationBarColor(Color.parseColor("#0F1420"));
+        NotificationHelper.ensureChannel(this);
 
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(Color.parseColor("#0F1420"));
@@ -50,6 +53,24 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(getLaunchingUrl().toString());
+
+        NotificationPermissionHelper.requestIfNeeded(this);
+        registerPushToken();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NotificationPermissionHelper.requestIfNeeded(this);
+    }
+
+    private void registerPushToken() {
+        try {
+            FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token -> PushTokenRegistrar.register(this, token));
+        } catch (IllegalStateException exception) {
+            // Firebase is only initialized in release builds that include google-services.json.
+        }
     }
 
     private Uri getLaunchingUrl() {

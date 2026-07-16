@@ -6,12 +6,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public final class NotificationHelper {
     public static final String CHANNEL_ID = "storage_retschwil_alerts";
+    private static final String TAG = "StorageNotification";
 
     private NotificationHelper() {
     }
@@ -36,6 +38,10 @@ public final class NotificationHelper {
 
     public static void showAlert(Context context, String title, String body) {
         ensureChannel(context);
+        if (!NotificationPermissionHelper.hasPermission(context)) {
+            Log.w(TAG, "Notification skipped because POST_NOTIFICATIONS is not granted.");
+            return;
+        }
 
         Intent intent = new Intent(context, GateActivity.class)
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -47,7 +53,7 @@ public final class NotificationHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(body)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
