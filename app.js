@@ -609,12 +609,12 @@ function renderAuditCosts(data = {}) {
   setText("auditMonthCost", formatMoney(data.monthToDate, currency));
   setText("auditDailyCost", formatMoney(data.dailyAverage, currency));
   setText("auditLastDayCost", formatMoney(lastDay.amount, currency));
-  setText("auditTopServiceCost", formatMoney(topService.monthEstimate ?? topService.amount, currency));
+  setText("auditTopServiceCost", formatMoney(data.monthEstimate, currency));
 
   setText("auditMonthCostMeta", data.updatedAt ? `Updated: ${formatDateTime(data.updatedAt)}` : "Loaded");
   setText("auditDailyCostMeta", "Current month average");
   setText("auditLastDayMeta", lastDay.date ? `${formatDateShort(lastDay.date)}${lastDay.estimated ? " · estimated" : ""}` : "No daily cost data");
-  setText("auditTopServiceMeta", topService.name ? `${topService.name} · estimated month` : "No service data");
+  setText("auditTopServiceMeta", topService.name ? `Top driver: ${topService.name}` : "Estimated month");
   renderEnergyYearList();
 }
 

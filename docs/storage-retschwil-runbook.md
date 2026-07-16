@@ -197,10 +197,10 @@ Top service: AWS Cost Explorer / CHF 9.22
 Top service month estimate: CHF 17.87
 ```
 
-The dashboard displays the top service card as a full-month projection:
+The dashboard displays the fourth AWS cost card as a full Storage Retschwil month projection:
 
 ```text
-topService.monthEstimate = topService.monthToDate / elapsedDays * daysInMonth
+monthEstimate = monthToDate / elapsedDays * daysInMonth
 ```
 
 ## Android Push Notifications

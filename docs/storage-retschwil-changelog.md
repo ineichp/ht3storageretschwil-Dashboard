@@ -2,6 +2,7 @@
 
 ## 2026-07-16
 
+- Changed the Audit Costs estimate card from top-service projection to full Storage Retschwil month projection.
 - Corrected Audit Costs from tag-only scope to Storage Retschwil service-scope because tag-only excluded AWS Cost Explorer and other project-relevant shared service costs.
 - Changed the Audit Costs top service card to show the projected full-month cost for the current top Storage Retschwil service.
 - Replaced the attempted tag-only audit cost scope with service-scope reporting so Month-to-date no longer shows the whole AWS account but still includes project-relevant untaggable/shared service costs.
