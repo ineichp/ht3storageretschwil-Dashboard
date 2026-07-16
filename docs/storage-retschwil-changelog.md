@@ -2,6 +2,7 @@
 
 ## 2026-07-16
 
+- Changed the Audit Costs top service card to show the projected full-month cost for the current top Storage Retschwil service.
 - Scoped `storageretschwilAuditCosts` to Storage Retschwil cost allocation tags so Month-to-date no longer shows account-wide AWS costs.
 - Moved the local Google Play Publisher API service account reference into `.local-secrets/google-play-publisher-service-account.json`; the private key remains gitignored.
 - Submitted Android app release `1.0.6` / `versionCode 7` to address Google Play release dashboard recommendations:

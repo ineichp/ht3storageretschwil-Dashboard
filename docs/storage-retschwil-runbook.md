@@ -181,6 +181,12 @@ Month to date: CHF 0.98
 Top service: Amazon Elastic Compute Cloud - Compute / CHF 0.93
 ```
 
+The dashboard displays the top service card as a full-month projection:
+
+```text
+topService.monthEstimate = topService.monthToDate / elapsedDays * daysInMonth
+```
+
 ## Android Push Notifications
 
 Core function:
