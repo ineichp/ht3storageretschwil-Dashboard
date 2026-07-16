@@ -2,7 +2,9 @@
 
 ## 2026-07-16
 
-- Removed Google Play tester group assignments from the historical `internal` and `alpha` tracks. Production remains on `Storage Retschwil 1.0.4` / `versionCode 5`.
+- Added native Android startup version check in app release `1.0.5` / `versionCode 6`.
+- Added `android-version.json` as the dashboard-hosted source of truth for the latest Android app version.
+- Removed Google Play tester group assignments from the historical `internal` and `alpha` tracks.
 - Added the Google Play App Signing SHA-256 fingerprint to `.well-known/assetlinks.json` so Android can open `storageretschwil.ortus.one` links directly in the installed app.
 - Added Android push notification reliability fixes in app release `1.0.4` / `versionCode 5`.
 - Updated the `storageretschwilPushNotifications` Lambda payload so `title` and `body` are available as FCM data fields.

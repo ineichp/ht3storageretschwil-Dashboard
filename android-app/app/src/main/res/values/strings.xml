@@ -8,4 +8,7 @@
     <string name="notification_channel_name">Storage Retschwil Alerts</string>
     <string name="notification_channel_description">Native app alerts for Storage Retschwil</string>
     <string name="notification_registration_url">https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com/push-tokens</string>
+    <string name="version_check_url">https://storageretschwil.ortus.one/android-version.json</string>
+    <string name="play_store_url">https://play.google.com/store/apps/details?id=one.ortus.storageretschwil</string>
+    <string name="play_store_market_url">market://details?id=one.ortus.storageretschwil</string>
 </resources>

@@ -46,8 +46,16 @@ Google Play production track
 Active release:
 
 ```text
-Production: Storage Retschwil 1.0.4 / versionCode 5
+Production: Storage Retschwil 1.0.5 / versionCode 6
 ```
+
+The app startup version check reads:
+
+```text
+https://storageretschwil.ortus.one/android-version.json
+```
+
+Keep `latestVersionCode` aligned with the active Google Play production release.
 
 Test tracks:
 

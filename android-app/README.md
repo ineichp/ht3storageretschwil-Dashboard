@@ -59,11 +59,14 @@ To enable real push delivery, add Firebase Cloud Messaging configuration:
 
 The app shell is intentionally thin. The dashboard remains the source of truth and is updated through Amplify.
 
+The app checks `https://storageretschwil.ortus.one/android-version.json` on startup. If the installed `versionCode` is lower than `latestVersionCode`, it shows a native update screen with a Play Store button before loading the dashboard.
+
 For each Android release, keep the following in sync:
 
 ```text
 1. Google Play listing metadata
 2. Google Cloud project labels
 3. Firebase service account documentation
-4. GitHub docs and changelog
+4. android-version.json latestVersionCode/latestVersionName
+5. GitHub docs and changelog
 ```
