@@ -4,6 +4,7 @@
 
 - Added native Android startup version check in app release `1.0.5` / `versionCode 6`.
 - Added `android-version.json` as the dashboard-hosted source of truth for the latest Android app version.
+- Set `android-version.json` back to the actually public Play Store version while `1.0.5` is still in Google review.
 - Removed Google Play tester group assignments from the historical `internal` and `alpha` tracks.
 - Added the Google Play App Signing SHA-256 fingerprint to `.well-known/assetlinks.json` so Android can open `storageretschwil.ortus.one` links directly in the installed app.
 - Added Android push notification reliability fixes in app release `1.0.4` / `versionCode 5`.

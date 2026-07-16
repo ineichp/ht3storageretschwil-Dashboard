@@ -55,7 +55,7 @@ The app startup version check reads:
 https://storageretschwil.ortus.one/android-version.json
 ```
 
-Keep `latestVersionCode` aligned with the active Google Play production release.
+Keep `latestVersionCode` aligned with the version that is actually visible in the public Play Store. A submitted production release can show as `completed` in the Android Publisher API while still being `In review` in the Play Console. Do not advance `android-version.json` until the Play Store listing offers the new version.
 
 Test tracks:
 
