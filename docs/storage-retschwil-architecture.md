@@ -88,8 +88,8 @@ flowchart TD
 ### Costs
 
 1. Dashboard calls the Audit Costs API.
-2. Lambda reads AWS Cost Explorer.
-3. Lambda combines AWS cost data with energy cost estimates.
+2. Lambda reads AWS Cost Explorer with Storage Retschwil cost allocation tag filters.
+3. Lambda combines scoped AWS cost data with energy cost estimates.
 4. Annual report Lambda sends a yearly email on January 1.
 
 ## Boundaries

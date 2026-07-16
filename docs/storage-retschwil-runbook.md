@@ -154,6 +154,33 @@ Check logs:
 aws logs tail /aws/lambda/storageretschwilAuditCosts --profile codex-terraform --region eu-central-1 --since 1h
 ```
 
+Cost scope:
+
+```text
+Only costs matched by Storage Retschwil cost allocation tags are shown.
+```
+
+Cost Explorer filter:
+
+```text
+Project = Storage-Retschwil
+Project = Storage Retschwil
+Storage-Retschwil = true
+```
+
+The daily cache key includes the scoped version:
+
+```text
+auditCostsDailyCache#storage-retschwil-v2#<yyyy-mm-dd>
+```
+
+After the scoped change on `2026-07-16`, the dashboard returned:
+
+```text
+Month to date: CHF 0.98
+Top service: Amazon Elastic Compute Cloud - Compute / CHF 0.93
+```
+
 ## Android Push Notifications
 
 Core function:
