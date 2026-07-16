@@ -2,6 +2,7 @@
 
 ## 2026-07-16
 
+- Moved the local Google Play Publisher API service account reference into `.local-secrets/google-play-publisher-service-account.json`; the private key remains gitignored.
 - Submitted Android app release `1.0.6` / `versionCode 7` to address Google Play release dashboard recommendations:
   - edge-to-edge inset handling for Android 15+
   - removed deprecated status/navigation bar color APIs

@@ -43,6 +43,14 @@ Distribution:
 Google Play production track
 ```
 
+Local Android Publisher API credential:
+
+```text
+.local-secrets/google-play-publisher-service-account.json
+```
+
+This file contains a private key and must stay local. The `.local-secrets/` folder is ignored by Git and must not be committed.
+
 Active release:
 
 ```text

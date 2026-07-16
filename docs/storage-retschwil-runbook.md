@@ -227,3 +227,11 @@ Privacy policy: https://storageretschwil.ortus.one/privacy.html
 ```
 
 Service account descriptions can be maintained after the Google IAM API is enabled for project `198845542006`.
+
+Local Google Play Publisher API key:
+
+```text
+.local-secrets/google-play-publisher-service-account.json
+```
+
+Keep this file outside Git. It replaces ad-hoc references to files in the Windows Downloads folder.
