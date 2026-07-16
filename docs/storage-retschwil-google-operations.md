@@ -43,6 +43,21 @@ Distribution:
 Google Play production track
 ```
 
+Active release:
+
+```text
+Production: Storage Retschwil 1.0.4 / versionCode 5
+```
+
+Test tracks:
+
+```text
+Internal: historical release 1.0.2 / versionCode 3, no tester groups configured
+Alpha: historical release 1.0.1 / versionCode 2, no tester groups configured
+```
+
+If Google Play still shows "You're an internal tester", open the normal production listing instead of the internal test link and leave the test program in the Play Store app if the option is shown.
+
 App signing SHA-256:
 
 ```text
