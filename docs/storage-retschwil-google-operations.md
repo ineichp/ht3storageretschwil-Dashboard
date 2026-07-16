@@ -43,6 +43,20 @@ Distribution:
 Google Play production track
 ```
 
+App signing SHA-256:
+
+```text
+E7:7D:F8:C1:67:7C:82:12:3C:20:F7:4E:1B:75:59:88:5F:B2:A1:3D:7B:24:31:17:99:06:FB:A3:02:48:D8:AA
+```
+
+This fingerprint must be present in:
+
+```text
+.well-known/assetlinks.json
+```
+
+It allows Android App Links for `https://storageretschwil.ortus.one` to open the installed app instead of the browser.
+
 Store listing metadata:
 
 ```text

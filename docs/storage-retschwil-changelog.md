@@ -2,6 +2,7 @@
 
 ## 2026-07-16
 
+- Added the Google Play App Signing SHA-256 fingerprint to `.well-known/assetlinks.json` so Android can open `storageretschwil.ortus.one` links directly in the installed app.
 - Added Android push notification reliability fixes in app release `1.0.4` / `versionCode 5`.
 - Updated the `storageretschwilPushNotifications` Lambda payload so `title` and `body` are available as FCM data fields.
 - Confirmed direct Android push test delivery through Firebase with `sent: 3` and `failed: 0`.

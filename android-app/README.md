@@ -8,13 +8,19 @@ Trusted Web Activity wrapper for `https://storageretschwil.ortus.one`.
 gradle assembleDebug
 ```
 
-The debug build uses the local Android debug certificate. Its SHA-256 fingerprint is already included in:
+The published Google Play build and the local upload certificate are both included in:
 
 ```text
 ../ht3storageretschwil-Dashboard/.well-known/assetlinks.json
 ```
 
-For Google Play, replace or add the Play App Signing SHA-256 fingerprint in `assetlinks.json`, then deploy the dashboard again.
+The Google Play App Signing SHA-256 fingerprint is:
+
+```text
+E7:7D:F8:C1:67:7C:82:12:3C:20:F7:4E:1B:75:59:88:5F:B2:A1:3D:7B:24:31:17:99:06:FB:A3:02:48:D8:AA
+```
+
+Keep this fingerprint in `assetlinks.json` so Android opens `https://storageretschwil.ortus.one` links directly in the app.
 
 ## Package
 
