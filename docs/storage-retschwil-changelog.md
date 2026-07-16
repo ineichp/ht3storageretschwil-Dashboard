@@ -2,8 +2,9 @@
 
 ## 2026-07-16
 
+- Corrected Audit Costs from tag-only scope to Storage Retschwil service-scope because tag-only excluded AWS Cost Explorer and other project-relevant shared service costs.
 - Changed the Audit Costs top service card to show the projected full-month cost for the current top Storage Retschwil service.
-- Scoped `storageretschwilAuditCosts` to Storage Retschwil cost allocation tags so Month-to-date no longer shows account-wide AWS costs.
+- Replaced the attempted tag-only audit cost scope with service-scope reporting so Month-to-date no longer shows the whole AWS account but still includes project-relevant untaggable/shared service costs.
 - Moved the local Google Play Publisher API service account reference into `.local-secrets/google-play-publisher-service-account.json`; the private key remains gitignored.
 - Submitted Android app release `1.0.6` / `versionCode 7` to address Google Play release dashboard recommendations:
   - edge-to-edge inset handling for Android 15+

@@ -157,28 +157,44 @@ aws logs tail /aws/lambda/storageretschwilAuditCosts --profile codex-terraform -
 Cost scope:
 
 ```text
-Only costs matched by Storage Retschwil cost allocation tags are shown.
+Only known Storage Retschwil AWS services are shown.
 ```
 
-Cost Explorer filter:
+Cost Explorer service filter:
 
 ```text
-Project = Storage-Retschwil
-Project = Storage Retschwil
-Storage-Retschwil = true
+AWS Amplify
+AWS Cost Explorer
+AWS IoT
+AWS Lambda
+AWS Secrets Manager
+Amazon API Gateway
+Amazon Cognito
+Amazon DynamoDB
+Amazon Elastic Compute Cloud - Compute
+Amazon Rekognition
+Amazon Simple Notification Service
+Amazon Simple Storage Service
+Amazon Virtual Private Cloud
+AmazonCloudWatch
+CloudWatch Events
+EC2 - Other
 ```
 
-The daily cache key includes the scoped version:
+Cost allocation tags remain documented, but are not sufficient for the dashboard total because AWS Cost Explorer and some shared charges are not reliably available through resource tags.
+
+The daily cache key includes the service-scoped version:
 
 ```text
-auditCostsDailyCache#storage-retschwil-v2#<yyyy-mm-dd>
+auditCostsDailyCache#storage-retschwil-services-v1#<yyyy-mm-dd>
 ```
 
-After the scoped change on `2026-07-16`, the dashboard returned:
+After the service-scoped correction on `2026-07-16`, the dashboard returned:
 
 ```text
-Month to date: CHF 0.98
-Top service: Amazon Elastic Compute Cloud - Compute / CHF 0.93
+Month to date: CHF 15.23
+Top service: AWS Cost Explorer / CHF 9.22
+Top service month estimate: CHF 17.87
 ```
 
 The dashboard displays the top service card as a full-month projection:
