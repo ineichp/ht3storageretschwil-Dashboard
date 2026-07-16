@@ -605,11 +605,12 @@ function renderAuditCosts(data = {}) {
   const currency = data.currency || "USD";
   const lastDay = data.lastDay || {};
   const topService = data.topService || {};
+  const safeMonthEstimate = Math.max(Number(data.monthEstimate || 0), Number(data.monthToDate || 0));
 
   setText("auditMonthCost", formatMoney(data.monthToDate, currency));
   setText("auditDailyCost", formatMoney(data.dailyAverage, currency));
   setText("auditLastDayCost", formatMoney(lastDay.amount, currency));
-  setText("auditTopServiceCost", formatMoney(data.monthEstimate, currency));
+  setText("auditTopServiceCost", formatMoney(safeMonthEstimate, currency));
 
   setText("auditMonthCostMeta", data.updatedAt ? `Updated: ${formatDateTime(data.updatedAt)}` : "Loaded");
   setText("auditDailyCostMeta", "Current month average");

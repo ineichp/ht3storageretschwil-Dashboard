@@ -2,6 +2,7 @@
 
 ## 2026-07-16
 
+- Bumped dashboard asset and service-worker cache versions after Audit Costs estimate changes and added a frontend guard so month estimate cannot render lower than month-to-date.
 - Rechecked AWS tags for Cost Explorer-relevant supporting resources and added missing standard tags to EC2 root volume, ENI, security group, Elastic IP, API Gateway default stage, and selected CloudWatch log groups.
 - Changed the Audit Costs estimate card from top-service projection to full Storage Retschwil month projection.
 - Corrected Audit Costs from tag-only scope to Storage Retschwil service-scope because tag-only excluded AWS Cost Explorer and other project-relevant shared service costs.
