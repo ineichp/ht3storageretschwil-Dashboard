@@ -183,6 +183,19 @@ EC2 - Other
 
 Cost allocation tags remain documented, but are not sufficient for the dashboard total because AWS Cost Explorer and some shared charges are not reliably available through resource tags.
 
+Resource tags were rechecked on `2026-07-16`. Missing standard tags were added to:
+
+```text
+EC2 root volume: vol-01cbc52c919ad7eef
+EC2 primary network interface: eni-0b0545ae4a13cd5d9
+EC2 security group: sg-093880d024847eeae
+Elastic IP: eipalloc-078e5c839c505ac80
+API Gateway default stage: onbcgvleu4/$default
+CloudWatch log groups with missing Owner/ManagedBy/Name/Description tags
+```
+
+IoT `thing` and IoT certificate tagging was attempted, but AWS returned `Invalid resource type`; the IoT rule is tagged and IoT usage is included by service scope.
+
 The daily cache key includes the service-scoped version:
 
 ```text

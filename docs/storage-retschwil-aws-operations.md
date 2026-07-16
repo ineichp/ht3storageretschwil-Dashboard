@@ -104,6 +104,34 @@ The `terraform` group is used for resources managed or prepared for Terraform.
 - Lambda: `storageretschwilAnnualCostReport`
 - EventBridge rule: `storageretschwilAnnualCostReportJan1`
 
+### Tagging Notes
+
+Some AWS cost line items are usage-based and do not map cleanly to resource tags in Cost Explorer:
+
+```text
+AWS Cost Explorer API usage
+Amazon Rekognition video job usage
+AWS IoT message/rule usage
+API Gateway request usage
+Some VPC/EC2 shared or network usage
+```
+
+Where supported, the underlying resources should still carry the standard Storage Retschwil tags. The dashboard cost calculation uses a service-scope filter for these services so untaggable project usage remains visible.
+
+Recently verified/tagged supporting resources:
+
+```text
+StorageRetschwil-Camera-UploadServerRootVolume
+StorageRetschwil-Camera-UploadServerNetworkInterface
+StorageRetschwil-Camera-UploadServerSecurityGroup
+StorageRetschwil-Camera-UploadServerElasticIp
+StorageRetschwil-Api-DashboardDefaultStage
+StorageRetschwil-Iot-Ht3MeasurementsRule
+StorageRetschwil-Logs-PowerIoT
+```
+
+AWS IoT returned `Invalid resource type` for direct tagging of the `thing/ht3storageretschwil` and its certificate through the current tagging API. The IoT rule is tagged and IoT costs remain included through service-scope cost reporting.
+
 ## Operational Notes
 
 - Do not rename existing AWS resource IDs casually. Prefer fixing the `Name` tag first.
