@@ -38,13 +38,13 @@ The app targets Android SDK 35 and handles edge-to-edge display with AndroidX in
 
 ## Native Notifications
 
-The app contains the Android notification channel, Firebase Messaging receiver, and runtime notification permission request. Existing WhatsApp notifications are not changed.
+The app contains the Android notification channel, Firebase Messaging receiver, and runtime notification permission request. Android app notifications are the only active alert delivery channel.
 
 AWS backend support is wired as follows:
 
 - `POST https://onbcgvleu4.execute-api.eu-central-1.amazonaws.com/push-tokens` registers Android FCM tokens.
 - Registered tokens are stored in DynamoDB item `storageretschwilconfig/androidPushTokens`.
-- Existing alert flows now send Android push notifications in addition to WhatsApp:
+- Existing alert flows send Android push notifications:
   - measurement threshold alerts
   - surveillance video detection alerts
   - flood alerts

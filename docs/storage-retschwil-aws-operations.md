@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Storage Retschwil is the AWS-backed dashboard and automation stack for camera upload handling, HT3 measurements, Shelly Flood status, Shelly power controls, WhatsApp alerts, and audit cost reporting.
+Storage Retschwil is the AWS-backed dashboard and automation stack for camera upload handling, HT3 measurements, Shelly Flood status, Shelly power controls, Android app alerts, and audit cost reporting.
 
 ## Naming Convention
 

@@ -2,11 +2,13 @@
 
 ## 2026-07-18
 
+- Decommissioned WhatsApp/CallMeBot alert delivery. Measurement, flood, device, and video detection alerts now use Android app notifications only.
+- Removed CallMeBot Lambda environment variables and cleaned stale WhatsApp alert state from `storageretschwilconfig`.
 - Added automatic backend setting refresh for dashboard controls so threshold and notification changes made in the web dashboard appear in the Android app without closing and reopening the app.
 - Submitted Android app release `1.0.7` / `versionCode 8` so tapping/opening a Storage Retschwil notification actively clears app notifications.
 - Changed Audit Costs `lastDay` selection so the dashboard prefers the latest completed/billable day and no longer shows the current empty Cost Explorer estimate as `CHF 0.00`.
 - Bumped the Audit Costs daily cache key to `storage-retschwil-services-v3`.
-- Added unchanged-state suppression for measurement and flood alerts so WhatsApp and Android push notifications are only sent when the alert values/state changed since the last sent notification.
+- Added unchanged-state suppression for measurement and flood alerts so Android push notifications are only sent when the alert values/state changed since the last sent notification.
 - Changed Firebase Cloud Messaging payloads to data-only messages for Storage Retschwil alerts so the Android app creates the notification locally and attaches the app-opening intent consistently.
 
 ## 2026-07-16
@@ -57,4 +59,4 @@
 
 - No production resource names were changed.
 - Legacy names with typos were left in place to avoid breaking ARN-based integrations.
-- Existing WhatsApp notification flows were not changed by this metadata update.
+- Existing alert behavior was not changed by this metadata update.

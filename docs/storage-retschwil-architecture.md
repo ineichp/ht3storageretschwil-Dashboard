@@ -2,7 +2,7 @@
 
 ## Overview
 
-Storage Retschwil combines an Amplify-hosted dashboard with AWS APIs, DynamoDB state, S3 camera videos, Rekognition label detection, Shelly Cloud device controls, WhatsApp notifications, Firebase Cloud Messaging, and a Google Play distributed Android app.
+Storage Retschwil combines an Amplify-hosted dashboard with AWS APIs, DynamoDB state, S3 camera videos, Rekognition label detection, Shelly Cloud device controls, Firebase Cloud Messaging app notifications, and a Google Play distributed Android app.
 
 ```mermaid
 flowchart TD
@@ -38,9 +38,6 @@ flowchart TD
     FloodApi --> ConfigTable
     PowerApi --> ConfigTable
 
-    AlertChecker --> WhatsApp["WhatsApp Alerts"]
-    FloodApi --> WhatsApp
-    EventProcessor --> WhatsApp
     AlertChecker --> AndroidPush["Android Push Notifications"]
     FloodApi --> AndroidPush
     EventProcessor --> PushLambda["Lambda: storageretschwilPushNotifications"]
@@ -67,7 +64,7 @@ flowchart TD
 1. Shelly Flood calls the webhook Lambda.
 2. Lambda stores flood and cable status.
 3. Dashboard reads status through API Gateway.
-4. WhatsApp and Android alerts are sent when configured alert conditions are met and the flood alert state changed since the last notification.
+4. Android app alerts are sent when configured alert conditions are met and the flood alert state changed since the last notification.
 
 ### Video Detection
 
@@ -75,7 +72,7 @@ flowchart TD
 2. Videos are stored in S3.
 3. S3 upload starts Rekognition analysis.
 4. Rekognition completion is delivered through SNS.
-5. Event processor stores labels and sends WhatsApp and Android push alerts.
+5. Event processor stores labels and sends Android push alerts.
 6. Dashboard shows all available detection records until the related video expires.
 
 ### Power And Dehumidifier
@@ -96,7 +93,7 @@ flowchart TD
 
 - AWS is the system of record for dashboard backend state.
 - Shelly Cloud is the source of live power and switch control data.
-- WhatsApp notifications remain independent from future Android push notifications.
+- Android push notifications are the only active alert delivery channel.
 - Android push notifications use Firebase Cloud Messaging data payloads; the installed app renders the notification locally so notification taps open the app.
 - Google Play is the distribution channel for the Android app package `one.ortus.storageretschwil`.
 - Existing legacy resource names should not be renamed without a planned migration.
