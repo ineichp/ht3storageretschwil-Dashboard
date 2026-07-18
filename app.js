@@ -42,6 +42,7 @@ let latestAuditCosts = {};
 let lastFocusRefreshAt = 0;
 let lastAuditRefreshAt = 0;
 let dehumidifierTransition = null;
+let thresholdsSaving = false;
 const EVENTS_PER_PAGE = 10;
 
 function isTemperatureAlert(value) {
@@ -665,7 +666,18 @@ function chartPointBorderWidth(values) {
   return values.length > 140 ? 0 : 1;
 }
 
-async function loadThresholds() {
+function isControlInputActive() {
+  const active = document.activeElement;
+  return Boolean(
+    thresholdsSaving ||
+    active?.classList?.contains("threshold-slider") ||
+    active?.classList?.contains("notification-toggle")
+  );
+}
+
+async function loadThresholds(options = {}) {
+  if (options.silent && isControlInputActive()) return;
+
   try {
     const response = await apiFetch(`${API_BASE_URL}/thresholds`);
     if (!response.ok) throw new Error(`Threshold API returned HTTP ${response.status}`);
@@ -685,7 +697,7 @@ async function loadThresholds() {
     renderThresholdInputs();
   } catch (error) {
     console.error(error);
-    setError(`Threshold API error: ${error.message}`);
+    if (!options.silent) setError(`Threshold API error: ${error.message}`);
     renderThresholdInputs();
   }
 }
@@ -949,6 +961,7 @@ async function saveThresholds() {
   if (!validateLimits(newLimits)) return;
 
   try {
+    thresholdsSaving = true;
     document.querySelectorAll(".threshold-slider, .notification-toggle").forEach(input => {
       input.disabled = true;
     });
@@ -980,6 +993,7 @@ async function saveThresholds() {
     console.error(error);
     setError(`Could not save thresholds: ${error.message}`);
   } finally {
+    thresholdsSaving = false;
     document.querySelectorAll(".threshold-slider, .notification-toggle").forEach(input => {
       input.disabled = false;
     });
@@ -1855,6 +1869,7 @@ function registerEventListeners() {
 
 async function refreshLiveDashboardData(options = {}) {
   await Promise.allSettled([
+    loadThresholds({ silent: options.silent !== false }),
     loadFloodState(),
     loadPowerIotState(),
     loadDehumidifierState(),
