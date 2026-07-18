@@ -1,5 +1,12 @@
 # Storage Retschwil Changelog
 
+## 2026-07-18
+
+- Changed Audit Costs `lastDay` selection so the dashboard prefers the latest completed/billable day and no longer shows the current empty Cost Explorer estimate as `CHF 0.00`.
+- Bumped the Audit Costs daily cache key to `storage-retschwil-services-v3`.
+- Added unchanged-state suppression for measurement and flood alerts so WhatsApp and Android push notifications are only sent when the alert values/state changed since the last sent notification.
+- Changed Firebase Cloud Messaging payloads to data-only messages for Storage Retschwil alerts so the Android app creates the notification locally and attaches the app-opening intent consistently.
+
 ## 2026-07-16
 
 - Bumped dashboard asset and service-worker cache versions after Audit Costs estimate changes and added a frontend guard so month estimate cannot render lower than month-to-date.

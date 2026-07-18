@@ -67,7 +67,7 @@ flowchart TD
 1. Shelly Flood calls the webhook Lambda.
 2. Lambda stores flood and cable status.
 3. Dashboard reads status through API Gateway.
-4. WhatsApp alert is sent when configured alert conditions are met.
+4. WhatsApp and Android alerts are sent when configured alert conditions are met and the flood alert state changed since the last notification.
 
 ### Video Detection
 
@@ -97,6 +97,6 @@ flowchart TD
 - AWS is the system of record for dashboard backend state.
 - Shelly Cloud is the source of live power and switch control data.
 - WhatsApp notifications remain independent from future Android push notifications.
-- Android push notifications use Firebase Cloud Messaging and keep WhatsApp notifications in place.
+- Android push notifications use Firebase Cloud Messaging data payloads; the installed app renders the notification locally so notification taps open the app.
 - Google Play is the distribution channel for the Android app package `one.ortus.storageretschwil`.
 - Existing legacy resource names should not be renamed without a planned migration.

@@ -199,15 +199,18 @@ IoT `thing` and IoT certificate tagging was attempted, but AWS returned `Invalid
 The daily cache key includes the service-scoped version:
 
 ```text
-auditCostsDailyCache#storage-retschwil-services-v1#<yyyy-mm-dd>
+auditCostsDailyCache#storage-retschwil-services-v3#<yyyy-mm-dd>
 ```
 
-After the service-scoped correction on `2026-07-16`, the dashboard returned:
+`lastDay` prefers the latest completed/billable Cost Explorer day. The current UTC day can be returned by AWS as `Estimated` before usage has been rated, so it is intentionally skipped when it would show as an empty `CHF 0.00` current-day estimate.
+
+After the `lastDay` correction on `2026-07-18`, the dashboard returned:
 
 ```text
-Month to date: CHF 15.23
-Top service: AWS Cost Explorer / CHF 9.22
-Top service month estimate: CHF 17.87
+Month to date: CHF 15.84
+Last day: 2026-07-17 / CHF 0.19 / estimated
+Top service: AWS Cost Explorer / CHF 9.38
+Top service month estimate: CHF 16.16
 ```
 
 The dashboard displays the fourth AWS cost card as a full Storage Retschwil month projection:
@@ -253,6 +256,10 @@ Send a direct test push:
 ```powershell
 aws lambda invoke --function-name storageretschwilPushNotifications --profile codex-terraform --region eu-central-1 --cli-binary-format raw-in-base64-out --payload '{\"title\":\"Storage Retschwil Alert\",\"body\":\"Android push test\",\"data\":{\"type\":\"test\"}}' response.json
 ```
+
+FCM messages are sent as data-only payloads. This lets the Android app create the notification locally with `NotificationHelper`, so tapping the notification opens the Storage Retschwil app through `GateActivity`.
+
+Measurement and flood alerts store the last sent alert signature in `storageretschwilconfig`. Identical alert values/states are suppressed until a relevant value changes.
 
 ## Metadata Audit
 
