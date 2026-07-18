@@ -54,7 +54,7 @@ This file contains a private key and must stay local. The `.local-secrets/` fold
 Active release:
 
 ```text
-Submitted production: Storage Retschwil 1.0.6 / versionCode 7
+Submitted production: Storage Retschwil 1.0.7 / versionCode 8
 Public Play Store version: keep checking the visible store listing before advancing android-version.json
 ```
 

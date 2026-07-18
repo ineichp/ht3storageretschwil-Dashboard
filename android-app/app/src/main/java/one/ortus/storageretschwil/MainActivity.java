@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         NotificationHelper.ensureChannel(this);
+        NotificationHelper.clearAlerts(this);
 
         root = new FrameLayout(this);
         root.setBackgroundColor(Color.parseColor("#0F1420"));
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        NotificationHelper.clearAlerts(this);
         NotificationPermissionHelper.requestIfNeeded(this);
     }
 

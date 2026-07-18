@@ -34,6 +34,7 @@ public class GateActivity extends FragmentActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         launchUri = getIntent() == null ? null : getIntent().getData();
         NotificationHelper.ensureChannel(this);
+        NotificationHelper.clearAlerts(this);
         registerPushToken();
         setLoadingView();
         authenticate();

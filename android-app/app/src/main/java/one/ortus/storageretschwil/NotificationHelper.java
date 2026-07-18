@@ -63,4 +63,8 @@ public final class NotificationHelper {
 
         NotificationManagerCompat.from(context).notify((int) System.currentTimeMillis(), builder.build());
     }
+
+    public static void clearAlerts(Context context) {
+        NotificationManagerCompat.from(context).cancelAll();
+    }
 }

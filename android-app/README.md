@@ -65,6 +65,8 @@ The app shell is intentionally thin. The dashboard remains the source of truth a
 
 The app checks `https://storageretschwil.ortus.one/android-version.json` on startup. If the installed `versionCode` is lower than `latestVersionCode`, it shows a native update screen with a Play Store button before loading the dashboard.
 
+Storage Retschwil notifications are cleared when the user opens them and again when the app enters the foreground. This is implemented in `NotificationHelper.clearAlerts()` and called from `GateActivity` and `MainActivity`.
+
 For each Android release, keep the following in sync:
 
 ```text
