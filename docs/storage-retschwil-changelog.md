@@ -2,6 +2,7 @@
 
 ## 2026-07-26
 
+- Submitted Android app release `1.0.8` / `versionCode 9` targeting Android 16 / API level 36 to satisfy the Google Play target API policy warning.
 - Updated the public privacy policy after WhatsApp/CallMeBot decommissioning so alert delivery is documented as Android app push notifications only.
 - Bumped the service worker shell cache to ensure Google Play and browsers receive the current privacy policy page.
 
