@@ -1,5 +1,10 @@
 # Storage Retschwil Changelog
 
+## 2026-07-26
+
+- Updated the public privacy policy after WhatsApp/CallMeBot decommissioning so alert delivery is documented as Android app push notifications only.
+- Bumped the service worker shell cache to ensure Google Play and browsers receive the current privacy policy page.
+
 ## 2026-07-18
 
 - Decommissioned WhatsApp/CallMeBot alert delivery. Measurement, flood, device, and video detection alerts now use Android app notifications only.
