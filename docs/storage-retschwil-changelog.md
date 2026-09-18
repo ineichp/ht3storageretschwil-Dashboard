@@ -11,6 +11,7 @@
 - Removed the HT3 battery display and HT3 low-battery alert while retaining external-power monitoring.
 - Added automatic cleanup of invalid FCM registrations and verified production push delivery.
 - Updated Lambda and EC2 descriptions plus the standard Storage Retschwil tags for all changed AWS resources.
+- Completed a 47-resource regional tag audit and added the missing project/owner tags to the Firebase service-account secret.
 
 ## 2026-07-26
 

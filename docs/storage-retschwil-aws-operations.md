@@ -138,6 +138,8 @@ The camera upload server uses `/usr/local/bin/sync-cam-storage.sh` and a root cr
 
 AWS IoT returned `Invalid resource type` for direct tagging of the `thing/ht3storageretschwil` and its certificate through the current tagging API. The IoT rule is tagged and IoT costs remain included through service-scope cost reporting.
 
+The regional tag audit on `2026-09-18` returned 47 resources with `Project=Storage-Retschwil`; all 47 contained `Name`, `Project`, `Storage-Retschwil`, `ManagedBy`, `Owner`, and `Description`.
+
 ## Operational Notes
 
 - Do not rename existing AWS resource IDs casually. Prefer fixing the `Name` tag first.
