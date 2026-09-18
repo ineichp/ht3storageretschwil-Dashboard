@@ -141,12 +141,14 @@ Current dashboard logic:
 
 - Power values from Shelly are treated as absolute values because the Shelly device can report negative watt values for positive consumption.
 - One Shelly Cloud v2 request loads Power IoT and dehumidifier state together.
+- Shelly status responses are cached for 15 seconds in DynamoDB. A distributed refresh lock prevents simultaneous dashboard and app polls from exceeding the Shelly Cloud rate limit.
+- Switch commands retry with a short backoff when Shelly Cloud responds with `TOO_MANY_REQUESTS`.
 - Power IoT OFF commands include `toggle_after: 30`; the remaining seconds are shown in the round power button.
 - Dehumidifier state is inferred from the PlugS current power.
 - ON target: click UniPlus switch and wait until measured power is above the configured ON threshold.
 - OFF target: click UniPlus switch and wait until measured power is below the configured OFF threshold.
 - Current ON threshold: `> 200 W`.
-- Current OFF threshold: `< 100 W`, which accounts for the approximately 34 W base load now connected to PlugS.
+- Current OFF threshold: `< 100 W`, which keeps the low PlugS base load in the OFF range.
 
 ## Audit Costs
 

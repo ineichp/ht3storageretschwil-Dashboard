@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand
@@ -20,6 +21,9 @@ const SHELLY_CLOUD_AUTH_KEY = process.env.SHELLY_CLOUD_AUTH_KEY || "";
 const SHELLY_CLOUD_DEVICE_ID = process.env.SHELLY_CLOUD_DEVICE_ID || "";
 const DEHUMIDIFIER_CLOUD_DEVICE_ID = process.env.DEHUMIDIFIER_CLOUD_DEVICE_ID || "e08cfe8c47dc";
 const POWER_AUTO_ON_DELAY_SECONDS = Number(process.env.POWER_AUTO_ON_DELAY_SECONDS || 30);
+const SHELLY_STATUS_CACHE_SECONDS = Number(process.env.SHELLY_STATUS_CACHE_SECONDS || 15);
+const SHELLY_STATUS_LOCK_KEY = process.env.SHELLY_STATUS_LOCK_KEY || "shellyCloudStatusRefreshLock";
+const SHELLY_COMMAND_RETRY_DELAYS_MS = [1500, 3000];
 
 const DEVICE_TARGETS = {
   power: {
@@ -77,6 +81,15 @@ function numberOrNull(value) {
 function absoluteNumberOrNull(value) {
   const n = numberOrNull(value);
   return n === null ? null : Math.abs(n);
+}
+
+function sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+function isFreshState(state, maxAgeSeconds = SHELLY_STATUS_CACHE_SECONDS) {
+  const updatedAt = Date.parse(state?.updatedAt || "");
+  return Number.isFinite(updatedAt) && Date.now() - updatedAt < maxAgeSeconds * 1000;
 }
 
 function resolveTarget(value) {
@@ -285,28 +298,43 @@ function hasShellyCloudConfig(target = DEVICE_TARGETS.power) {
   return Boolean(SHELLY_CLOUD_SERVER && SHELLY_CLOUD_AUTH_KEY && target.cloudDeviceId);
 }
 
-async function shellyCloudV2Request(path, body) {
+async function shellyCloudV2Request(path, body, options = {}) {
   if (!SHELLY_CLOUD_SERVER || !SHELLY_CLOUD_AUTH_KEY) {
     throw new Error("Shelly Cloud is not configured.");
   }
 
-  const url = new URL(`${SHELLY_CLOUD_SERVER.replace(/\/$/, "")}${path}`);
-  url.searchParams.set("auth_key", SHELLY_CLOUD_AUTH_KEY);
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
+  const retryDelays = options.retryRateLimit ? SHELLY_COMMAND_RETRY_DELAYS_MS : [];
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || payload.isok === false) {
+  for (let attempt = 0; ; attempt += 1) {
+    const url = new URL(`${SHELLY_CLOUD_SERVER.replace(/\/$/, "")}${path}`);
+    url.searchParams.set("auth_key", SHELLY_CLOUD_AUTH_KEY);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (response.ok && payload.isok !== false) return payload;
+
     const errors = Array.isArray(payload.errors) ? payload.errors.join(", ") : payload.errors;
-    throw new Error(errors || payload.error || payload.message || `Shelly Cloud HTTP ${response.status}`);
-  }
+    const message = errors || payload.error || payload.message || `Shelly Cloud HTTP ${response.status}`;
+    const rateLimited = response.status === 429 || /TOO_MANY_REQUESTS/i.test(String(message));
+    if (!rateLimited || attempt >= retryDelays.length) {
+      const error = new Error(message);
+      error.statusCode = response.status;
+      throw error;
+    }
 
-  return payload;
+    const retryAfterSeconds = Number(response.headers.get("retry-after"));
+    const delay = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      ? retryAfterSeconds * 1000
+      : retryDelays[attempt];
+    console.warn(`Shelly Cloud rate limited ${path}; retrying in ${delay} ms.`);
+    await sleep(delay);
+  }
 }
 
 function shellyDevicesFromPayload(payload = {}) {
@@ -359,35 +387,93 @@ async function setShellyCloudOutput(on, target = DEVICE_TARGETS.power) {
     command.toggle_after = POWER_AUTO_ON_DELAY_SECONDS;
   }
 
-  await shellyCloudV2Request("/v2/devices/api/set/switch", command);
+  await shellyCloudV2Request("/v2/devices/api/set/switch", command, { retryRateLimit: true });
+}
+
+async function acquireStatusRefreshLock() {
+  const ownerToken = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const now = Date.now();
+
+  try {
+    await ddb.send(new PutCommand({
+      TableName: CONFIG_TABLE,
+      Item: {
+        configKey: SHELLY_STATUS_LOCK_KEY,
+        ownerToken,
+        lockUntilEpochMs: now + 10_000,
+        updatedAt: new Date(now).toISOString()
+      },
+      ConditionExpression: "attribute_not_exists(configKey) OR lockUntilEpochMs < :now",
+      ExpressionAttributeValues: { ":now": now }
+    }));
+    return ownerToken;
+  } catch (error) {
+    if (error.name === "ConditionalCheckFailedException") return null;
+    throw error;
+  }
+}
+
+async function releaseStatusRefreshLock(ownerToken) {
+  if (!ownerToken) return;
+  try {
+    await ddb.send(new DeleteCommand({
+      TableName: CONFIG_TABLE,
+      Key: { configKey: SHELLY_STATUS_LOCK_KEY },
+      ConditionExpression: "ownerToken = :ownerToken",
+      ExpressionAttributeValues: { ":ownerToken": ownerToken }
+    }));
+  } catch (error) {
+    if (error.name !== "ConditionalCheckFailedException") {
+      console.warn("Could not release Shelly status refresh lock:", error.message);
+    }
+  }
 }
 
 async function getPowerState(target = DEVICE_TARGETS.power) {
+  const stored = await getStoredPowerState(target);
+  if (isFreshState(stored)) return stored;
+
   if (hasShellyCloudConfig(target)) {
+    const ownerToken = await acquireStatusRefreshLock();
+    if (!ownerToken) return stored;
     try {
       const key = target === DEVICE_TARGETS.power ? "power" : "dehumidifier";
       return (await getShellyCloudStates([target]))[key];
     } catch (error) {
       console.warn("Shelly Cloud status failed, falling back to DynamoDB:", error.message);
+    } finally {
+      await releaseStatusRefreshLock(ownerToken);
     }
   }
 
-  return await getStoredPowerState(target);
+  return stored;
 }
 
 async function getAllPowerStates() {
+  const [storedPower, storedDehumidifier] = await Promise.all([
+    getStoredPowerState(DEVICE_TARGETS.power),
+    getStoredPowerState(DEVICE_TARGETS.dehumidifier)
+  ]);
+  if (isFreshState(storedPower) && isFreshState(storedDehumidifier)) {
+    return { power: storedPower, dehumidifier: storedDehumidifier };
+  }
+
+  const ownerToken = await acquireStatusRefreshLock();
+  if (!ownerToken) return { power: storedPower, dehumidifier: storedDehumidifier };
   try {
     const states = await getShellyCloudStates();
     return {
-      power: states.power || await getStoredPowerState(DEVICE_TARGETS.power),
-      dehumidifier: states.dehumidifier || await getStoredPowerState(DEVICE_TARGETS.dehumidifier)
+      power: states.power || storedPower,
+      dehumidifier: states.dehumidifier || storedDehumidifier
     };
   } catch (error) {
     console.warn("Shelly Cloud batch status failed, falling back to DynamoDB:", error.message);
     return {
-      power: await getStoredPowerState(DEVICE_TARGETS.power),
-      dehumidifier: await getStoredPowerState(DEVICE_TARGETS.dehumidifier)
+      power: storedPower,
+      dehumidifier: storedDehumidifier
     };
+  } finally {
+    await releaseStatusRefreshLock(ownerToken);
   }
 }
 

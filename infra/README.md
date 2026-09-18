@@ -4,7 +4,7 @@ This directory contains the production source for infrastructure components chan
 
 ## Lambda
 
-- `lambda/storageretschwilPowerIoT/index.mjs`: batched Shelly Cloud v2 status, controls, energy metrics, and Power IoT timer.
+- `lambda/storageretschwilPowerIoT/index.mjs`: batched Shelly Cloud v2 status with a short shared cache, rate-limit-safe controls, energy metrics, and Power IoT timer.
 - `lambda/ht3storageretschwilAlertChecker/index.mjs`: measurement automation and changed-state device notifications.
 - `lambda/storageretschwilPushNotifications/index.mjs`: Firebase delivery and stale-token cleanup.
 
