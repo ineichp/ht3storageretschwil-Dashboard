@@ -1,0 +1,1 @@
+* * * * * /usr/bin/flock -n /run/lock/storage-retschwil-camera-sync.lock /usr/local/bin/sync-cam-storage.sh >> /var/log/sync-cam-storage.log 2>&1

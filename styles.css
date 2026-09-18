@@ -1218,6 +1218,20 @@ button.iot-switch.pending span::before {
   display: none;
 }
 
+button.iot-switch.countdown span {
+  width: auto;
+  height: auto;
+  border: 0;
+  color: #fbbf24;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+button.iot-switch.countdown span::before {
+  display: none;
+}
+
 .round-icon-button svg {
   width: 14px;
   height: 14px;

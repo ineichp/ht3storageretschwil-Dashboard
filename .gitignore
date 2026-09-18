@@ -8,3 +8,5 @@ android-app/**/*.apk
 .aws-lambda-src/
 android-app/*.aab
 android-app/**/*.aab
+.build/
+.tmp-*

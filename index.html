@@ -22,7 +22,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="qrcode-generator.js?v=20260622-4"></script>
-  <link rel="stylesheet" href="styles.css?v=20260716-1" />
+  <link rel="stylesheet" href="styles.css?v=20260918-1" />
   <link rel="stylesheet" href="auth.css?v=20260713-1" />
 </head>
 
@@ -232,7 +232,7 @@
               <article class="card metric">
                 <div class="label">Device Status</div>
                 <div class="battery-metric-stack">
-                  <div class="battery-status" aria-label="HT3 sensor battery">
+                  <div class="battery-status" aria-label="HT3 external power status">
                     <div class="device-status-name">
                       <span>HT3</span>
                       <small id="ht3DeviceUpdate">—</small>
@@ -244,10 +244,6 @@
                           <path class="plug-slash" d="M4 4l16 16" />
                         </svg>
                       </span>
-                      <div id="ht3BatteryIcon" class="battery-icon unknown" aria-hidden="true">
-                        <i></i><i></i><i></i><i></i>
-                      </div>
-                      <strong id="ht3BatteryValue" class="loading-inline">Loading</strong>
                     </div>
                   </div>
 
@@ -441,7 +437,7 @@
   </div>
 
   <script src="auth.js?v=20260713-1"></script>
-  <script src="app.js?v=20260718-1"></script>
+  <script src="app.js?v=20260918-1"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol === "https:") {
       window.addEventListener("load", () => {

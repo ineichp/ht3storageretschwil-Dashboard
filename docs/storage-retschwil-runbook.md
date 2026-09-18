@@ -112,6 +112,17 @@ Check Rekognition event processing logs:
 aws logs tail /aws/lambda/videorekostorageretschwilcamevents --profile codex-terraform --region eu-central-1 --since 2h
 ```
 
+Camera upload server checks:
+
+```powershell
+aws ec2 describe-instance-status --profile codex-terraform --region eu-central-1 --instance-ids i-07592619da3ca3fcd --include-all-instances
+```
+
+- `vsftpd` must be active and `pasv_address` must match the attached public Elastic IP.
+- Root cron runs `sync-cam-storage.sh` once per minute through `flock` so a slow 1-Mbit upload cannot create overlapping AWS CLI processes.
+- The EC2 instance role must resolve through IMDS and allow writes to `s3://camstorageretschwil/`.
+- The sync script must use `set -e`; local files are deleted only after `aws s3 sync` succeeds.
+
 ## Power And Dehumidifier Controls
 
 Core function:
@@ -129,9 +140,13 @@ aws logs tail /aws/lambda/storageretschwilPowerIoT --profile codex-terraform --r
 Current dashboard logic:
 
 - Power values from Shelly are treated as absolute values because the Shelly device can report negative watt values for positive consumption.
+- One Shelly Cloud v2 request loads Power IoT and dehumidifier state together.
+- Power IoT OFF commands include `toggle_after: 30`; the remaining seconds are shown in the round power button.
 - Dehumidifier state is inferred from the PlugS current power.
 - ON target: click UniPlus switch and wait until measured power is above the configured ON threshold.
 - OFF target: click UniPlus switch and wait until measured power is below the configured OFF threshold.
+- Current ON threshold: `> 200 W`.
+- Current OFF threshold: `< 100 W`, which accounts for the approximately 34 W base load now connected to PlugS.
 
 ## Audit Costs
 
@@ -258,6 +273,10 @@ aws lambda invoke --function-name storageretschwilPushNotifications --profile co
 ```
 
 FCM messages are sent as data-only payloads. This lets the Android app create the notification locally with `NotificationHelper`, so tapping the notification opens the Storage Retschwil app through `GateActivity`.
+
+Firebase `UNREGISTERED` and token-specific `INVALID_ARGUMENT` responses remove the stale registration from `storageretschwilconfig/androidPushTokens`. A successful direct test on `2026-09-18` sent to 20 valid registrations and removed 4 invalid registrations.
+
+HT3 battery alerts are disabled because the HT3 now operates exclusively from external power. The external-power-disconnected alert remains active.
 
 Measurement and flood alerts store the last sent alert signature in `storageretschwilconfig`. Identical alert values/states are suppressed until a relevant value changes.
 

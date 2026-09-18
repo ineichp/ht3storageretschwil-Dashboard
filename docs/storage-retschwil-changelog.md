@@ -1,5 +1,17 @@
 # Storage Retschwil Changelog
 
+## 2026-09-18
+
+- Recovered the camera upload EC2 instance from an impaired/OOM state and resized it from `t3.nano` to `t3.micro`.
+- Corrected the FTP passive address to the current Elastic IP and restored S3 synchronization through the attached EC2 role.
+- Added a locked camera sync script that prevents overlapping uploads and never deletes local videos after a failed S3 sync.
+- Migrated Power IoT status reads to one batched Shelly Cloud v2 request for both devices.
+- Added a 30-second device-side Power IoT flip-back timer and a live countdown in the dashboard/app power button.
+- Corrected the dehumidifier OFF inference threshold from 10 W to 100 W for the current 34 W PlugS base load.
+- Removed the HT3 battery display and HT3 low-battery alert while retaining external-power monitoring.
+- Added automatic cleanup of invalid FCM registrations and verified production push delivery.
+- Updated Lambda and EC2 descriptions plus the standard Storage Retschwil tags for all changed AWS resources.
+
 ## 2026-07-26
 
 - Submitted Android app release `1.0.8` / `versionCode 9` targeting Android 16 / API level 36 to satisfy the Google Play target API policy warning.

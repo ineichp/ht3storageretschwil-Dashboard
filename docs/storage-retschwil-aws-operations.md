@@ -85,6 +85,8 @@ The `terraform` group is used for resources managed or prepared for Terraform.
 ### Camera And Rekognition
 
 - S3 bucket: `camstorageretschwil`
+- EC2 upload server: `i-07592619da3ca3fcd` / `StorageRetschwil-Camera-UploadServer`
+- EC2 size: `t3.micro` (1 GiB RAM)
 - Lambda: `videorekostorageretschwilanalysis`
 - Lambda: `videorekostorageretschwilcamevents`
 - Lambda: `videorekostorageretschwilgetevents`
@@ -97,6 +99,8 @@ The `terraform` group is used for resources managed or prepared for Terraform.
 - Lambda: `storageretschwilFloodWebhook`
 - Lambda: `storageretschwilPowerIoT`
 - DynamoDB table: `storageretschwilconfig`
+- Shelly Cloud status reads are batched because the account API allows one request per second.
+- Power IoT OFF commands use a 30-second device timer before returning to ON.
 
 ### Costs
 
@@ -129,6 +133,8 @@ StorageRetschwil-Api-DashboardDefaultStage
 StorageRetschwil-Iot-Ht3MeasurementsRule
 StorageRetschwil-Logs-PowerIoT
 ```
+
+The camera upload server uses `/usr/local/bin/sync-cam-storage.sh` and a root cron entry guarded by `flock`. The tracked source is in `infra/camera-upload/`. The sync deletes files older than ten minutes only after S3 synchronization succeeds.
 
 AWS IoT returned `Invalid resource type` for direct tagging of the `thing/ht3storageretschwil` and its certificate through the current tagging API. The IoT rule is tagged and IoT costs remain included through service-scope cost reporting.
 
