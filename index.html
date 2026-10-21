@@ -22,7 +22,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="qrcode-generator.js?v=20260622-4"></script>
-  <link rel="stylesheet" href="styles.css?v=20260918-1" />
+  <link rel="stylesheet" href="styles.css?v=20261021-1" />
   <link rel="stylesheet" href="auth.css?v=20260713-1" />
 </head>
 
@@ -160,7 +160,12 @@
             <div class="control-switch-card control-device-row" aria-label="Dehumidifier switch status">
               <span class="control-device-label">
                 Dehumidifier
-                <span id="dehumidifierAutomationTag" class="automation-tag" hidden></span>
+                <span id="dehumidifierAutomationTag" class="automation-indicator" role="img" title="Active by automation" aria-label="Active by automation" hidden>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+                    <path d="M20 4v7h-7" />
+                  </svg>
+                </span>
               </span>
               <div class="control-switch-row">
                 <span id="dehumidifierCloud" class="cloud-status offline" title="Dehumidifier offline" aria-label="Dehumidifier offline">
@@ -437,7 +442,7 @@
   </div>
 
   <script src="auth.js?v=20260713-1"></script>
-  <script src="app.js?v=20260918-1"></script>
+  <script src="app.js?v=20261021-1"></script>
   <script>
     if ("serviceWorker" in navigator && location.protocol === "https:") {
       window.addEventListener("load", () => {

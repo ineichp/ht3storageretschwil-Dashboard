@@ -697,24 +697,30 @@ h1 {
   flex-wrap: wrap;
 }
 
-.automation-tag {
+.automation-indicator {
   display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
   align-items: center;
-  min-height: 20px;
-  padding: 2px 8px;
+  justify-content: center;
   border: 1px solid rgba(248, 113, 113, 0.52);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(239, 68, 68, 0.16);
-  color: #fecaca;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  text-transform: none;
-  white-space: nowrap;
+  color: #f87171;
 }
 
-.automation-tag[hidden] {
+.automation-indicator svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.automation-indicator[hidden] {
   display: none;
 }
 

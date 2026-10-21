@@ -541,13 +541,16 @@ function renderDehumidifierState(state = {}) {
       !Number.isNaN(activeSince.getTime());
 
     automationTag.hidden = !showAutomationTag;
-    automationTag.textContent = showAutomationTag
-      ? `Active by Automation since: ${activeSince.toLocaleTimeString("de-CH", {
+    if (showAutomationTag) {
+      const activeTime = activeSince.toLocaleTimeString("de-CH", {
         hour: "2-digit",
         minute: "2-digit",
         timeZone: "Europe/Zurich"
-      })}`
-      : "";
+      });
+      const label = `Active by automation since ${activeTime}`;
+      automationTag.title = label;
+      automationTag.setAttribute("aria-label", label);
+    }
   }
 }
 

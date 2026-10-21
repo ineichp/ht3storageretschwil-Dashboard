@@ -83,6 +83,8 @@ flowchart TD
 3. Lambda sends switch commands to Shelly Cloud. Switching Power IoT off includes a device-side 30-second flip-back timer.
 4. Dashboard displays that timer inside the Power IoT button.
 5. Dashboard infers the dehumidifier state from the positive PlugS reading: above 200 W is ON and below 100 W is OFF.
+6. Humidity automation switches on above the configured maximum and switches off only at one percentage point below it.
+7. A high-humidity Android notification is emitted once per automation cycle and is re-armed at the automation stop threshold.
 
 ### Costs
 

@@ -1,5 +1,11 @@
 # Storage Retschwil Changelog
 
+## 2026-10-21
+
+- Added a one-percentage-point humidity hysteresis: automation starts above the configured maximum and stops at `maximum - 1 percentage point`.
+- Changed measurement notifications to one Android push per active threshold cycle; high humidity is re-armed only after the automation stop threshold is reached.
+- Replaced the verbose red dehumidifier automation tag with a compact red automation icon in the dashboard and Android WebView.
+
 ## 2026-09-18
 
 - Recovered the camera upload EC2 instance from an impaired/OOM state and resized it from `t3.nano` to `t3.micro`.

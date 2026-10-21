@@ -6,7 +6,11 @@ import {
   PutCommand
 } from "@aws-sdk/lib-dynamodb";
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
-import { createHash, createSign } from "node:crypto";
+import { createSign } from "node:crypto";
+import {
+  getDehumidifierAutomationDecision,
+  getMeasurementAlertCycle
+} from "./automation-logic.mjs";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const lambda = new LambdaClient({});
@@ -22,38 +26,26 @@ const FIREBASE_SECRET_ID = process.env.FIREBASE_SECRET_ID || "storageretschwil/f
 const POWER_IOT_FUNCTION_NAME = process.env.POWER_IOT_FUNCTION_NAME || "storageretschwilPowerIoT";
 const DEHUMIDIFIER_ON_WATTS = Number(process.env.DEHUMIDIFIER_ON_WATTS || 200);
 const DEHUMIDIFIER_OFF_WATTS = Number(process.env.DEHUMIDIFIER_OFF_WATTS || 100);
+const DEHUMIDIFIER_HYSTERESIS_PERCENT = Number(process.env.DEHUMIDIFIER_HYSTERESIS_PERCENT || 1);
 
 let firebaseCredentialCache = null;
 let firebaseAccessTokenCache = null;
 
-function stableStringify(value) {
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
-  if (value && typeof value === "object") {
-    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
-
-function alertSignature(payload) {
-  return createHash("sha256").update(stableStringify(payload)).digest("hex");
-}
-
-async function getNotificationSignature(configKey) {
+async function getMeasurementNotificationState() {
   const result = await ddb.send(new GetCommand({
     TableName: CONFIG_TABLE,
-    Key: { configKey }
+    Key: { configKey: MEASUREMENT_NOTIFICATION_STATE_KEY }
   }));
 
-  return result.Item?.signature || null;
+  return result.Item || {};
 }
 
-async function putNotificationSignature(configKey, signature, payload) {
+async function putMeasurementNotificationState(state) {
   await ddb.send(new PutCommand({
     TableName: CONFIG_TABLE,
     Item: {
-      configKey,
-      signature,
-      payload,
+      configKey: MEASUREMENT_NOTIFICATION_STATE_KEY,
+      ...state,
       updatedAt: new Date().toISOString()
     }
   }));
@@ -144,9 +136,20 @@ async function controlDehumidifierByHumidity(humidity, thresholds) {
     return { skipped: true, reason: "missing humidity or threshold" };
   }
 
-  const shouldRun = humidity > targetHumidity;
-  const powerState = await invokePowerIot(lambdaPayload("GET"));
+  const stopHumidity = targetHumidity - DEHUMIDIFIER_HYSTERESIS_PERCENT;
+  const allStates = await invokePowerIot(lambdaPayload("GET", { device: "all" }));
+  const powerState = allStates.power || allStates;
+  const dehumidifierState = allStates.dehumidifier || {};
   const isRunning = dehumidifierPowerState(powerState);
+  const automationActive = dehumidifierState.automationActive === true;
+  const decision = getDehumidifierAutomationDecision({
+    humidity,
+    targetHumidity,
+    isRunning,
+    automationActive,
+    hysteresisPercent: DEHUMIDIFIER_HYSTERESIS_PERCENT
+  });
+  const shouldRun = decision.shouldRun;
 
   if (isRunning === shouldRun) {
     return {
@@ -154,7 +157,9 @@ async function controlDehumidifierByHumidity(humidity, thresholds) {
       reason: "already in target state",
       humidity,
       targetHumidity,
+      stopHumidity,
       shouldRun,
+      automationActive,
       plugWatts: positivePowerWatts(powerState.apower)
     };
   }
@@ -165,7 +170,9 @@ async function controlDehumidifierByHumidity(humidity, thresholds) {
       reason: "plug wattage in transition range",
       humidity,
       targetHumidity,
+      stopHumidity,
       shouldRun,
+      automationActive,
       plugWatts: positivePowerWatts(powerState.apower)
     };
   }
@@ -180,7 +187,9 @@ async function controlDehumidifierByHumidity(humidity, thresholds) {
     changed: true,
     humidity,
     targetHumidity,
+    stopHumidity,
     shouldRun,
+    automationActive: shouldRun,
     previousPlugWatts: positivePowerWatts(powerState.apower),
     commandStatus: command.status,
     commandMode: command.commandMode
@@ -461,44 +470,32 @@ export const handler = async (event) => {
     console.error("Device notifications failed:", error);
   }
 
-  const alerts = [];
-
-  if (Number.isFinite(temperature)) {
-    if (temperature > thresholds.maxTemperature) {
-      alerts.push(`Temperature too high: ${temperature} °C > ${thresholds.maxTemperature} °C`);
-    }
-
-    if (temperature < thresholds.minTemperature) {
-      alerts.push(`Temperature too low: ${temperature} °C < ${thresholds.minTemperature} °C`);
-    }
-  }
-
-  if (Number.isFinite(humidity)) {
-    if (humidity > thresholds.maxHumidity) {
-      alerts.push(`Humidity too high: ${humidity} % > ${thresholds.maxHumidity} %`);
-    }
-
-    if (humidity < thresholds.minHumidity) {
-      alerts.push(`Humidity too low: ${humidity} % < ${thresholds.minHumidity} %`);
-    }
-  }
+  const previousMeasurementState = await getMeasurementNotificationState();
+  const previousActiveSignatureList = Array.isArray(previousMeasurementState.activeSignatures)
+    ? previousMeasurementState.activeSignatures
+    : [];
+  const previousActiveSignatures = new Set(previousActiveSignatureList);
+  const {
+    alerts,
+    activeAlerts: activeMeasurementAlerts,
+    activeSignatures,
+    newlyActiveAlerts
+  } = getMeasurementAlertCycle({
+    temperature,
+    humidity,
+    thresholds,
+    previousActiveSignatures: previousActiveSignatureList,
+    hysteresisPercent: DEHUMIDIFIER_HYSTERESIS_PERCENT
+  });
 
   console.log("Detected alerts:", JSON.stringify(alerts));
 
-  if (alerts.length === 0) {
-    return {
-      alert: false,
-      sent: false,
-      message: "No threshold exceeded",
-      thresholds,
-      dehumidifierAutomation,
-      deviceNotifications
-    };
-  }
-
   if (!thresholds.measurementNotificationsEnabled) {
+    if (previousActiveSignatures.size > 0) {
+      await putMeasurementNotificationState({ activeSignatures: [], lastAlerts: [] });
+    }
     return {
-      alert: true,
+      alert: alerts.length > 0,
       sent: false,
       reason: "measurement notifications disabled",
       alerts,
@@ -507,24 +504,24 @@ export const handler = async (event) => {
     };
   }
 
-  const notificationState = {
-    alerts,
-    temperature,
-    humidity,
-    thresholds: {
-      minTemperature: thresholds.minTemperature,
-      maxTemperature: thresholds.maxTemperature,
-      minHumidity: thresholds.minHumidity,
-      maxHumidity: thresholds.maxHumidity
-    }
-  };
-  const signature = alertSignature(notificationState);
-  const previousSignature = await getNotificationSignature(MEASUREMENT_NOTIFICATION_STATE_KEY);
-  if (previousSignature === signature) {
+  const stateChanged = signaturesChanged([...previousActiveSignatures], activeSignatures);
+
+  if (stateChanged) {
+    await putMeasurementNotificationState({
+      activeSignatures,
+      lastAlerts: activeMeasurementAlerts.map(alert => alert.line),
+      lastValues: { temperature, humidity },
+      lastSentAt: newlyActiveAlerts.length > 0
+        ? new Date().toISOString()
+        : previousMeasurementState.lastSentAt || null
+    });
+  }
+
+  if (newlyActiveAlerts.length === 0) {
     return {
-      alert: true,
+      alert: alerts.length > 0,
       sent: false,
-      reason: "unchanged measurement alert",
+      reason: activeSignatures.length > 0 ? "measurement alert cycle already active" : "No threshold exceeded",
       alerts,
       dehumidifierAutomation,
       deviceNotifications
@@ -540,12 +537,11 @@ export const handler = async (event) => {
   } catch (error) {
     console.error("Android push failed for measurement alert:", error);
   }
-  await putNotificationSignature(MEASUREMENT_NOTIFICATION_STATE_KEY, signature, notificationState);
 
   return {
-    alert: true,
+    alert: alerts.length > 0,
     sent: true,
-    alerts,
+    alerts: newlyActiveAlerts.map(alert => alert.line),
     dehumidifierAutomation,
     deviceNotifications
   };

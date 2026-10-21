@@ -149,6 +149,9 @@ Current dashboard logic:
 - OFF target: click UniPlus switch and wait until measured power is below the configured OFF threshold.
 - Current ON threshold: `> 200 W`.
 - Current OFF threshold: `< 100 W`, which keeps the low PlugS base load in the OFF range.
+- Humidity automation starts when the HT3 reading exceeds the configured maximum humidity.
+- Once started by automation, the dehumidifier remains active until humidity reaches `maximum - 1 percentage point` or lower.
+- The Android high-humidity notification is sent once when a new automation cycle starts. It is re-armed only after humidity reaches the same `maximum - 1 percentage point` stop threshold.
 
 ## Audit Costs
 
